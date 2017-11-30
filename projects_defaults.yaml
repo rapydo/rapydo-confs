@@ -1,7 +1,7 @@
 
 variables:
   repos:
-    # TODO: maybe all branches should be the latest/fixed tag/release
+    # IMPORTANT: if you change online_urls here, remember to also fix in develop
     rapydo-confs:
       online_url: https://github.com/rapydo/rapydo-confs.git
       if: true
