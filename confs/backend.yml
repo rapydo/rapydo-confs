@@ -79,7 +79,8 @@ services:
       # AUTH_SERVICE: ${AUTH_SERVICE}
       DEBUG_ENDPOINTS: 0
     volumes:
-      # Custom configuration
+      # configuration files
+      - ${SUBMODULE_DIR}/rapydo-confs/projects_defaults.yaml:/code/confs/projects_defaults.yaml
       - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/project_configuration.yaml:/code/confs/project_configuration.yaml
       # Vanilla code
       - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/backend:/code/${COMPOSE_PROJECT_NAME}
@@ -186,7 +187,8 @@ services:
       VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
       JWT_APP_SECRETS: ${JWT_APP_SECRETS}
     volumes:
-      # Custom configuration
+      # configuration files
+      - ${SUBMODULE_DIR}/rapydo-confs/projects_defaults.yaml:/code/confs/projects_defaults.yaml
       - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/project_configuration.yaml:/code/confs/project_configuration.yaml
       # Vanilla code
       - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/backend:/code/${COMPOSE_PROJECT_NAME}
@@ -235,7 +237,8 @@ services:
       VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
       JWT_APP_SECRETS: ${JWT_APP_SECRETS}
     volumes:
-      # Custom configuration
+      # configuration files
+      - ${SUBMODULE_DIR}/rapydo-confs/projects_defaults.yaml:/code/confs/projects_defaults.yaml
       - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/project_configuration.yaml:/code/confs/project_configuration.yaml
       # Vanilla code
       - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/backend:/code/${COMPOSE_PROJECT_NAME}
