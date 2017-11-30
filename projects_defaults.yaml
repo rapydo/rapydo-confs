@@ -2,10 +2,9 @@
 variables:
   repos:
     # TODO: maybe all branches should be the latest/fixed tag/release
-    core:
-      online_url: https://github.com/rapydo/core.git
+    rapydo-confs:
+      online_url: https://github.com/rapydo/rapydo-confs.git
       if: true
-      path: .
     utils:
       online_url: https://github.com/rapydo/utils.git
       if: $$devel

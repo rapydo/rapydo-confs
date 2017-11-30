@@ -56,7 +56,7 @@ services:
   backend:
     # command: sleep infinity
     build:
-      context: ../submodules/build-templates/backend
+      context: ${SUBMODULE_DIR}/build-templates/backend
       args:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
 
@@ -66,9 +66,10 @@ services:
     hostname: rapydo_server
     environment:
       ACTIVATE: 0  # activate me inside your Blueprint
-      FLASK_APP: ${COMPOSE_PROJECT_NAME}/${PYTHON_MAIN_FILE}.py
-      # FLASK_APP: /usr/local/lib/python3.6/dist-packages/restapi/__main__.py
-      UWSGI_APP: ${COMPOSE_PROJECT_NAME}.${PYTHON_MAIN_FILE}
+      # FLASK_APP: ${COMPOSE_PROJECT_NAME}/${PYTHON_MAIN_FILE}.py
+      # UWSGI_APP: ${COMPOSE_PROJECT_NAME}.${PYTHON_MAIN_FILE}
+      FLASK_APP: ${PYTHON_PATH}/restapi/${PYTHON_MAIN_FILE}.py
+      UWSGI_APP: restapi.${PYTHON_MAIN_FILE}
       VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
       JWT_APP_SECRETS: ${JWT_APP_SECRETS}
       # enable the basic /api/login method
@@ -79,9 +80,9 @@ services:
       DEBUG_ENDPOINTS: 0
     volumes:
       # Custom configuration
-      - ../projects/${COMPOSE_PROJECT_NAME}/project_configuration.yaml:/code/confs/project_configuration.yaml
+      - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/project_configuration.yaml:/code/confs/project_configuration.yaml
       # Vanilla code
-      - ../projects/${COMPOSE_PROJECT_NAME}/backend:/code/${COMPOSE_PROJECT_NAME}
+      - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/backend:/code/${COMPOSE_PROJECT_NAME}
       # JWT tokens secret
       - jwt_tokens:${JWT_APP_SECRETS}
     networks:
@@ -94,7 +95,7 @@ services:
 
   ##############################
   proxy:
-    build: ../submodules/build-templates/proxy
+    build: ${SUBMODULE_DIR}/build-templates/proxy
     # image: ${COMPOSE_PROJECT_NAME}/proxy:template
     image: rapydo/proxy:${RAPYDO_VERSION}
     hostname: reverseproxy
@@ -126,7 +127,7 @@ services:
     image: postgres:9.6
     volumes:
       - sqldata:/var/lib/postgresql/data
-      - ../submodules/build-templates/postgres/pgs_init.sh:/docker-entrypoint-initdb.d/setup-my-schema.sh:ro
+      - ${SUBMODULE_DIR}/build-templates/postgres/pgs_init.sh:/docker-entrypoint-initdb.d/setup-my-schema.sh:ro
     environment:
       ACTIVATE: 0
       POSTGRES_USER: "${PLACEHOLDER}"
@@ -171,7 +172,7 @@ services:
 
   celery:
     build:
-      context: ../submodules/build-templates/celery
+      context: ${SUBMODULE_DIR}/build-templates/celery
       args:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
     # image: ${COMPOSE_PROJECT_NAME}/celery:template
@@ -186,9 +187,9 @@ services:
       JWT_APP_SECRETS: ${JWT_APP_SECRETS}
     volumes:
       # Custom configuration
-      - ../projects/${COMPOSE_PROJECT_NAME}/project_configuration.yaml:/code/confs/project_configuration.yaml
+      - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/project_configuration.yaml:/code/confs/project_configuration.yaml
       # Vanilla code
-      - ../projects/${COMPOSE_PROJECT_NAME}/backend:/code/${COMPOSE_PROJECT_NAME}
+      - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/backend:/code/${COMPOSE_PROJECT_NAME}
       # JWT tokens secret
       - jwt_tokens:${JWT_APP_SECRETS}
     networks:
@@ -216,7 +217,7 @@ services:
 
   celeryui:
     build:
-      context: ../submodules/build-templates/celery
+      context: ${SUBMODULE_DIR}/build-templates/celery
       args:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
     # image: ${COMPOSE_PROJECT_NAME}/celery:template
@@ -235,9 +236,9 @@ services:
       JWT_APP_SECRETS: ${JWT_APP_SECRETS}
     volumes:
       # Custom configuration
-      - ../projects/${COMPOSE_PROJECT_NAME}/project_configuration.yaml:/code/confs/project_configuration.yaml
+      - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/project_configuration.yaml:/code/confs/project_configuration.yaml
       # Vanilla code
-      - ../projects/${COMPOSE_PROJECT_NAME}/backend:/code/${COMPOSE_PROJECT_NAME}
+      - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/backend:/code/${COMPOSE_PROJECT_NAME}
       # JWT tokens secret
       - jwt_tokens:${JWT_APP_SECRETS}
     networks:
@@ -247,14 +248,14 @@ services:
       - rabbit
 
   swaggerui:
-    build: ../submodules/build-templates/swaggerui
+    build: ${SUBMODULE_DIR}/build-templates/swaggerui
     # image: ${COMPOSE_PROJECT_NAME}/swaggerui:template
     image: rapydo/swaggerui:${RAPYDO_VERSION}
     environment:
       ACTIVATE: 0
 
   sqlalchemyui:
-    build: ../submodules/build-templates/sqlalchemyui
+    build: ${SUBMODULE_DIR}/build-templates/sqlalchemyui
     # image: ${COMPOSE_PROJECT_NAME}/sqlalchemyui:template
     image: rapydo/sqlalchemyui:${RAPYDO_VERSION}
     # NOTE: this image let you access sqllite/postgres/mysql
@@ -276,7 +277,7 @@ services:
   # REST API client (wget, curl, httpie, http-prompt)
   restclient:
     build:
-      context: ../submodules/build-templates/restclient
+      context: ${SUBMODULE_DIR}/build-templates/restclient
       args:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
     # image: ${COMPOSE_PROJECT_NAME}/restclient:template
@@ -286,8 +287,8 @@ services:
       MAIN_ENDPOINT: ${API_MAIN_ENDPOINT}
       ACTIVATE: 0
     volumes:
-      - ../projects/${COMPOSE_PROJECT_NAME}/project_configuration.yaml:/code/custom.yml
-      - ../submodules/utilities/utilities/projects_defaults.yaml:/code/base.yml
+      - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/project_configuration.yaml:/code/custom.yml
+      - ${SUBMODULE_DIR}/rapydo-confs/projects_defaults.yaml:/code/base.yml
 
 
   ###################
@@ -295,7 +296,7 @@ services:
   ###################
   ftp:
     # image: stilliard/pure-ftpd:latest
-    build: ../submodules/build-templates/ftp
+    build: ${SUBMODULE_DIR}/build-templates/ftp
     # image: ${COMPOSE_PROJECT_NAME}/ftp:template
     image: rapydo/ftp:${RAPYDO_VERSION}
     volumes:
@@ -315,7 +316,7 @@ services:
   ######################################################
   icat:
     # B2safe instance on irods
-    build: ../submodules/build-templates/icat
+    build: ${SUBMODULE_DIR}/build-templates/icat
     # image: ${COMPOSE_PROJECT_NAME}/icat:template
     image: rapydo/icat:${RAPYDO_VERSION}
     # image: b2safe:rapydo
