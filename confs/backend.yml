@@ -143,7 +143,7 @@ services:
           - ${ALCHEMY_HOST}
 
   neo4j:
-    image: neo4j:3.2.2
+    image: neo4j:3.3.2
     volumes:
       - graphdata:/data
     networks:
