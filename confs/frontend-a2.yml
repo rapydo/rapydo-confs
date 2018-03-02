@@ -13,6 +13,7 @@ services:
     # working_dir: /rapydo/
     environment:
       MODULE_PATH: /modules
+      PROJECT_TITLE: ${PROJECT_TITLE}
     volumes:
       - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}:/app
       - ${SUBMODULE_DIR}/frontend/:/rapydo
