@@ -32,7 +32,7 @@ services:
     working_dir: /confs
     volumes:
       - ${VANILLA_DIR}/data/${COMPOSE_PROJECT_NAME}:/libs
-      - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/frontend/bower.json:/confs/bower.json
+      - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/frontend/package.json:/confs/bower.json
 
   ###############################
   proxy:
