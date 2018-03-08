@@ -7,6 +7,7 @@ services:
       context: ${SUBMODULE_DIR}/build-templates/frontend
       args:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
+        CURRENT_UID: ${CURRENT_UID}
     image: rapydo/frontend:${RAPYDO_VERSION}
     # command: sleep infinity
     hostname: frontend

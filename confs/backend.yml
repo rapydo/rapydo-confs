@@ -59,6 +59,7 @@ services:
       context: ${SUBMODULE_DIR}/build-templates/backend
       args:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
+        CURRENT_UID: ${CURRENT_UID}
 
     # image: ${COMPOSE_PROJECT_NAME}/backend:template
     image: rapydo/backend:${RAPYDO_VERSION}
@@ -100,6 +101,7 @@ services:
       context: ${SUBMODULE_DIR}/build-templates/proxy
       args:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
+        CURRENT_UID: ${CURRENT_UID}
     image: rapydo/proxy:${RAPYDO_VERSION}
     hostname: reverseproxy
     volumes:
@@ -179,6 +181,7 @@ services:
       context: ${SUBMODULE_DIR}/build-templates/celery
       args:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
+        CURRENT_UID: ${CURRENT_UID}
     # image: ${COMPOSE_PROJECT_NAME}/celery:template
     image: rapydo/celery:${RAPYDO_VERSION}
     # hostname: celworker
@@ -225,6 +228,7 @@ services:
       context: ${SUBMODULE_DIR}/build-templates/celery
       args:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
+        CURRENT_UID: ${CURRENT_UID}
     # image: ${COMPOSE_PROJECT_NAME}/celery:template
     image: rapydo/celery:${RAPYDO_VERSION}
     hostname: flower
@@ -287,6 +291,7 @@ services:
       context: ${SUBMODULE_DIR}/build-templates/restclient
       args:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
+        CURRENT_UID: ${CURRENT_UID}
     # image: ${COMPOSE_PROJECT_NAME}/restclient:template
     image: rapydo/restclient:${RAPYDO_VERSION}
     hostname: rapydo_client
@@ -327,6 +332,7 @@ services:
       context: ${SUBMODULE_DIR}/build-templates/icat
       args:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
+        CURRENT_UID: ${CURRENT_UID}
     image: rapydo/icat:${RAPYDO_VERSION}
     hostname: ${IRODS_HOST}
     # command: sleep infinity
