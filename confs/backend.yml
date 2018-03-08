@@ -299,8 +299,8 @@ services:
       MAIN_ENDPOINT: ${API_MAIN_ENDPOINT}
       ACTIVATE: 0
     volumes:
-      - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/project_configuration.yaml:/code/custom.yml
-      # - ${SUBMODULE_DIR}/rapydo-confs/projects_defaults.yaml:/code/base.yml
+      - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/project_configuration.yaml:/code/custom.yaml
+      - ${SUBMODULE_DIR}/rapydo-confs/projects_defaults.yaml:/code/base.yaml
 
 
   ###################
