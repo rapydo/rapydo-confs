@@ -72,6 +72,7 @@ services:
       UWSGI_APP: restapi.${PYTHON_MAIN_FILE}
       VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
       JWT_APP_SECRETS: ${JWT_APP_SECRETS}
+      DOMAIN: ${PROJECT_DOMAIN}
       # enable the basic /api/login method
       MAIN_LOGIN_ENABLE: 1
       # base the user/role mechanism on some database
