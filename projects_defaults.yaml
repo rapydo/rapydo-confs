@@ -50,7 +50,7 @@ variables:
       # extension: $$shortyaml
       path: $$baseconf
       mandatory: True
-      if: true
+      if: $$backend
     frontend:
       file: frontend
       base: True
@@ -74,7 +74,7 @@ variables:
       base: False
       path: $$customconf
       mandatory: False
-      if: True
+      if: $$commons
     mode:
       file: $$mode
       base: False
