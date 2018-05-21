@@ -15,6 +15,8 @@ services:
     environment:
       MODULE_PATH: /modules
       PROJECT_TITLE: ${PROJECT_TITLE}
+      ALLOW_PASSWORD_RESET: "false"
+      ALLOW_REGISTRATION: "false"
     volumes:
       - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}:/app
       - ${SUBMODULE_DIR}/frontend/:/rapydo
