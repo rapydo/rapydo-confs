@@ -17,6 +17,8 @@ services:
       PROJECT_TITLE: ${PROJECT_TITLE}
       ALLOW_PASSWORD_RESET: "false"
       ALLOW_REGISTRATION: "false"
+      BACKEND_PORT: 8080
+      BACKEND_HOST: ${PROJECT_DOMAIN}
     volumes:
       - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}:/app
       - ${SUBMODULE_DIR}/frontend/:/rapydo
