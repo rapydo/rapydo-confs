@@ -24,6 +24,9 @@ services:
       - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/frontend/templates:/data/submodules/frontend/felask/static/app/templates/custom
       - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/frontend/css:/data/submodules/frontend/felask/static/css/custom
       - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/frontend/assets:/data/submodules/frontend/felask/static/assets
+  environment:
+    BACKEND_PORT: 8080
+    BACKEND_HOST: ${PROJECT_DOMAIN}
 
   ###############################
   # Make automatic to install libraries
