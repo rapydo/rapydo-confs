@@ -2,15 +2,14 @@ version: '3'
 
 services:
   frontend:
-    # image: rapydo/frontend
     build:
-      context: ${SUBMODULE_DIR}/build-templates/frontend
+      context: ${SUBMODULE_DIR}/build-templates/angular
       args:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
         CURRENT_UID: ${CURRENT_UID}
-    image: rapydo/frontend:${RAPYDO_VERSION}
+    image: rapydo/angular:${RAPYDO_VERSION}
     # command: sleep infinity
-    hostname: frontend
+    hostname: angular
     # working_dir: /rapydo/
     environment:
       MODULE_PATH: /modules
