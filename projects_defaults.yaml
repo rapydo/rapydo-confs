@@ -14,11 +14,19 @@ variables:
     build-templates:
       online_url: https://github.com/rapydo/build-templates.git
       if: true
-    frontend:
+    rapydo-angular:
+      online_url: https://github.com/rapydo/rapydo-angular.git
+      if: $$angular
+      path: frontend
+    rapydo-react:
+      online_url: https://github.com/rapydo/rapydo-react.git
+      if: $$react
+      path: frontend
+    rapydo-angularjs:
       online_url: https://github.com/rapydo/angularjs-on-flask.git
-      # online_url: https://github.com/rapydo/node-ui.git
-      if: $$frontend
+      if: $$angularjs
       branch: master
+      path: frontend
     do:
       online_url: https://github.com/rapydo/do.git
       if: false
@@ -35,12 +43,8 @@ variables:
         admin: admin_root
         default: normal_user
   frontend:
-    env:
-      some: var
     enable: false
-    branch: master
-  # js:
-  #   load_timeout: '800'
+    framework: None
 
   # The list of files to be considered
   composers:
@@ -51,12 +55,34 @@ variables:
       path: $$baseconf
       mandatory: True
       if: $$backend
+
+    # TO BE REMOVED
     frontend:
       file: frontend
       base: True
       path: $$baseconf
       mandatory: False
       if: $$frontend
+    #################
+    angular:
+      file: angular
+      base: True
+      path: $$baseconf
+      mandatory: False
+      if: $$angular
+    react:
+      file: react
+      base: True
+      path: $$baseconf
+      mandatory: False
+      if: $$react
+    angularjs:
+      file: angularjs
+      base: True
+      path: $$baseconf
+      mandatory: False
+      if: $$angularjs
+
     logging:
       file: logging
       base: True
