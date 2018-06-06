@@ -43,7 +43,6 @@ variables:
         admin: admin_root
         default: normal_user
   frontend:
-    enable: false
     framework: None
 
   # The list of files to be considered
