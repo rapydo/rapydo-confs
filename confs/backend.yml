@@ -194,6 +194,17 @@ services:
       ACTIVATE: 0
       VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
       JWT_APP_SECRETS: ${JWT_APP_SECRETS}
+
+      CELERY_EXTERNAL: ${CELERY_EXTERNAL}
+
+      CELERY_BROKER: ${CELERY_BROKER}
+      CELERY_BACKEND: ${CELERY_BACKEND}
+     
+      CELERY_BROKER_HOST: ${CELERY_BROKER_HOST}
+      CELERY_BROKER_PORT: ${CELERY_BROKER_PORT}
+
+      CELERY_BACKEND_HOST: ${CELERY_BACKEND_HOST}
+      CELERY_BACKEND_PORT: ${CELERY_BACKEND_PORT}
     volumes:
       # configuration files
       - ${SUBMODULE_DIR}/rapydo-confs/projects_defaults.yaml:/code/confs/projects_defaults.yaml
