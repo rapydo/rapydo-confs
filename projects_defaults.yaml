@@ -127,7 +127,6 @@ variables:
 
     ACTIVATE_RESTCLIENT: 0
 
-    # COMPOSE_PROJECT_NAME: $PLACEHOLDER
     API_MAIN_ENDPOINT: status
     PYTHON_MAIN_FILE: __main__
     # Path to dist-packages in backend/celery containers
