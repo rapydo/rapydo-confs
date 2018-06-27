@@ -202,6 +202,8 @@ services:
     user: developer
     working_dir: /code
     environment:
+      APP_MODE: debug
+      DEBUG_LEVEL: DEBUG
       ACTIVATE: ${ACTIVATE_CELERY}
       VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
       JWT_APP_SECRETS: ${JWT_APP_SECRETS}
@@ -262,6 +264,8 @@ services:
     ports:
       - ${CELERYUI_PORT}:${CELERYUI_PORT}
     environment:
+      APP_MODE: debug
+      DEBUG_LEVEL: DEBUG
       ACTIVATE: ${ACTIVATE_CELERYUI}
 
       VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
