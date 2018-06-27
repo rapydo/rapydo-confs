@@ -188,7 +188,7 @@ services:
     image: rapydo/celery:${RAPYDO_VERSION}
     # hostname: celworker
     # command: celery worker -c 1 -A rapydo.flask_ext.flask_celery.worker.celery_app
-    user: root
+    user: developer
     working_dir: /code
     environment:
       ACTIVATE: ${ACTIVATE_CELERY}
@@ -242,13 +242,13 @@ services:
     # image: ${COMPOSE_PROJECT_NAME}/celery:template
     image: rapydo/celery:${RAPYDO_VERSION}
     hostname: flower
-    user: root
+    user: developer
     working_dir: /code
     command: start_flower
     expose:
-      - 5555
+      - ${CELERYUI_PORT}
     ports:
-      - 5555:5555
+      - ${CELERYUI_PORT}:${CELERYUI_PORT}
     environment:
       ACTIVATE: ${ACTIVATE_CELERYUI}
 
@@ -264,6 +264,10 @@ services:
       CELERY_BACKEND: ${CELERY_BACKEND}
       CELERY_BACKEND_HOST: ${CELERY_BACKEND_HOST}
       CELERY_BACKEND_PORT: ${CELERY_BACKEND_PORT}
+
+      CELERYUI_PORT: ${CELERYUI_PORT}
+      CELERYUI_USER: ${PLACEHOLDER}
+      CELERYUI_PASSWORD: ${PLACEHOLDER} 
     volumes:
       # configuration files
       - ${SUBMODULE_DIR}/rapydo-confs/projects_defaults.yaml:/code/confs/projects_defaults.yaml
