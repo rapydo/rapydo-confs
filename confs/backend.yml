@@ -141,7 +141,6 @@ services:
   ###  DATABASES  ###
   ###################
   postgres:
-    # image: postgres:9.6.5-alpine
     image: postgres:10.0-alpine
     volumes:
       - sqldata:/var/lib/postgresql/data
@@ -195,9 +194,7 @@ services:
       args:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
         CURRENT_UID: ${CURRENT_UID}
-    # image: ${COMPOSE_PROJECT_NAME}/celery:template
     image: rapydo/celery:${RAPYDO_VERSION}
-    # hostname: celworker
     # command: celery worker -c 1 -A rapydo.flask_ext.flask_celery.worker.celery_app
     user: developer
     working_dir: /code
