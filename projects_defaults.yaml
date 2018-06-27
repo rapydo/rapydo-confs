@@ -108,8 +108,26 @@ variables:
       if: True
 
   env:
+
+    ACTIVATE_BACKEND: 1
+    ACTIVATE_PROXY: 0
+
+    ACTIVATE_POSTGRES: 0
+    ACTIVATE_NEO4J: 0
+    ACTIVATE_MONGODB: 0
+
+    ACTIVATE_ICAT: 0
+    ACTIVATE_CELERY: 0
+    ACTIVATE_FTP: 0
+
+    ACTIVATE_SWAGGERUI: 0
+    ACTIVATE_SQLALCHEMYUI: 0
+    ACTIVATE_MONGOUI: 0
+    ACTIVATE_CELERYUI: 0
+
+    ACTIVATE_RESTCLIENT: 0
+
     # COMPOSE_PROJECT_NAME: $PLACEHOLDER
-    # PROJECT_DOMAIN: myserver.mydomain.dev  # deprecated
     API_MAIN_ENDPOINT: status
     PYTHON_MAIN_FILE: __main__
     # Path to dist-packages in backend/celery containers

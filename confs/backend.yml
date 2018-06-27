@@ -66,7 +66,7 @@ services:
     # hostname: restapi
     hostname: rapydo_server
     environment:
-      ACTIVATE: 0  # activate me inside your Blueprint
+      ACTIVATE: ${ACTIVATE_BACKEND}
       # FLASK_APP: ${COMPOSE_PROJECT_NAME}/${PYTHON_MAIN_FILE}.py
       # UWSGI_APP: ${COMPOSE_PROJECT_NAME}.${PYTHON_MAIN_FILE}
       FLASK_APP: ${PYTHON_PATH}/restapi/${PYTHON_MAIN_FILE}.py
@@ -119,7 +119,7 @@ services:
     environment:
       DOMAIN: ${PROJECT_DOMAIN}
       MODE: ${LETSENCRYPT_MODE}
-      ACTIVATE: 0
+      ACTIVATE: ${ACTIVATE_PROXY}
     depends_on:
       # NOTE: you have to rewrite all depends_on in a new yml file
       # at the moment they do not cumulate
@@ -136,7 +136,7 @@ services:
       - sqldata:/var/lib/postgresql/data
       - ${SUBMODULE_DIR}/build-templates/postgres/pgs_init.sh:/docker-entrypoint-initdb.d/setup-my-schema.sh:ro
     environment:
-      ACTIVATE: 0
+      ACTIVATE: ${ACTIVATE_POSTGRES}
       POSTGRES_USER: "${PLACEHOLDER}"
       POSTGRES_PASSWORD: "${PLACEHOLDER}"
       POSTGRES_DBS: ${PLACEHOLDER}
@@ -154,7 +154,7 @@ services:
         aliases:
           - ${GRAPHDB_HOST}
     environment:
-      ACTIVATE: 0
+      ACTIVATE: ${ACTIVATE_NEO4J}
       # Note: once changed this, also set GRAPHDB_PASSWORD in backend service
       NEO4J_AUTH: neo4j/${PLACEHOLDER}
       # NEO4J_dbms_memory_pagecache_size: 2048M
@@ -172,7 +172,7 @@ services:
         aliases:
           - ${MONGO_HOST}
     environment:
-      ACTIVATE: 0
+      ACTIVATE: ${ACTIVATE_MONGODB}
 
   #########################
   ###  QUEUE MANAGEMENT ###
@@ -191,7 +191,7 @@ services:
     user: root
     working_dir: /code
     environment:
-      ACTIVATE: 0
+      ACTIVATE: ${ACTIVATE_CELERY}
       VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
       JWT_APP_SECRETS: ${JWT_APP_SECRETS}
 
@@ -228,8 +228,6 @@ services:
       worker_net:
         aliases:
           - ${CELERY_BROKER_HOST}
-    environment:
-      ACTIVATE: 0
 
   ##########################
   ### SERVICE INTERFACES ###
@@ -252,7 +250,8 @@ services:
     ports:
       - 5555:5555
     environment:
-      ACTIVATE: 0
+      ACTIVATE: ${ACTIVATE_CELERYUI}
+
       VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
       JWT_APP_SECRETS: ${JWT_APP_SECRETS}
 
@@ -284,7 +283,7 @@ services:
     image: swaggerapi/swagger-ui:latest
     # image: swaggerapi/swagger-ui:v3.0.5
     environment:
-      ACTIVATE: 0
+      ACTIVATE: ${ACTIVATE_SWAGGERUI}
 
   sqlalchemyui:
     # build: ${SUBMODULE_DIR}/build-templates/sqlalchemyui
@@ -294,14 +293,14 @@ services:
     networks:
       db_net:
     environment:
-      ACTIVATE: 0
+      ACTIVATE: ${ACTIVATE_SQLALCHEMYUI}
       # https://github.com/vrana/adminer/tree/master/designs
       # ADMINER_DESIGN: brade
 
   mongoui:
     image: mongo-express:0.40.0
     environment:
-      ACTIVATE: 0
+      ACTIVATE: ${ACTIVATE_MONGOUI}
       ME_CONFIG_MONGODB_SERVER: ${MONGO_HOST}
     networks:
       db_net:
@@ -319,7 +318,7 @@ services:
     hostname: rapydo_client
     environment:
       MAIN_ENDPOINT: ${API_MAIN_ENDPOINT}
-      ACTIVATE: 0
+      ACTIVATE: ${ACTIVATE_RESTCLIENT}
     volumes:
       - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/project_configuration.yaml:/code/custom.yaml
       - ${SUBMODULE_DIR}/rapydo-confs/projects_defaults.yaml:/code/base.yaml
@@ -338,7 +337,7 @@ services:
   # with the server's SSL certificates for TLS support. Optional TLS is
   # automatically enabled when the container finds this file on startup.
     environment:
-      ACTIVATE: 0
+      ACTIVATE: ${ACTIVATE_FTP}
       PUBLICHOST: ${PROJECT_DOMAIN}
       ADDED_FLAGS: -d -d
     networks:
@@ -358,7 +357,7 @@ services:
     hostname: ${IRODS_HOST}
     # command: sleep infinity
     environment:
-      ACTIVATE: 0
+      ACTIVATE: ${ACTIVATE_ICAT}
       POSTGRES_HOST: ${PLACEHOLDER}
       POSTGRES_USER: ${PLACEHOLDER}
       POSTGRES_PASSWORD: ${PLACEHOLDER}

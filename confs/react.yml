@@ -13,6 +13,7 @@ services:
     hostname: frontend
     # working_dir: /rapydo/
     environment:
+      ACTIVATE: 1  # fixed, because it is enabled by frontend.framework variable
       MODULE_PATH: /modules
       PROJECT_TITLE: ${PROJECT_TITLE}
       ALLOW_PASSWORD_RESET: "false"
