@@ -56,13 +56,13 @@ services:
   backend:
     # command: sleep infinity
     build:
-      context: ${SUBMODULE_DIR}/build-templates/backend
+      context: ${SUBMODULE_DIR}/build-templates/${BACKEND_BUILD_MODE}
       args:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
         CURRENT_UID: ${CURRENT_UID}
 
     # image: ${COMPOSE_PROJECT_NAME}/backend:template
-    image: rapydo/backend:${RAPYDO_VERSION}
+    image: rapydo/${BACKEND_BUILD_MODE}:${RAPYDO_VERSION}
     # hostname: restapi
     hostname: rapydo_server
     environment:
@@ -174,7 +174,7 @@ services:
     #   - 7687:7687
 
   mongodb:
-    image: mongo:3.4
+    image: mongo:4.0.0
     volumes:
       - mongodata:/data/db
     networks:
@@ -281,7 +281,7 @@ services:
 
       CELERYUI_PORT: ${CELERYUI_PORT}
       CELERYUI_USER: ${PLACEHOLDER}
-      CELERYUI_PASSWORD: ${PLACEHOLDER} 
+      CELERYUI_PASSWORD: ${PLACEHOLDER}
     volumes:
       # configuration files
       - ${SUBMODULE_DIR}/rapydo-confs/projects_defaults.yaml:/code/confs/projects_defaults.yaml
@@ -316,10 +316,11 @@ services:
       # ADMINER_DESIGN: brade
 
   mongoui:
-    image: mongo-express:0.40.0
+    image: mongo-express:0.45.0
     environment:
       ACTIVATE: ${ACTIVATE_MONGOUI}
       ME_CONFIG_MONGODB_SERVER: ${MONGO_HOST}
+      ME_CONFIG_OPTIONS_EDITORTHEME: ambiance
     networks:
       db_net:
 
