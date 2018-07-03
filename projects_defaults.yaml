@@ -132,7 +132,7 @@ variables:
     # Path to dist-packages in backend/celery containers
     PYTHON_PATH: /usr/local/lib/python3.6/dist-packages
     # DB_SUBNET: 172.1.0.0
-    BACKEND_BUILD_MODE: backend  # or lightbackend
+    BACKEND_BUILD_MODE: backend  # or backendirods
     JWT_APP_SECRETS: /jwt_tokens
     ALCHEMY_HOST: psqldb.dockerized.io
     ALCHEMY_PORT: 5432

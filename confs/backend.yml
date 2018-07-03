@@ -174,7 +174,8 @@ services:
     #   - 7687:7687
 
   mongodb:
-    image: mongo:4.0.0
+    # image: mongo:4.0.0
+    image: mongo:3.4
     volumes:
       - mongodata:/data/db
     networks:
