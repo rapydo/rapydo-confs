@@ -29,7 +29,7 @@ variables:
       path: frontend
     do:
       online_url: https://github.com/rapydo/do.git
-      if: false
+      if: $$devel
     develop:
       online_url: https://github.com/rapydo/develop.git
       if: false
