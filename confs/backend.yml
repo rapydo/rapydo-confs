@@ -256,7 +256,7 @@ services:
         CURRENT_UID: ${CURRENT_UID}
     # image: ${COMPOSE_PROJECT_NAME}/celery:template
     image: rapydo/celery:${RAPYDO_VERSION}
-    context: ${SUBMODULE_DIR}/build-templates/${BACKEND_BUILD_MODE}
+    entrypoint: docker-entrypoint-celery 
     command: start_flower
     hostname: flower
     user: developer
