@@ -196,7 +196,7 @@ services:
       args:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
         CURRENT_UID: ${CURRENT_UID}
-    image: rapydo/celery:${RAPYDO_VERSION}
+    image: rapydo/${BACKEND_BUILD_MODE}:${RAPYDO_VERSION}
     entrypoint: docker-entrypoint-celery
     command: mycelery
     # command: celery worker -c 1 -A rapydo.flask_ext.flask_celery.worker.celery_app
@@ -255,8 +255,7 @@ services:
       args:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
         CURRENT_UID: ${CURRENT_UID}
-    # image: ${COMPOSE_PROJECT_NAME}/celery:template
-    image: rapydo/celery:${RAPYDO_VERSION}
+    image: rapydo/${BACKEND_BUILD_MODE}:${RAPYDO_VERSION}
     entrypoint: docker-entrypoint-celery
     command: start_flower
     hostname: flower
