@@ -89,6 +89,7 @@ services:
       AUTH_DISABLE_UNUSED_CREDENTIALS_AFTER: ${AUTH_DISABLE_UNUSED_CREDENTIALS_AFTER}
       AUTH_MAX_LOGIN_ATTEMPTS: ${AUTH_MAX_LOGIN_ATTEMPTS}
       AUTH_SECOND_FACTOR_AUTHENTICATION: ${AUTH_SECOND_FACTOR_AUTHENTICATION}
+      TOKEN_DEFAULT_TTL: ${TOKEN_DEFAULT_TTL}
 
       DEBUG_ENDPOINTS: 0
     volumes:
@@ -196,7 +197,7 @@ services:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
         CURRENT_UID: ${CURRENT_UID}
     image: rapydo/celery:${RAPYDO_VERSION}
-    entrypoint: docker-entrypoint-celery 
+    entrypoint: docker-entrypoint-celery
     command: mycelery
     # command: celery worker -c 1 -A rapydo.flask_ext.flask_celery.worker.celery_app
     user: developer
@@ -256,7 +257,7 @@ services:
         CURRENT_UID: ${CURRENT_UID}
     # image: ${COMPOSE_PROJECT_NAME}/celery:template
     image: rapydo/celery:${RAPYDO_VERSION}
-    entrypoint: docker-entrypoint-celery 
+    entrypoint: docker-entrypoint-celery
     command: start_flower
     hostname: flower
     user: developer
