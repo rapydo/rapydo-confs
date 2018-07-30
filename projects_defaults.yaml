@@ -14,14 +14,22 @@ variables:
     build-templates:
       online_url: https://github.com/rapydo/build-templates.git
       if: true
-    frontend:
+    rapydo-angular:
+      online_url: https://github.com/rapydo/rapydo-angular.git
+      if: $$angular
+      path: frontend
+    rapydo-react:
+      online_url: https://github.com/rapydo/rapydo-react.git
+      if: $$react
+      path: frontend
+    rapydo-angularjs:
       online_url: https://github.com/rapydo/angularjs-on-flask.git
-      # online_url: https://github.com/rapydo/node-ui.git
-      if: $$frontend
+      if: $$angularjs
       branch: master
+      path: frontend
     do:
       online_url: https://github.com/rapydo/do.git
-      if: false
+      if: $$devel
     develop:
       online_url: https://github.com/rapydo/develop.git
       if: false
@@ -35,12 +43,7 @@ variables:
         admin: admin_root
         default: normal_user
   frontend:
-    env:
-      some: var
-    enable: false
-    branch: master
-  # js:
-  #   load_timeout: '800'
+    framework: None
 
   # The list of files to be considered
   composers:
@@ -50,13 +53,35 @@ variables:
       # extension: $$shortyaml
       path: $$baseconf
       mandatory: True
-      if: true
+      if: $$backend
+
+    # TO BE REMOVED
     frontend:
       file: frontend
       base: True
       path: $$baseconf
       mandatory: False
       if: $$frontend
+    #################
+    angular:
+      file: angular
+      base: True
+      path: $$baseconf
+      mandatory: False
+      if: $$angular
+    react:
+      file: react
+      base: True
+      path: $$baseconf
+      mandatory: False
+      if: $$react
+    angularjs:
+      file: angularjs
+      base: True
+      path: $$baseconf
+      mandatory: False
+      if: $$angularjs
+
     logging:
       file: logging
       base: True
@@ -74,7 +99,7 @@ variables:
       base: False
       path: $$customconf
       mandatory: False
-      if: True
+      if: $$commons
     mode:
       file: $$mode
       base: False
@@ -83,13 +108,31 @@ variables:
       if: True
 
   env:
-    # COMPOSE_PROJECT_NAME: $PLACEHOLDER
-    # PROJECT_DOMAIN: myserver.mydomain.dev  # deprecated
+
+    ACTIVATE_BACKEND: 1
+    ACTIVATE_PROXY: 0
+
+    ACTIVATE_POSTGRES: 0
+    ACTIVATE_NEO4J: 0
+    ACTIVATE_MONGODB: 0
+
+    ACTIVATE_ICAT: 0
+    ACTIVATE_CELERY: 0
+    ACTIVATE_FTP: 0
+
+    ACTIVATE_SWAGGERUI: 0
+    ACTIVATE_SQLALCHEMYUI: 0
+    ACTIVATE_MONGOUI: 0
+    ACTIVATE_CELERYUI: 0
+
+    ACTIVATE_RESTCLIENT: 0
+
     API_MAIN_ENDPOINT: status
     PYTHON_MAIN_FILE: __main__
     # Path to dist-packages in backend/celery containers
     PYTHON_PATH: /usr/local/lib/python3.6/dist-packages
     # DB_SUBNET: 172.1.0.0
+    BACKEND_BUILD_MODE: backend  # or backendirods
     JWT_APP_SECRETS: /jwt_tokens
     ALCHEMY_HOST: psqldb.dockerized.io
     ALCHEMY_PORT: 5432
@@ -104,11 +147,25 @@ variables:
     MONGO_DATABASE: test
     FLASK_HOST: apiserver.dockerized.io
     FLASK_DEFAULT_PORT: 5000
+    ELASTIC_HOST: elastic.dockerized.io
+    ELASTIC_PORT: 9200
     RABBITMQ_HOST: rabbit.dockerized.io
     RABBITMQ_PORT: 5672
-    CELERY_BROKER_HOST: broker.dockerized.io
+
     CELERY_BROKER: RABBIT
-    CELERY_BROKER_PORT: 4369
+    CELERY_BROKER_HOST: broker.dockerized.io
+    CELERY_BROKER_PORT: 5672
+    CELERY_BROKER_USER:
+    CELERY_BROKER_PASSWORD:
+    CELERY_BROKER_VHOST:
+
+    CELERY_BACKEND: RABBIT
+    CELERY_BACKEND_HOST: broker.dockerized.io
+    CELERY_BACKEND_PORT: 4369
+    CELERY_BACKEND_USER:
+    CELERY_BACKEND_PASSWORD:
+
+    CELERYUI_PORT: 5555
     PROXY_HOST: myproxy.dockerized.io
     PROXY_DEV_PORT: 80
     PROXY_PROD_PORT: 443
@@ -127,6 +184,8 @@ variables:
     AUTH_DISABLE_UNUSED_CREDENTIALS_AFTER: 0
     AUTH_MAX_LOGIN_ATTEMPTS: 0
     AUTH_SECOND_FACTOR_AUTHENTICATION: None
+    TOKEN_DEFAULT_TTL: 604800 # 1 week in seconds
+    # AUTH_SECOND_FACTOR_AUTHENTICATION: TOTP
 
 project:
   name: rapydo

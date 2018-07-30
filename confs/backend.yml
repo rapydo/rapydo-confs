@@ -56,17 +56,19 @@ services:
   backend:
     # command: sleep infinity
     build:
-      context: ${SUBMODULE_DIR}/build-templates/backend
+      context: ${SUBMODULE_DIR}/build-templates/${BACKEND_BUILD_MODE}
       args:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
         CURRENT_UID: ${CURRENT_UID}
 
     # image: ${COMPOSE_PROJECT_NAME}/backend:template
-    image: rapydo/backend:${RAPYDO_VERSION}
+    image: rapydo/${BACKEND_BUILD_MODE}:${RAPYDO_VERSION}
     # hostname: restapi
     hostname: rapydo_server
     environment:
-      ACTIVATE: 0  # activate me inside your Blueprint
+      ACTIVATE: ${ACTIVATE_BACKEND}
+      APP_MODE: debug
+      DEBUG_LEVEL: VERBOSE
       # FLASK_APP: ${COMPOSE_PROJECT_NAME}/${PYTHON_MAIN_FILE}.py
       # UWSGI_APP: ${COMPOSE_PROJECT_NAME}.${PYTHON_MAIN_FILE}
       FLASK_APP: ${PYTHON_PATH}/restapi/${PYTHON_MAIN_FILE}.py
@@ -74,11 +76,21 @@ services:
       VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
       JWT_APP_SECRETS: ${JWT_APP_SECRETS}
       DOMAIN: ${PROJECT_DOMAIN}
+
       # enable the basic /api/login method
       MAIN_LOGIN_ENABLE: 1
       # base the user/role mechanism on some database
       AUTH_ENABLE: 0
       # AUTH_SERVICE: ${AUTH_SERVICE}
+      AUTH_REGISTER_FAILED_LOGIN: ${AUTH_REGISTER_FAILED_LOGIN}
+      AUTH_FORCE_FIRST_PASSWORD_CHANGE: ${AUTH_FORCE_FIRST_PASSWORD_CHANGE}
+      AUTH_VERIFY_PASSWORD_STRENGTH: ${AUTH_VERIFY_PASSWORD_STRENGTH}
+      AUTH_MAX_PASSWORD_VALIDITY: ${AUTH_MAX_PASSWORD_VALIDITY}
+      AUTH_DISABLE_UNUSED_CREDENTIALS_AFTER: ${AUTH_DISABLE_UNUSED_CREDENTIALS_AFTER}
+      AUTH_MAX_LOGIN_ATTEMPTS: ${AUTH_MAX_LOGIN_ATTEMPTS}
+      AUTH_SECOND_FACTOR_AUTHENTICATION: ${AUTH_SECOND_FACTOR_AUTHENTICATION}
+      TOKEN_DEFAULT_TTL: ${TOKEN_DEFAULT_TTL}
+
       DEBUG_ENDPOINTS: 0
     volumes:
       # configuration files
@@ -119,7 +131,7 @@ services:
     environment:
       DOMAIN: ${PROJECT_DOMAIN}
       MODE: ${LETSENCRYPT_MODE}
-      ACTIVATE: 0
+      ACTIVATE: ${ACTIVATE_PROXY}
     depends_on:
       # NOTE: you have to rewrite all depends_on in a new yml file
       # at the moment they do not cumulate
@@ -130,13 +142,12 @@ services:
   ###  DATABASES  ###
   ###################
   postgres:
-    # image: postgres:9.6.5-alpine
     image: postgres:10.0-alpine
     volumes:
       - sqldata:/var/lib/postgresql/data
       - ${SUBMODULE_DIR}/build-templates/postgres/pgs_init.sh:/docker-entrypoint-initdb.d/setup-my-schema.sh:ro
     environment:
-      ACTIVATE: 0
+      ACTIVATE: ${ACTIVATE_POSTGRES}
       POSTGRES_USER: "${PLACEHOLDER}"
       POSTGRES_PASSWORD: "${PLACEHOLDER}"
       POSTGRES_DBS: ${PLACEHOLDER}
@@ -146,7 +157,7 @@ services:
           - ${ALCHEMY_HOST}
 
   neo4j:
-    image: neo4j:3.3.2
+    image: neo4j:3.4
     volumes:
       - graphdata:/data
     networks:
@@ -154,7 +165,7 @@ services:
         aliases:
           - ${GRAPHDB_HOST}
     environment:
-      ACTIVATE: 0
+      ACTIVATE: ${ACTIVATE_NEO4J}
       # Note: once changed this, also set GRAPHDB_PASSWORD in backend service
       NEO4J_AUTH: neo4j/${PLACEHOLDER}
       # NEO4J_dbms_memory_pagecache_size: 2048M
@@ -164,7 +175,7 @@ services:
     #   - 7687:7687
 
   mongodb:
-    image: mongo:3.4
+    image: mongo:4.0.0
     volumes:
       - mongodata:/data/db
     networks:
@@ -172,7 +183,7 @@ services:
         aliases:
           - ${MONGO_HOST}
     environment:
-      ACTIVATE: 0
+      ACTIVATE: ${ACTIVATE_MONGODB}
 
   #########################
   ###  QUEUE MANAGEMENT ###
@@ -180,20 +191,39 @@ services:
 
   celery:
     build:
-      context: ${SUBMODULE_DIR}/build-templates/celery
+      # context: ${SUBMODULE_DIR}/build-templates/celery
+      context: ${SUBMODULE_DIR}/build-templates/${BACKEND_BUILD_MODE}
       args:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
         CURRENT_UID: ${CURRENT_UID}
-    # image: ${COMPOSE_PROJECT_NAME}/celery:template
-    image: rapydo/celery:${RAPYDO_VERSION}
-    # hostname: celworker
+    image: rapydo/${BACKEND_BUILD_MODE}:${RAPYDO_VERSION}
+    entrypoint: docker-entrypoint-celery
+    command: mycelery
     # command: celery worker -c 1 -A rapydo.flask_ext.flask_celery.worker.celery_app
-    user: root
+    user: developer
     working_dir: /code
     environment:
-      ACTIVATE: 0
+      APP_MODE: debug
+      DEBUG_LEVEL: DEBUG
+      ACTIVATE: ${ACTIVATE_CELERY}
       VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
       JWT_APP_SECRETS: ${JWT_APP_SECRETS}
+
+      CELERY_ENABLE: 1
+      CELERY_EXTERNAL: ${CELERY_EXTERNAL}
+
+      CELERY_BROKER: ${CELERY_BROKER}
+      CELERY_BROKER_HOST: ${CELERY_BROKER_HOST}
+      CELERY_BROKER_PORT: ${CELERY_BROKER_PORT}
+      CELERY_BROKER_USER: ${CELERY_BROKER_USER}
+      CELERY_BROKER_PASSWORD: ${CELERY_BROKER_PASSWORD}
+      CELERY_BROKER_VHOST: ${CELERY_BROKER_VHOST}
+
+      CELERY_BACKEND: ${CELERY_BACKEND}
+      CELERY_BACKEND_HOST: ${CELERY_BACKEND_HOST}
+      CELERY_BACKEND_PORT: ${CELERY_BACKEND_PORT}
+      CELERY_BACKEND_USER: ${CELERY_BACKEND_USER}
+      CELERY_BACKEND_PASSWORD: ${CELERY_BACKEND_PASSWORD}
     volumes:
       # configuration files
       - ${SUBMODULE_DIR}/rapydo-confs/projects_defaults.yaml:/code/confs/projects_defaults.yaml
@@ -218,8 +248,6 @@ services:
       worker_net:
         aliases:
           - ${CELERY_BROKER_HOST}
-    environment:
-      ACTIVATE: 0
 
   ##########################
   ### SERVICE INTERFACES ###
@@ -227,24 +255,48 @@ services:
 
   celeryui:
     build:
-      context: ${SUBMODULE_DIR}/build-templates/celery
+      # context: ${SUBMODULE_DIR}/build-templates/celery
+      context: ${SUBMODULE_DIR}/build-templates/${BACKEND_BUILD_MODE}
       args:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
         CURRENT_UID: ${CURRENT_UID}
-    # image: ${COMPOSE_PROJECT_NAME}/celery:template
-    image: rapydo/celery:${RAPYDO_VERSION}
-    hostname: flower
-    user: root
-    working_dir: /code
+    image: rapydo/${BACKEND_BUILD_MODE}:${RAPYDO_VERSION}
+    entrypoint: docker-entrypoint-celery
     command: start_flower
+    hostname: flower
+    user: developer
+    working_dir: /code
     expose:
-      - 5555
+      - ${CELERYUI_PORT}
     ports:
-      - 5555:5555
+      - ${CELERYUI_PORT}:${CELERYUI_PORT}
     environment:
-      ACTIVATE: 0
+      APP_MODE: debug
+      DEBUG_LEVEL: DEBUG
+      ACTIVATE: ${ACTIVATE_CELERYUI}
+
       VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
       JWT_APP_SECRETS: ${JWT_APP_SECRETS}
+
+      CELERY_ENABLE: 1
+      CELERY_EXTERNAL: ${CELERY_EXTERNAL}
+
+      CELERY_BROKER: ${CELERY_BROKER}
+      CELERY_BROKER_HOST: ${CELERY_BROKER_HOST}
+      CELERY_BROKER_PORT: ${CELERY_BROKER_PORT}
+      CELERY_BROKER_USER: ${CELERY_BROKER_USER}
+      CELERY_BROKER_PASSWORD: ${CELERY_BROKER_PASSWORD}
+      CELERY_BROKER_VHOST: ${CELERY_BROKER_VHOST}
+
+      CELERY_BACKEND: ${CELERY_BACKEND}
+      CELERY_BACKEND_HOST: ${CELERY_BACKEND_HOST}
+      CELERY_BACKEND_PORT: ${CELERY_BACKEND_PORT}
+      CELERY_BACKEND_USER: ${CELERY_BACKEND_USER}
+      CELERY_BACKEND_PASSWORD: ${CELERY_BACKEND_PASSWORD}
+
+      CELERYUI_PORT: ${CELERYUI_PORT}
+      CELERYUI_USER: ${PLACEHOLDER}
+      CELERYUI_PASSWORD: ${PLACEHOLDER}
     volumes:
       # configuration files
       - ${SUBMODULE_DIR}/rapydo-confs/projects_defaults.yaml:/code/confs/projects_defaults.yaml
@@ -264,25 +316,25 @@ services:
     image: swaggerapi/swagger-ui:latest
     # image: swaggerapi/swagger-ui:v3.0.5
     environment:
-      ACTIVATE: 0
+      ACTIVATE: ${ACTIVATE_SWAGGERUI}
 
   sqlalchemyui:
-    # build: ${SUBMODULE_DIR}/build-templates/sqlalchemyui
-    image: adminer:4.3.1-standalone
     # NOTE: this image let you access sqllite/postgres/mysql
     # with a phpmyadmin-like web page
+    image: adminer:4.6.3-standalone
     networks:
       db_net:
     environment:
-      ACTIVATE: 0
+      ACTIVATE: ${ACTIVATE_SQLALCHEMYUI}
       # https://github.com/vrana/adminer/tree/master/designs
       # ADMINER_DESIGN: brade
 
   mongoui:
-    image: mongo-express:0.40.0
+    image: mongo-express:0.45.0
     environment:
-      ACTIVATE: 0
+      ACTIVATE: ${ACTIVATE_MONGOUI}
       ME_CONFIG_MONGODB_SERVER: ${MONGO_HOST}
+      ME_CONFIG_OPTIONS_EDITORTHEME: ambiance
     networks:
       db_net:
 
@@ -299,7 +351,7 @@ services:
     hostname: rapydo_client
     environment:
       MAIN_ENDPOINT: ${API_MAIN_ENDPOINT}
-      ACTIVATE: 0
+      ACTIVATE: ${ACTIVATE_RESTCLIENT}
     volumes:
       - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/project_configuration.yaml:/code/custom.yaml
       - ${SUBMODULE_DIR}/rapydo-confs/projects_defaults.yaml:/code/base.yaml
@@ -318,7 +370,7 @@ services:
   # with the server's SSL certificates for TLS support. Optional TLS is
   # automatically enabled when the container finds this file on startup.
     environment:
-      ACTIVATE: 0
+      ACTIVATE: ${ACTIVATE_FTP}
       PUBLICHOST: ${PROJECT_DOMAIN}
       ADDED_FLAGS: -d -d
     networks:
@@ -338,7 +390,7 @@ services:
     hostname: ${IRODS_HOST}
     # command: sleep infinity
     environment:
-      ACTIVATE: 0
+      ACTIVATE: ${ACTIVATE_ICAT}
       POSTGRES_HOST: ${PLACEHOLDER}
       POSTGRES_USER: ${PLACEHOLDER}
       POSTGRES_PASSWORD: ${PLACEHOLDER}
