@@ -319,10 +319,9 @@ services:
       ACTIVATE: ${ACTIVATE_SWAGGERUI}
 
   sqlalchemyui:
-    # build: ${SUBMODULE_DIR}/build-templates/sqlalchemyui
-    image: adminer:4.3.1-standalone
     # NOTE: this image let you access sqllite/postgres/mysql
     # with a phpmyadmin-like web page
+    image: adminer:4.6.3-standalone
     networks:
       db_net:
     environment:
