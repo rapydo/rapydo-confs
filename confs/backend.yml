@@ -69,6 +69,7 @@ services:
       ACTIVATE: ${ACTIVATE_BACKEND}
       APP_MODE: debug
       DEBUG_LEVEL: VERBOSE
+      CURRENT_UID: ${CURRENT_UID}
       # FLASK_APP: ${COMPOSE_PROJECT_NAME}/${PYTHON_MAIN_FILE}.py
       # UWSGI_APP: ${COMPOSE_PROJECT_NAME}.${PYTHON_MAIN_FILE}
       FLASK_APP: ${PYTHON_PATH}/restapi/${PYTHON_MAIN_FILE}.py
@@ -132,6 +133,7 @@ services:
       DOMAIN: ${PROJECT_DOMAIN}
       MODE: ${LETSENCRYPT_MODE}
       ACTIVATE: ${ACTIVATE_PROXY}
+      CURRENT_UID: ${CURRENT_UID}
     depends_on:
       # NOTE: you have to rewrite all depends_on in a new yml file
       # at the moment they do not cumulate
@@ -206,6 +208,7 @@ services:
       APP_MODE: debug
       DEBUG_LEVEL: DEBUG
       ACTIVATE: ${ACTIVATE_CELERY}
+      CURRENT_UID: ${CURRENT_UID}
       VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
       JWT_APP_SECRETS: ${JWT_APP_SECRETS}
 
@@ -274,6 +277,7 @@ services:
       APP_MODE: debug
       DEBUG_LEVEL: DEBUG
       ACTIVATE: ${ACTIVATE_CELERYUI}
+      CURRENT_UID: ${CURRENT_UID}
 
       VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
       JWT_APP_SECRETS: ${JWT_APP_SECRETS}
@@ -352,6 +356,7 @@ services:
     environment:
       MAIN_ENDPOINT: ${API_MAIN_ENDPOINT}
       ACTIVATE: ${ACTIVATE_RESTCLIENT}
+      CURRENT_UID: ${CURRENT_UID}
     volumes:
       - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/project_configuration.yaml:/code/custom.yaml
       - ${SUBMODULE_DIR}/rapydo-confs/projects_defaults.yaml:/code/base.yaml
@@ -391,6 +396,7 @@ services:
     # command: sleep infinity
     environment:
       ACTIVATE: ${ACTIVATE_ICAT}
+      CURRENT_UID: ${CURRENT_UID}
       POSTGRES_HOST: ${PLACEHOLDER}
       POSTGRES_USER: ${PLACEHOLDER}
       POSTGRES_PASSWORD: ${PLACEHOLDER}
