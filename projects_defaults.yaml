@@ -172,6 +172,7 @@ variables:
     LETSENCRYPT_MODE: --staging
     FULL_JWT: true
     SMTP_HOST: smtp.dockerized.io
+    REGISTRATION_NOTIFICATIONS: true
 
     GRAPHDB_EXTERNAL: 0
     CELERY_EXTERNAL: 0
