@@ -21,6 +21,8 @@ volumes:
     driver: local
   ssl_dhparam:
     driver: local
+  flower_db:
+    driver: local
 
   # redisdata:
   #   driver: local
@@ -311,6 +313,7 @@ services:
       - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/backend:/code/${COMPOSE_PROJECT_NAME}
       # JWT tokens secret
       - jwt_tokens:${JWT_APP_SECRETS}
+      - flower_db:/var/flower
     networks:
       db_net:
       worker_net:
