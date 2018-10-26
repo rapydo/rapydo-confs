@@ -270,7 +270,8 @@ services:
     image: rapydo/${BACKEND_BUILD_MODE}:${RAPYDO_VERSION}
     entrypoint: docker-entrypoint-celery
     # command: start_flower
-    command: flower --basic_auth=${CELERYUI_USER}:${CELERYUI_PASSWORD} --port=${CELERYUI_PORT} --persistent --db=/var/flower/flower -A restapi.flask_ext.flask_celery.worker.celery_app -n flower_monitor
+    # command: flower --basic_auth=${CELERYUI_USER}:${CELERYUI_PASSWORD} --port=${CELERYUI_PORT} --persistent --db=/var/flower/flower -A restapi.flask_ext.flask_celery.worker.celery_app -n flower_monitor
+    command: flower --basic_auth=${CELERYUI_USER}:${CELERYUI_PASSWORD} --port=${CELERYUI_PORT} --persistent -A restapi.flask_ext.flask_celery.worker.celery_app -n flower_monitor
     hostname: flower
     user: developer
     working_dir: /code
