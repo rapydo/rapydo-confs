@@ -21,6 +21,8 @@ volumes:
     driver: local
   ssl_dhparam:
     driver: local
+  flower_db:
+    driver: local
 
   # redisdata:
   #   driver: local
@@ -267,7 +269,9 @@ services:
         CURRENT_UID: ${CURRENT_UID}
     image: rapydo/${BACKEND_BUILD_MODE}:${RAPYDO_VERSION}
     entrypoint: docker-entrypoint-celery
-    command: start_flower
+    # command: start_flower
+    # command: flower --basic_auth=${CELERYUI_USER}:${CELERYUI_PASSWORD} --port=${CELERYUI_PORT} --persistent --db=/var/flower/flower -A restapi.flask_ext.flask_celery.worker.celery_app -n flower_monitor
+    command: flower --basic_auth=${CELERYUI_USER}:${CELERYUI_PASSWORD} --port=${CELERYUI_PORT} --persistent --db=/tmp/flower -A restapi.flask_ext.flask_celery.worker.celery_app -n flower_monitor
     hostname: flower
     user: developer
     working_dir: /code
@@ -311,6 +315,7 @@ services:
       - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/backend:/code/${COMPOSE_PROJECT_NAME}
       # JWT tokens secret
       - jwt_tokens:${JWT_APP_SECRETS}
+      - flower_db:/var/flower
     networks:
       db_net:
       worker_net:
