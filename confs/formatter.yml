@@ -1,0 +1,17 @@
+
+version: '3'
+
+services:
+
+  formatter:
+    image: unibeautify/black:latest
+    command: -S .
+    volumes:
+      # main config
+      - ${SUBMODULE_DIR}/rapydo-confs/confs/ormatter.toml:/workdir/pyproject.toml
+      # base dirs
+      - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/backend/apis:/workdir/api
+      - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/backend/tests:/workdir/tests
+      # TODO: add custom dirs
+      # - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/backend/bot:/workdir/bot
+    working_dir: /workdir
