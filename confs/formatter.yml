@@ -12,6 +12,4 @@ services:
       # base dirs
       - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/backend/apis:/workdir/api
       - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/backend/tests:/workdir/tests
-      # TODO: add custom dirs
-      # - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/backend/bot:/workdir/bot
     working_dir: /workdir
