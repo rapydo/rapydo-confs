@@ -167,6 +167,7 @@ variables:
 
     CELERYUI_USER:
     CELERYUI_PASSWORD:
+    CELERYUI_DBDIR: /var/flower
 
     CELERYUI_PORT: 5555
     PROXY_HOST: myproxy.dockerized.io
