@@ -273,7 +273,6 @@ services:
     # command: start_flower
     command: flower --basic_auth=${CELERYUI_USER}:${CELERYUI_PASSWORD} --port=${CELERYUI_PORT} --persistent --db=${CELERYUI_DBDIR}/flower -A restapi.flask_ext.flask_celery.worker.celery_app -n flower_monitor
     hostname: flower
-    user: developer
     working_dir: /code
     expose:
       - ${CELERYUI_PORT}
