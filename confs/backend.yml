@@ -269,9 +269,9 @@ services:
         CURRENT_UID: ${CURRENT_UID}
     image: rapydo/${BACKEND_BUILD_MODE}:${RAPYDO_VERSION}
     entrypoint: docker-entrypoint-celery
+    user: root
     # command: start_flower
-    # command: flower --basic_auth=${CELERYUI_USER}:${CELERYUI_PASSWORD} --port=${CELERYUI_PORT} --persistent --db=/var/flower/flower -A restapi.flask_ext.flask_celery.worker.celery_app -n flower_monitor
-    command: flower --basic_auth=${CELERYUI_USER}:${CELERYUI_PASSWORD} --port=${CELERYUI_PORT} --persistent --db=/tmp/flower -A restapi.flask_ext.flask_celery.worker.celery_app -n flower_monitor
+    command: flower --basic_auth=${CELERYUI_USER}:${CELERYUI_PASSWORD} --port=${CELERYUI_PORT} --persistent --db=${CELERYUI_DBDIR}/flower -A restapi.flask_ext.flask_celery.worker.celery_app -n flower_monitor
     hostname: flower
     user: developer
     working_dir: /code
@@ -307,6 +307,7 @@ services:
       CELERYUI_PORT: ${CELERYUI_PORT}
       CELERYUI_USER: ${PLACEHOLDER}
       CELERYUI_PASSWORD: ${PLACEHOLDER}
+      CELERYUI_DBDIR: ${CELERYUI_DBDIR}
     volumes:
       # configuration files
       - ${SUBMODULE_DIR}/rapydo-confs/projects_defaults.yaml:/code/confs/projects_defaults.yaml
@@ -315,7 +316,7 @@ services:
       - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/backend:/code/${COMPOSE_PROJECT_NAME}
       # JWT tokens secret
       - jwt_tokens:${JWT_APP_SECRETS}
-      - flower_db:/var/flower
+      - flower_db:${CELERYUI_DBDIR}
     networks:
       db_net:
       worker_net:
