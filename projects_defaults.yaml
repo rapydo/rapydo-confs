@@ -43,10 +43,10 @@ variables:
         admin: admin_root
         default: normal_user
     # Roles allowed for non-admin users (e.g. coordinator allowed to create users)
-    allowed_roles:
+    # allowed_roles:
     #   - normal_user
     # List of preauthorized roles with assigned roles
-    preauthorized_users:
+    # preauthorized_users:
     #   yourusername:
     #     - yourrole
     #     - yourrole
