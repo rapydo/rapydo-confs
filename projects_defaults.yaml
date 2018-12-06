@@ -42,6 +42,15 @@ variables:
         internal: staff_user
         admin: admin_root
         default: normal_user
+    # Roles allowed for non-admin users (e.g. coordinator allowed to create users)
+    # allowed_roles:
+    #   - normal_user
+    # List of preauthorized roles with assigned roles
+    # preauthorized_users:
+    #   yourusername:
+    #     - yourrole
+    #     - yourrole
+
   frontend:
     framework: None
 
@@ -165,6 +174,10 @@ variables:
     CELERY_BACKEND_USER:
     CELERY_BACKEND_PASSWORD:
 
+    CELERYUI_USER:
+    CELERYUI_PASSWORD:
+    CELERYUI_DBDIR: /var/flower
+
     CELERYUI_PORT: 5555
     PROXY_HOST: myproxy.dockerized.io
     PROXY_DEV_PORT: 80
@@ -172,6 +185,7 @@ variables:
     LETSENCRYPT_MODE: --staging
     FULL_JWT: true
     SMTP_HOST: smtp.dockerized.io
+    REGISTRATION_NOTIFICATIONS: true
 
     GRAPHDB_EXTERNAL: 0
     CELERY_EXTERNAL: 0
@@ -184,7 +198,8 @@ variables:
     AUTH_DISABLE_UNUSED_CREDENTIALS_AFTER: 0
     AUTH_MAX_LOGIN_ATTEMPTS: 0
     AUTH_SECOND_FACTOR_AUTHENTICATION: None
-    TOKEN_DEFAULT_TTL: 604800 # 1 week in seconds
+    TOKEN_SHORT_TTL: 604800 # 1 week in seconds
+    TOKEN_LONG_TTL: 2592000 # 1 month in seconds
     # AUTH_SECOND_FACTOR_AUTHENTICATION: TOTP
 
 project:

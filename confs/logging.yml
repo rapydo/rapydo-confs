@@ -1,10 +1,9 @@
-
 version: '3'
 #######################
 # Link services inside API
 
 services:
-  
+
   # backend:
   #   networks:
   #     elk:
@@ -67,14 +66,14 @@ services:
     command: 'syslog://logstash:6000'
     # command: 'syslog://logstash:6000?filter.name=imc_*'
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock 
+      - /var/run/docker.sock:/var/run/docker.sock
     environment:
       ACTIVATE: 1
     depends_on:
       - logstash
     networks:
       elk:
- 
+
 
 networks:
   elk:

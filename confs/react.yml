@@ -14,6 +14,7 @@ services:
     # working_dir: /rapydo/
     environment:
       ACTIVATE: 1  # fixed, because it is enabled by frontend.framework variable
+      CURRENT_UID: ${CURRENT_UID}
       APP_MODE: debug
       MODULE_PATH: /modules
       PROJECT_TITLE: ${PROJECT_TITLE}

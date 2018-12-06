@@ -21,6 +21,8 @@ volumes:
     driver: local
   ssl_dhparam:
     driver: local
+  flower_db:
+    driver: local
 
   # redisdata:
   #   driver: local
@@ -69,6 +71,7 @@ services:
       ACTIVATE: ${ACTIVATE_BACKEND}
       APP_MODE: debug
       DEBUG_LEVEL: VERBOSE
+      CURRENT_UID: ${CURRENT_UID}
       # FLASK_APP: ${COMPOSE_PROJECT_NAME}/${PYTHON_MAIN_FILE}.py
       # UWSGI_APP: ${COMPOSE_PROJECT_NAME}.${PYTHON_MAIN_FILE}
       FLASK_APP: ${PYTHON_PATH}/restapi/${PYTHON_MAIN_FILE}.py
@@ -89,7 +92,10 @@ services:
       AUTH_DISABLE_UNUSED_CREDENTIALS_AFTER: ${AUTH_DISABLE_UNUSED_CREDENTIALS_AFTER}
       AUTH_MAX_LOGIN_ATTEMPTS: ${AUTH_MAX_LOGIN_ATTEMPTS}
       AUTH_SECOND_FACTOR_AUTHENTICATION: ${AUTH_SECOND_FACTOR_AUTHENTICATION}
-      TOKEN_DEFAULT_TTL: ${TOKEN_DEFAULT_TTL}
+      TOKEN_SHORT_TTL: ${TOKEN_SHORT_TTL}
+      TOKEN_LONG_TTL: ${TOKEN_LONG_TTL}
+
+      REGISTRATION_NOTIFICATIONS: ${REGISTRATION_NOTIFICATIONS}
 
       DEBUG_ENDPOINTS: 0
     volumes:
@@ -132,11 +138,40 @@ services:
       DOMAIN: ${PROJECT_DOMAIN}
       MODE: ${LETSENCRYPT_MODE}
       ACTIVATE: ${ACTIVATE_PROXY}
+      CURRENT_UID: ${CURRENT_UID}
     depends_on:
       # NOTE: you have to rewrite all depends_on in a new yml file
       # at the moment they do not cumulate
       - backend
       # - frontend
+
+  # Cloned from proxy service
+  certificates-proxy:
+    build:
+      context: ${SUBMODULE_DIR}/build-templates/proxy
+      args:
+        RAPYDO_VERSION: ${RAPYDO_VERSION}
+        CURRENT_UID: ${CURRENT_UID}
+    image: rapydo/proxy:${RAPYDO_VERSION}
+    hostname: reverseproxy
+    volumes:
+      - letsencrypt_certs:/etc/letsencrypt
+      - ssl_dhparam:/etc/nginx/ssl/
+      - ${SUBMODULE_DIR}/rapydo-confs/confs/nginx/certificates.conf:/etc/nginx/sites-enabled/production
+
+    networks:
+      proxy_net:
+        aliases:
+          - ${PROXY_HOST}
+    ports:
+      - ${PROXY_DEV_PORT}:${PROXY_DEV_PORT}   # 80 redirect
+      - ${PROXY_PROD_PORT}:${PROXY_PROD_PORT} # 443 SSL
+    environment:
+      ACTIVATE: 0
+      DOMAIN: ${PROJECT_DOMAIN}
+      MODE: ${LETSENCRYPT_MODE}
+      SMTP_ADMIN: ${SMTP_ADMIN}
+      CURRENT_UID: ${CURRENT_UID}
 
   ###################
   ###  DATABASES  ###
@@ -175,7 +210,7 @@ services:
     #   - 7687:7687
 
   mongodb:
-    image: mongo:4.0.0
+    image: mongo:4.1.4
     volumes:
       - mongodata:/data/db
     networks:
@@ -206,6 +241,7 @@ services:
       APP_MODE: debug
       DEBUG_LEVEL: DEBUG
       ACTIVATE: ${ACTIVATE_CELERY}
+      CURRENT_UID: ${CURRENT_UID}
       VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
       JWT_APP_SECRETS: ${JWT_APP_SECRETS}
 
@@ -262,9 +298,10 @@ services:
         CURRENT_UID: ${CURRENT_UID}
     image: rapydo/${BACKEND_BUILD_MODE}:${RAPYDO_VERSION}
     entrypoint: docker-entrypoint-celery
-    command: start_flower
+    user: root
+    # command: start_flower
+    command: flower --basic_auth=${CELERYUI_USER}:${CELERYUI_PASSWORD} --port=${CELERYUI_PORT} --persistent --db=${CELERYUI_DBDIR}/flower -A restapi.flask_ext.flask_celery.worker.celery_app -n flower_monitor
     hostname: flower
-    user: developer
     working_dir: /code
     expose:
       - ${CELERYUI_PORT}
@@ -274,6 +311,7 @@ services:
       APP_MODE: debug
       DEBUG_LEVEL: DEBUG
       ACTIVATE: ${ACTIVATE_CELERYUI}
+      CURRENT_UID: ${CURRENT_UID}
 
       VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
       JWT_APP_SECRETS: ${JWT_APP_SECRETS}
@@ -297,6 +335,7 @@ services:
       CELERYUI_PORT: ${CELERYUI_PORT}
       CELERYUI_USER: ${PLACEHOLDER}
       CELERYUI_PASSWORD: ${PLACEHOLDER}
+      CELERYUI_DBDIR: ${CELERYUI_DBDIR}
     volumes:
       # configuration files
       - ${SUBMODULE_DIR}/rapydo-confs/projects_defaults.yaml:/code/confs/projects_defaults.yaml
@@ -305,6 +344,7 @@ services:
       - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/backend:/code/${COMPOSE_PROJECT_NAME}
       # JWT tokens secret
       - jwt_tokens:${JWT_APP_SECRETS}
+      - flower_db:${CELERYUI_DBDIR}
     networks:
       db_net:
       worker_net:
@@ -352,6 +392,7 @@ services:
     environment:
       MAIN_ENDPOINT: ${API_MAIN_ENDPOINT}
       ACTIVATE: ${ACTIVATE_RESTCLIENT}
+      CURRENT_UID: ${CURRENT_UID}
     volumes:
       - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/project_configuration.yaml:/code/custom.yaml
       - ${SUBMODULE_DIR}/rapydo-confs/projects_defaults.yaml:/code/base.yaml
@@ -391,6 +432,7 @@ services:
     # command: sleep infinity
     environment:
       ACTIVATE: ${ACTIVATE_ICAT}
+      CURRENT_UID: ${CURRENT_UID}
       POSTGRES_HOST: ${PLACEHOLDER}
       POSTGRES_USER: ${PLACEHOLDER}
       POSTGRES_PASSWORD: ${PLACEHOLDER}
