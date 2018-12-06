@@ -153,6 +153,7 @@ services:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
         CURRENT_UID: ${CURRENT_UID}
     image: rapydo/proxy:${RAPYDO_VERSION}
+    command: /bin/bash updatecertificates
     hostname: reverseproxy
     volumes:
       - letsencrypt_certs:/etc/letsencrypt
