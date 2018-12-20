@@ -301,12 +301,29 @@ services:
     entrypoint: docker-entrypoint-celery
     user: root
     command: flower --basic_auth=${CELERYUI_USER}:${CELERYUI_PASSWORD} --port=${CELERYUI_PORT} --persistent --db=${CELERYUI_DBDIR}/flower -A restapi.flask_ext.flask_celery.worker.celery_app -n flower_monitor
+    # Production command:
+    # command: flower --basic_auth=${CELERYUI_USER}:${CELERYUI_PASSWORD} --port=${CELERYUI_PORT} --persistent --db=${CELERYUI_DBDIR}/flower --certfile=/ssl/real/fullchain1.pem --keyfile=/ssl/real/privkey1.pem -A restapi.flask_ext.flask_celery.worker.celery_app -n flower_monitor
     hostname: flower
     working_dir: /code
     expose:
       - ${CELERYUI_PORT}
     ports:
       - ${CELERYUI_PORT}:${CELERYUI_PORT}
+    volumes:
+      # configuration files
+      - ${SUBMODULE_DIR}/rapydo-confs/projects_defaults.yaml:/code/confs/projects_defaults.yaml
+      - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/project_configuration.yaml:/code/confs/project_configuration.yaml
+      # Vanilla code
+      - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/backend:/code/${COMPOSE_PROJECT_NAME}
+      # JWT tokens secret
+      - jwt_tokens:${JWT_APP_SECRETS}
+      - flower_db:${CELERYUI_DBDIR}
+      - letsencrypt_certs:/ssl
+    networks:
+      db_net:
+      worker_net:
+    depends_on:
+      - rabbit
     environment:
       APP_MODE: debug
       DEBUG_LEVEL: DEBUG
@@ -336,20 +353,7 @@ services:
       CELERYUI_USER: ${PLACEHOLDER}
       CELERYUI_PASSWORD: ${PLACEHOLDER}
       CELERYUI_DBDIR: ${CELERYUI_DBDIR}
-    volumes:
-      # configuration files
-      - ${SUBMODULE_DIR}/rapydo-confs/projects_defaults.yaml:/code/confs/projects_defaults.yaml
-      - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/project_configuration.yaml:/code/confs/project_configuration.yaml
-      # Vanilla code
-      - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/backend:/code/${COMPOSE_PROJECT_NAME}
-      # JWT tokens secret
-      - jwt_tokens:${JWT_APP_SECRETS}
-      - flower_db:${CELERYUI_DBDIR}
-    networks:
-      db_net:
-      worker_net:
-    depends_on:
-      - rabbit
+
 
   swaggerui:
     # build: ${SUBMODULE_DIR}/build-templates/swaggerui
