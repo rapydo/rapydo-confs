@@ -113,7 +113,7 @@ variables:
       file: $$mode
       base: False
       path: $$extendedproject
-      mandatory: True
+      mandatory: False
       if: $$extended-mode
     commons:
       file: commons
