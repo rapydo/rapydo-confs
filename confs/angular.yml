@@ -22,7 +22,7 @@ services:
       BACKEND_PORT: 8080
       BACKEND_HOST: ${PROJECT_DOMAIN}
     volumes:
-      - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}:/app
+      - ${PROJECT_DIR}:/app
       - ${SUBMODULE_DIR}/frontend/:/rapydo
       - ${VANILLA_DIR}/data/${COMPOSE_PROJECT_NAME}/frontend:/modules
 

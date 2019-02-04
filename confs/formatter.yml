@@ -10,6 +10,6 @@ services:
       # main config
       - ${SUBMODULE_DIR}/rapydo-confs/confs/ormatter.toml:/workdir/pyproject.toml
       # base dirs
-      - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/backend/apis:/workdir/api
-      - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/backend/tests:/workdir/tests
+      - ${PROJECT_DIR}/backend/apis:/workdir/api
+      - ${PROJECT_DIR}/backend/tests:/workdir/tests
     working_dir: /workdir
