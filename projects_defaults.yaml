@@ -103,6 +103,18 @@ variables:
       path: $$baseconf
       mandatory: False
       if: $$devel
+    extended-commons:
+      file: commons
+      base: False
+      path: $$extendedproject
+      mandatory: False
+      if: $$extended-commons
+    extended-mode:
+      file: $$mode
+      base: False
+      path: $$extendedproject
+      mandatory: True
+      if: $$extended-mode
     commons:
       file: commons
       base: False
