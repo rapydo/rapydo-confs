@@ -149,6 +149,8 @@ variables:
 
     ACTIVATE_RESTCLIENT: 0
 
+    ACTIVATE_TESTING_MODE: 0
+
     API_MAIN_ENDPOINT: status
     PYTHON_MAIN_FILE: __main__
     # Path to dist-packages in backend/celery containers
