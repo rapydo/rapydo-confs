@@ -63,7 +63,6 @@ services:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
         CURRENT_UID: ${CURRENT_UID}
 
-    # image: ${COMPOSE_PROJECT_NAME}/backend:template
     image: rapydo/${BACKEND_BUILD_MODE}:${RAPYDO_VERSION}
     # hostname: restapi
     hostname: rapydo_server
@@ -72,8 +71,6 @@ services:
       APP_MODE: debug
       DEBUG_LEVEL: VERBOSE
       CURRENT_UID: ${CURRENT_UID}
-      # FLASK_APP: ${COMPOSE_PROJECT_NAME}/${PYTHON_MAIN_FILE}.py
-      # UWSGI_APP: ${COMPOSE_PROJECT_NAME}.${PYTHON_MAIN_FILE}
       FLASK_APP: ${PYTHON_PATH}/restapi/${PYTHON_MAIN_FILE}.py
       UWSGI_APP: restapi.${PYTHON_MAIN_FILE}
       VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
@@ -271,6 +268,9 @@ services:
       - ${PROJECT_DIR}/project_configuration.yaml:/code/confs/project_configuration.yaml
       # Vanilla code
       - ${PROJECT_DIR}/backend:/code/${COMPOSE_PROJECT_NAME}
+      # From project, if any
+      - ${EXTENDED_PROJECT_PATH}/backend:/code/${EXTENDED_PROJECT}
+      - ${EXTENDED_PROJECT_PATH}/project_configuration.yaml:/code/confs/extended_project_configuration.yaml
       # JWT tokens secret
       - jwt_tokens:${JWT_APP_SECRETS}
     networks:
@@ -324,6 +324,9 @@ services:
       - ${PROJECT_DIR}/project_configuration.yaml:/code/confs/project_configuration.yaml
       # Vanilla code
       - ${PROJECT_DIR}/backend:/code/${COMPOSE_PROJECT_NAME}
+      # From project, if any
+      - ${EXTENDED_PROJECT_PATH}/backend:/code/${EXTENDED_PROJECT}
+      - ${EXTENDED_PROJECT_PATH}/project_configuration.yaml:/code/confs/extended_project_configuration.yaml
       # JWT tokens secret
       - jwt_tokens:${JWT_APP_SECRETS}
       - flower_db:${CELERYUI_DBDIR}
