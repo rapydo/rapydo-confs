@@ -63,7 +63,6 @@ services:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
         CURRENT_UID: ${CURRENT_UID}
 
-    # image: ${COMPOSE_PROJECT_NAME}/backend:template
     image: rapydo/${BACKEND_BUILD_MODE}:${RAPYDO_VERSION}
     # hostname: restapi
     hostname: rapydo_server
@@ -72,11 +71,10 @@ services:
       APP_MODE: debug
       DEBUG_LEVEL: VERBOSE
       CURRENT_UID: ${CURRENT_UID}
-      # FLASK_APP: ${COMPOSE_PROJECT_NAME}/${PYTHON_MAIN_FILE}.py
-      # UWSGI_APP: ${COMPOSE_PROJECT_NAME}.${PYTHON_MAIN_FILE}
       FLASK_APP: ${PYTHON_PATH}/restapi/${PYTHON_MAIN_FILE}.py
       UWSGI_APP: restapi.${PYTHON_MAIN_FILE}
       VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
+      EXTENDED_PACKAGE: ${EXTENDED_PROJECT}
       JWT_APP_SECRETS: ${JWT_APP_SECRETS}
       DOMAIN: ${PROJECT_DOMAIN}
 
@@ -94,6 +92,7 @@ services:
       AUTH_SECOND_FACTOR_AUTHENTICATION: ${AUTH_SECOND_FACTOR_AUTHENTICATION}
       TOKEN_SHORT_TTL: ${TOKEN_SHORT_TTL}
       TOKEN_LONG_TTL: ${TOKEN_LONG_TTL}
+      ALLOW_ACCESS_TOKEN_PARAMETER: ${ALLOW_ACCESS_TOKEN_PARAMETER}
 
       REGISTRATION_NOTIFICATIONS: ${REGISTRATION_NOTIFICATIONS}
 
@@ -101,9 +100,12 @@ services:
     volumes:
       # configuration files
       - ${SUBMODULE_DIR}/rapydo-confs/projects_defaults.yaml:/code/confs/projects_defaults.yaml
-      - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/project_configuration.yaml:/code/confs/project_configuration.yaml
+      - ${PROJECT_DIR}/project_configuration.yaml:/code/confs/project_configuration.yaml
       # Vanilla code
-      - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/backend:/code/${COMPOSE_PROJECT_NAME}
+      - ${PROJECT_DIR}/backend:/code/${COMPOSE_PROJECT_NAME}
+      # From project, if any
+      - ${EXTENDED_PROJECT_PATH}/backend:/code/${EXTENDED_PROJECT}
+      - ${EXTENDED_PROJECT_PATH}/project_configuration.yaml:/code/confs/extended_project_configuration.yaml
       # JWT tokens secret
       - jwt_tokens:${JWT_APP_SECRETS}
     networks:
@@ -153,6 +155,7 @@ services:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
         CURRENT_UID: ${CURRENT_UID}
     image: rapydo/proxy:${RAPYDO_VERSION}
+    command: updatecertificates
     hostname: reverseproxy
     volumes:
       - letsencrypt_certs:/etc/letsencrypt
@@ -192,7 +195,7 @@ services:
           - ${ALCHEMY_HOST}
 
   neo4j:
-    image: neo4j:3.4
+    image: neo4j:3.5.0
     volumes:
       - graphdata:/data
     networks:
@@ -233,8 +236,8 @@ services:
         CURRENT_UID: ${CURRENT_UID}
     image: rapydo/${BACKEND_BUILD_MODE}:${RAPYDO_VERSION}
     entrypoint: docker-entrypoint-celery
-    command: mycelery
-    # command: celery worker -c 1 -A rapydo.flask_ext.flask_celery.worker.celery_app
+    command: celery worker --concurrency=1 -Ofair -A restapi.flask_ext.flask_celery.worker.celery_app -Q celery -n ${COMPOSE_PROJECT_NAME}-%h
+    
     user: developer
     working_dir: /code
     environment:
@@ -243,6 +246,7 @@ services:
       ACTIVATE: ${ACTIVATE_CELERY}
       CURRENT_UID: ${CURRENT_UID}
       VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
+      EXTENDED_PACKAGE: ${EXTENDED_PROJECT}
       JWT_APP_SECRETS: ${JWT_APP_SECRETS}
 
       CELERY_ENABLE: 1
@@ -263,21 +267,29 @@ services:
     volumes:
       # configuration files
       - ${SUBMODULE_DIR}/rapydo-confs/projects_defaults.yaml:/code/confs/projects_defaults.yaml
-      - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/project_configuration.yaml:/code/confs/project_configuration.yaml
+      - ${PROJECT_DIR}/project_configuration.yaml:/code/confs/project_configuration.yaml
       # Vanilla code
-      - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/backend:/code/${COMPOSE_PROJECT_NAME}
+      - ${PROJECT_DIR}/backend:/code/${COMPOSE_PROJECT_NAME}
+      # From project, if any
+      - ${EXTENDED_PROJECT_PATH}/backend:/code/${EXTENDED_PROJECT}
+      - ${EXTENDED_PROJECT_PATH}/project_configuration.yaml:/code/confs/extended_project_configuration.yaml
       # JWT tokens secret
       - jwt_tokens:${JWT_APP_SECRETS}
     networks:
       db_net:
       worker_net:
-    depends_on:
-      - rabbit
-      # - celeryui
+    # depends_on:
+    #   - rabbit
+    #   # - celeryui
 
   rabbit:
     image: rabbitmq:latest
     hostname: rabbit
+    environment:
+      # CAN BE locally changed by ovverride with:
+      # ACTIVATE: ${ACTIVATE_RABBIT}  
+      ACTIVATE: ${ACTIVATE_CELERY}
+
     volumes:
       - rabbitdata:/var/lib/rabbitmq
     networks:
@@ -299,14 +311,33 @@ services:
     image: rapydo/${BACKEND_BUILD_MODE}:${RAPYDO_VERSION}
     entrypoint: docker-entrypoint-celery
     user: root
-    # command: start_flower
     command: flower --basic_auth=${CELERYUI_USER}:${CELERYUI_PASSWORD} --port=${CELERYUI_PORT} --persistent --db=${CELERYUI_DBDIR}/flower -A restapi.flask_ext.flask_celery.worker.celery_app -n flower_monitor
+    # Production command:
+    # command: flower --basic_auth=${CELERYUI_USER}:${CELERYUI_PASSWORD} --port=${CELERYUI_PORT} --persistent --db=${CELERYUI_DBDIR}/flower --certfile=/ssl/real/fullchain1.pem --keyfile=/ssl/real/privkey1.pem -A restapi.flask_ext.flask_celery.worker.celery_app -n flower_monitor
     hostname: flower
     working_dir: /code
     expose:
       - ${CELERYUI_PORT}
     ports:
       - ${CELERYUI_PORT}:${CELERYUI_PORT}
+    volumes:
+      # configuration files
+      - ${SUBMODULE_DIR}/rapydo-confs/projects_defaults.yaml:/code/confs/projects_defaults.yaml
+      - ${PROJECT_DIR}/project_configuration.yaml:/code/confs/project_configuration.yaml
+      # Vanilla code
+      - ${PROJECT_DIR}/backend:/code/${COMPOSE_PROJECT_NAME}
+      # From project, if any
+      - ${EXTENDED_PROJECT_PATH}/backend:/code/${EXTENDED_PROJECT}
+      - ${EXTENDED_PROJECT_PATH}/project_configuration.yaml:/code/confs/extended_project_configuration.yaml
+      # JWT tokens secret
+      - jwt_tokens:${JWT_APP_SECRETS}
+      - flower_db:${CELERYUI_DBDIR}
+      - letsencrypt_certs:/ssl
+    networks:
+      db_net:
+      worker_net:
+    # depends_on:
+    #   - rabbit
     environment:
       APP_MODE: debug
       DEBUG_LEVEL: DEBUG
@@ -314,6 +345,7 @@ services:
       CURRENT_UID: ${CURRENT_UID}
 
       VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
+      EXTENDED_PACKAGE: ${EXTENDED_PROJECT}
       JWT_APP_SECRETS: ${JWT_APP_SECRETS}
 
       CELERY_ENABLE: 1
@@ -336,20 +368,7 @@ services:
       CELERYUI_USER: ${PLACEHOLDER}
       CELERYUI_PASSWORD: ${PLACEHOLDER}
       CELERYUI_DBDIR: ${CELERYUI_DBDIR}
-    volumes:
-      # configuration files
-      - ${SUBMODULE_DIR}/rapydo-confs/projects_defaults.yaml:/code/confs/projects_defaults.yaml
-      - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/project_configuration.yaml:/code/confs/project_configuration.yaml
-      # Vanilla code
-      - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/backend:/code/${COMPOSE_PROJECT_NAME}
-      # JWT tokens secret
-      - jwt_tokens:${JWT_APP_SECRETS}
-      - flower_db:${CELERYUI_DBDIR}
-    networks:
-      db_net:
-      worker_net:
-    depends_on:
-      - rabbit
+
 
   swaggerui:
     # build: ${SUBMODULE_DIR}/build-templates/swaggerui
@@ -394,7 +413,7 @@ services:
       ACTIVATE: ${ACTIVATE_RESTCLIENT}
       CURRENT_UID: ${CURRENT_UID}
     volumes:
-      - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/project_configuration.yaml:/code/custom.yaml
+      - ${PROJECT_DIR}/project_configuration.yaml:/code/custom.yaml
       - ${SUBMODULE_DIR}/rapydo-confs/projects_defaults.yaml:/code/base.yaml
 
   ###################

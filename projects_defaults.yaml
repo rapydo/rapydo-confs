@@ -103,6 +103,18 @@ variables:
       path: $$baseconf
       mandatory: False
       if: $$devel
+    extended-commons:
+      file: commons
+      base: False
+      path: $$extendedproject
+      mandatory: False
+      if: $$extended-commons
+    extended-mode:
+      file: $$mode
+      base: False
+      path: $$extendedproject
+      mandatory: False
+      if: $$extended-mode
     commons:
       file: commons
       base: False
@@ -124,6 +136,7 @@ variables:
     ACTIVATE_POSTGRES: 0
     ACTIVATE_NEO4J: 0
     ACTIVATE_MONGODB: 0
+    ACTIVATE_RABBIT: 0
 
     ACTIVATE_ICAT: 0
     ACTIVATE_CELERY: 0
@@ -135,6 +148,8 @@ variables:
     ACTIVATE_CELERYUI: 0
 
     ACTIVATE_RESTCLIENT: 0
+
+    ACTIVATE_TESTING_MODE: 0
 
     API_MAIN_ENDPOINT: status
     PYTHON_MAIN_FILE: __main__
@@ -200,6 +215,7 @@ variables:
     AUTH_SECOND_FACTOR_AUTHENTICATION: None
     TOKEN_SHORT_TTL: 604800 # 1 week in seconds
     TOKEN_LONG_TTL: 2592000 # 1 month in seconds
+    ALLOW_ACCESS_TOKEN_PARAMETER: False
     # AUTH_SECOND_FACTOR_AUTHENTICATION: TOTP
 
 project:

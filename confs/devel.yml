@@ -7,9 +7,14 @@ services:
       - ${SUBMODULE_DIR}/utils/utilities:${PYTHON_PATH}/utilities
       # Unit tests
       - ${SUBMODULE_DIR}/http-api/tests:/code/tests
-      - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/backend/tests:/code/tests/custom
+      - ${PROJECT_DIR}/backend/tests:/code/tests/custom
 
   celery:
+    volumes:
+      - ${SUBMODULE_DIR}/http-api/restapi:${PYTHON_PATH}/restapi
+      - ${SUBMODULE_DIR}/utils/utilities:${PYTHON_PATH}/utilities
+
+  celeryui:
     volumes:
       - ${SUBMODULE_DIR}/http-api/restapi:${PYTHON_PATH}/restapi
       - ${SUBMODULE_DIR}/utils/utilities:${PYTHON_PATH}/utilities
