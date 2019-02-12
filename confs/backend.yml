@@ -97,6 +97,13 @@ services:
       REGISTRATION_NOTIFICATIONS: ${REGISTRATION_NOTIFICATIONS}
 
       DEBUG_ENDPOINTS: 0
+
+      SMTP_ADMIN: ${SMTP_ADMIN}
+      SMTP_NOREPLY: ${SMTP_NOREPLY}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_USERNAME: ${SMTP_USERNAME}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
     volumes:
       # configuration files
       - ${SUBMODULE_DIR}/rapydo-confs/projects_defaults.yaml:/code/confs/projects_defaults.yaml
@@ -264,6 +271,13 @@ services:
       CELERY_BACKEND_PORT: ${CELERY_BACKEND_PORT}
       CELERY_BACKEND_USER: ${CELERY_BACKEND_USER}
       CELERY_BACKEND_PASSWORD: ${CELERY_BACKEND_PASSWORD}
+
+      SMTP_ADMIN: ${SMTP_ADMIN}
+      SMTP_NOREPLY: ${SMTP_NOREPLY}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_USERNAME: ${SMTP_USERNAME}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
     volumes:
       # configuration files
       - ${SUBMODULE_DIR}/rapydo-confs/projects_defaults.yaml:/code/confs/projects_defaults.yaml
