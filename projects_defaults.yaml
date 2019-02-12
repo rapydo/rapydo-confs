@@ -1,6 +1,6 @@
 
 variables:
-  repos:
+  submodules:
     # IMPORTANT: if you change online_urls here, remember to also fix in develop
     rapydo-confs:
       online_url: https://github.com/rapydo/rapydo-confs.git
