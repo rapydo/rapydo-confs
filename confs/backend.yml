@@ -24,9 +24,6 @@ volumes:
   flower_db:
     driver: local
 
-  # redisdata:
-  #   driver: local
-
 # #####################
 # NETWORKS
 # #####################
@@ -56,6 +53,13 @@ services:
   ###  MAIN CONTAINER  ###
   ########################
   backend:
+    restart: on-failure:5
+    # TO TEST the failure:
+    # 1. go inside backend
+    # 2. ps aux --forest
+    # 3. kill process 1 and the tree branches
+
+    # restart: always
     # command: sleep infinity
     build:
       context: ${SUBMODULE_DIR}/build-templates/${BACKEND_BUILD_MODE}
@@ -125,6 +129,7 @@ services:
 
   ##############################
   proxy:
+    restart: always
     build:
       context: ${SUBMODULE_DIR}/build-templates/proxy
       args:
@@ -156,6 +161,7 @@ services:
 
   # Cloned from proxy service
   certificates-proxy:
+    restart: no
     build:
       context: ${SUBMODULE_DIR}/build-templates/proxy
       args:
@@ -187,6 +193,8 @@ services:
   ###  DATABASES  ###
   ###################
   postgres:
+    # restart: always
+    restart: on-failure:5
     image: postgres:10.0-alpine
     volumes:
       - sqldata:/var/lib/postgresql/data
@@ -202,6 +210,7 @@ services:
           - ${ALCHEMY_HOST}
 
   neo4j:
+    restart: on-failure:5
     image: neo4j:3.5.0
     volumes:
       - graphdata:/data
@@ -220,6 +229,7 @@ services:
     #   - 7687:7687
 
   mongodb:
+    restart: on-failure:5
     image: mongo:4.1.4
     volumes:
       - mongodata:/data/db
@@ -235,6 +245,7 @@ services:
   #########################
 
   celery:
+    restart: on-failure:5
     build:
       # context: ${SUBMODULE_DIR}/build-templates/celery
       context: ${SUBMODULE_DIR}/build-templates/${BACKEND_BUILD_MODE}
@@ -297,6 +308,7 @@ services:
     #   # - celeryui
 
   rabbit:
+    restart: on-failure:5
     image: rabbitmq:latest
     hostname: rabbit
     environment:
@@ -316,6 +328,7 @@ services:
   ##########################
 
   celeryui:
+    restart: on-failure:5
     build:
       # context: ${SUBMODULE_DIR}/build-templates/celery
       context: ${SUBMODULE_DIR}/build-templates/${BACKEND_BUILD_MODE}
@@ -385,6 +398,7 @@ services:
 
 
   swaggerui:
+    restart: no
     # build: ${SUBMODULE_DIR}/build-templates/swaggerui
     image: swaggerapi/swagger-ui:latest
     # image: swaggerapi/swagger-ui:v3.0.5
@@ -392,6 +406,7 @@ services:
       ACTIVATE: ${ACTIVATE_SWAGGERUI}
 
   sqlalchemyui:
+    restart: no
     # NOTE: this image let you access sqllite/postgres/mysql
     # with a phpmyadmin-like web page
     image: adminer:4.6.3-standalone
@@ -403,6 +418,7 @@ services:
       # ADMINER_DESIGN: brade
 
   mongoui:
+    restart: no
     image: mongo-express:0.45.0
     environment:
       ACTIVATE: ${ACTIVATE_MONGOUI}
@@ -414,6 +430,7 @@ services:
   #############
   # REST API client (wget, curl, httpie, http-prompt)
   restclient:
+    restart: no
     build:
       context: ${SUBMODULE_DIR}/build-templates/restclient
       args:
@@ -434,6 +451,7 @@ services:
   ### FTP SERVER  ###
   ###################
   ftp:
+    restart: on-failure:5 
     # image: stilliard/pure-ftpd:latest
     build: ${SUBMODULE_DIR}/build-templates/ftp
     # image: ${COMPOSE_PROJECT_NAME}/ftp:template
@@ -454,6 +472,7 @@ services:
   ###  iRODS iCAT server (usually for EUDAT B2safe)  ###
   ######################################################
   icat:
+    restart: no
     # B2safe instance on irods
     build:
       context: ${SUBMODULE_DIR}/build-templates/icat
@@ -482,23 +501,3 @@ services:
       db_net:
     depends_on:
       - postgres
-
-  # #################################
-  # OTHERS
-  # #################################
-
-  #######################
-  # elasticsearch:
-  #   image: elasticsearch
-  #   hostname: elastic
-  #   volumes:
-  #       - restangulask_graphbased_elasticdata:/usr/share/elasticsearch/data
-
-  #################################
-  # REDIS key/value store
-  # redisqueue:
-  #   image: redis:alpine
-  #   command: redis-server --appendonly yes
-  #   hostname: myqueue
-  #   volumes:
-  #     - redisdata:/data
