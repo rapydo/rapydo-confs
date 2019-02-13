@@ -2,7 +2,7 @@ version: '3'
 
 services:
   frontend:
-    restart: no
+    # restart: no
     build:
       context: ${SUBMODULE_DIR}/build-templates/angular
       args:

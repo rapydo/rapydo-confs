@@ -161,7 +161,7 @@ services:
 
   # Cloned from proxy service
   certificates-proxy:
-    restart: no
+    # restart: no
     build:
       context: ${SUBMODULE_DIR}/build-templates/proxy
       args:
@@ -398,7 +398,7 @@ services:
 
 
   swaggerui:
-    restart: no
+    # restart: no
     # build: ${SUBMODULE_DIR}/build-templates/swaggerui
     image: swaggerapi/swagger-ui:latest
     # image: swaggerapi/swagger-ui:v3.0.5
@@ -406,7 +406,7 @@ services:
       ACTIVATE: ${ACTIVATE_SWAGGERUI}
 
   sqlalchemyui:
-    restart: no
+    # restart: no
     # NOTE: this image let you access sqllite/postgres/mysql
     # with a phpmyadmin-like web page
     image: adminer:4.6.3-standalone
@@ -418,7 +418,7 @@ services:
       # ADMINER_DESIGN: brade
 
   mongoui:
-    restart: no
+    # restart: no
     image: mongo-express:0.45.0
     environment:
       ACTIVATE: ${ACTIVATE_MONGOUI}
@@ -430,7 +430,7 @@ services:
   #############
   # REST API client (wget, curl, httpie, http-prompt)
   restclient:
-    restart: no
+    # restart: no
     build:
       context: ${SUBMODULE_DIR}/build-templates/restclient
       args:
@@ -472,7 +472,7 @@ services:
   ###  iRODS iCAT server (usually for EUDAT B2safe)  ###
   ######################################################
   icat:
-    restart: no
+    # restart: no
     # B2safe instance on irods
     build:
       context: ${SUBMODULE_DIR}/build-templates/icat
