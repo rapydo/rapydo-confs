@@ -1,5 +1,9 @@
 
 variables:
+  # back-compatibility fix:
+  repos:
+    # this empty list of repos will allow old rapydo versions to be able to execute
+    # both rapydo install and rapydo version commands
   submodules:
     # IMPORTANT: if you change online_urls here, remember to also fix in develop
     rapydo-confs:
