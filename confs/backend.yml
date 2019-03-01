@@ -195,7 +195,7 @@ services:
   postgres:
     # restart: always
     restart: on-failure:5
-    image: postgres:10.0-alpine
+    image: postgres:10.7-alpine
     volumes:
       - sqldata:/var/lib/postgresql/data
       - ${SUBMODULE_DIR}/build-templates/postgres/pgs_init.sh:/docker-entrypoint-initdb.d/setup-my-schema.sh:ro
