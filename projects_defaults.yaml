@@ -67,15 +67,6 @@ variables:
       path: $$baseconf
       mandatory: True
       if: $$backend
-
-    # TO BE REMOVED
-    frontend:
-      file: frontend
-      base: True
-      path: $$baseconf
-      mandatory: False
-      if: $$frontend
-    #################
     angular:
       file: angular
       base: True
