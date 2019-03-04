@@ -28,6 +28,8 @@ for service in services:
     dependencies[service]['compose'] = image
 
 for d in glob("../build-templates/*/Dockerfile"):
+    if 'not_used_anymore_' in d:
+        continue
     with open(d) as f:
         for line in f:
             if 'FROM' in line:
@@ -126,7 +128,8 @@ for service in dependencies:
 
     elif isinstance(service_dependencies, dict):
         for category in service_dependencies:
-            filtered_dependencies[service] = {}
+            if service not in filtered_dependencies:
+                filtered_dependencies[service] = {}
             deps = service_dependencies[category]
 
             was_str = False
@@ -141,6 +144,8 @@ for service in dependencies:
                 skipped = False
                 if d == 'b2safe/server:icat':
                     skipped = True
+                elif d == 'node:carbon':
+                    skipped = True
                 elif re.match(r'^git\+https://github\.com.*@master$', d):
                     skipped = True
                 elif d == 'docker:dind':
@@ -150,8 +155,10 @@ for service in dependencies:
                 elif d.startswith('rapydo-utils=='):
                     skipped = True
                 elif '==' in d or ':' in d:
+
                     if was_str:
                         filtered_dependencies[service][category] = d
+                        log.critical(filtered_dependencies[service][category])
                     else:
                         filtered_dependencies[service][category].append(d)
                 else:
