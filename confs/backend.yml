@@ -198,7 +198,7 @@ services:
     image: postgres:10.7-alpine
     volumes:
       - sqldata:/var/lib/postgresql/data
-      - ${SUBMODULE_DIR}/build-templates/postgres/pgs_init.sh:/docker-entrypoint-initdb.d/setup-my-schema.sh:ro
+      - ${SUBMODULE_DIR}/rapydo-confs/confs/postgresql/pgs_init.sh:/docker-entrypoint-initdb.d/setup-my-schema.sh:ro
     environment:
       ACTIVATE: ${ACTIVATE_POSTGRES}
       POSTGRES_USER: "${PLACEHOLDER}"
