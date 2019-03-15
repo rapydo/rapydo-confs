@@ -73,7 +73,7 @@ services:
     environment:
       ACTIVATE: ${ACTIVATE_BACKEND}
       APP_MODE: debug
-      DEBUG_LEVEL: VERBOSE
+      DEBUG_LEVEL: ${LOG_LEVEL}
       CURRENT_UID: ${CURRENT_UID}
       FLASK_APP: ${PYTHON_PATH}/restapi/${PYTHON_MAIN_FILE}.py
       UWSGI_APP: restapi.${PYTHON_MAIN_FILE}
@@ -146,8 +146,8 @@ services:
           - ${PROXY_HOST}
       app_net:
     ports:
-      - ${PROXY_DEV_PORT}:${PROXY_DEV_PORT}   # 80 redirect
-      - ${PROXY_PROD_PORT}:${PROXY_PROD_PORT} # 443 SSL
+      - ${PROXY_DEV_PORT}:80   # 80 redirect
+      - ${PROXY_PROD_PORT}:443 # 443 SSL
     environment:
       DOMAIN: ${PROJECT_DOMAIN}
       MODE: ${LETSENCRYPT_MODE}
@@ -260,7 +260,7 @@ services:
     working_dir: /code
     environment:
       APP_MODE: debug
-      DEBUG_LEVEL: DEBUG
+      DEBUG_LEVEL: ${LOG_LEVEL}
       ACTIVATE: ${ACTIVATE_CELERY}
       CURRENT_UID: ${CURRENT_UID}
       VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
@@ -367,7 +367,7 @@ services:
     #   - rabbit
     environment:
       APP_MODE: debug
-      DEBUG_LEVEL: DEBUG
+      DEBUG_LEVEL: ${LOG_LEVEL}
       ACTIVATE: ${ACTIVATE_CELERYUI}
       CURRENT_UID: ${CURRENT_UID}
 
