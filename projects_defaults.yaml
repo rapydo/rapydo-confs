@@ -157,6 +157,7 @@ variables:
     JWT_APP_SECRETS: /jwt_tokens
     ALCHEMY_HOST: psqldb.dockerized.io
     ALCHEMY_PORT: 5432
+    ALCHEMY_DBTYPE: 'postgresql'
     GRAPHDB_HOST: matrix.dockerized.io
     GRAPHDB_BOLT_PORT: 7687
     IRODS_HOST: rodserver.dockerized.io
