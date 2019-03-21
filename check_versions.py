@@ -188,4 +188,4 @@ def check_versions(skip_angular):
 
 
 if __name__ == '__main__':
-    check_versions()
+    check_versions(False)
