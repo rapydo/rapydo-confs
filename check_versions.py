@@ -184,8 +184,8 @@ def check_versions(skip_angular):
 
         # print(service)
 
-    log.pp(filtered_dependencies)
+    log.app(filtered_dependencies)
 
 
 if __name__ == '__main__':
-    check_versions(False)
+    check_versions()
