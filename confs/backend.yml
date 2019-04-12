@@ -11,6 +11,8 @@ volumes:
     driver: local
   sqldata:
     driver: local
+  mariadb:
+    driver: local
   graphdata:
     driver: local
   mongodata:
@@ -207,6 +209,23 @@ services:
       POSTGRES_USER: "${PLACEHOLDER}"
       POSTGRES_PASSWORD: "${PLACEHOLDER}"
       POSTGRES_DBS: ${PLACEHOLDER}
+    networks:
+      db_net:
+        aliases:
+          - ${ALCHEMY_HOST}
+
+  mariadb:
+    # restart: always
+    restart: on-failure:5
+    image: mariadb:10.4.4
+    volumes:
+      - mariadb:/var/lib/mysql
+    environment:
+      ACTIVATE: ${ACTIVATE_POSTGRES}
+      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+      MYSQL_USER: "${PLACEHOLDER}"
+      MYSQL_PASSWORD: "${PLACEHOLDER}"
+      MYSQL_DATABASE: ${PLACEHOLDER}
     networks:
       db_net:
         aliases:
