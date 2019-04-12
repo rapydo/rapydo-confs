@@ -431,7 +431,7 @@ services:
     # restart: no
     # NOTE: this image let you access sqllite/postgres/mysql
     # with a phpmyadmin-like web page
-    image: adminer:4.6.3-standalone
+    image: adminer:4.7.1-standalone
     networks:
       db_net:
     environment:
