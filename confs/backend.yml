@@ -11,6 +11,8 @@ volumes:
     driver: local
   sqldata:
     driver: local
+  mariadb:
+    driver: local
   graphdata:
     driver: local
   mongodata:
@@ -23,9 +25,6 @@ volumes:
     driver: local
   flower_db:
     driver: local
-
-  # redisdata:
-  #   driver: local
 
 # #####################
 # NETWORKS
@@ -56,6 +55,13 @@ services:
   ###  MAIN CONTAINER  ###
   ########################
   backend:
+    restart: on-failure:5
+    # TO TEST the failure:
+    # 1. go inside backend
+    # 2. ps aux --forest
+    # 3. kill process 1 and the tree branches
+
+    # restart: always
     # command: sleep infinity
     build:
       context: ${SUBMODULE_DIR}/build-templates/${BACKEND_BUILD_MODE}
@@ -69,7 +75,7 @@ services:
     environment:
       ACTIVATE: ${ACTIVATE_BACKEND}
       APP_MODE: debug
-      DEBUG_LEVEL: VERBOSE
+      DEBUG_LEVEL: ${LOG_LEVEL}
       CURRENT_UID: ${CURRENT_UID}
       FLASK_APP: ${PYTHON_PATH}/restapi/${PYTHON_MAIN_FILE}.py
       UWSGI_APP: restapi.${PYTHON_MAIN_FILE}
@@ -97,6 +103,15 @@ services:
       REGISTRATION_NOTIFICATIONS: ${REGISTRATION_NOTIFICATIONS}
 
       DEBUG_ENDPOINTS: 0
+
+      SMTP_ADMIN: ${SMTP_ADMIN}
+      SMTP_NOREPLY: ${SMTP_NOREPLY}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_USERNAME: ${SMTP_USERNAME}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+
+      SENTRY_URL: ${SENTRY_URL}
     volumes:
       # configuration files
       - ${SUBMODULE_DIR}/rapydo-confs/projects_defaults.yaml:/code/confs/projects_defaults.yaml
@@ -118,6 +133,7 @@ services:
 
   ##############################
   proxy:
+    restart: always
     build:
       context: ${SUBMODULE_DIR}/build-templates/proxy
       args:
@@ -134,13 +150,14 @@ services:
           - ${PROXY_HOST}
       app_net:
     ports:
-      - ${PROXY_DEV_PORT}:${PROXY_DEV_PORT}   # 80 redirect
-      - ${PROXY_PROD_PORT}:${PROXY_PROD_PORT} # 443 SSL
+      - ${PROXY_DEV_PORT}:80   # 80 redirect
+      - ${PROXY_PROD_PORT}:443 # 443 SSL
     environment:
       DOMAIN: ${PROJECT_DOMAIN}
       MODE: ${LETSENCRYPT_MODE}
       ACTIVATE: ${ACTIVATE_PROXY}
       CURRENT_UID: ${CURRENT_UID}
+      SMTP_ADMIN: ${SMTP_ADMIN}
     depends_on:
       # NOTE: you have to rewrite all depends_on in a new yml file
       # at the moment they do not cumulate
@@ -149,6 +166,7 @@ services:
 
   # Cloned from proxy service
   certificates-proxy:
+    # restart: no
     build:
       context: ${SUBMODULE_DIR}/build-templates/proxy
       args:
@@ -180,10 +198,12 @@ services:
   ###  DATABASES  ###
   ###################
   postgres:
-    image: postgres:10.0-alpine
+    # restart: always
+    restart: on-failure:5
+    image: postgres:10.7-alpine
     volumes:
       - sqldata:/var/lib/postgresql/data
-      - ${SUBMODULE_DIR}/build-templates/postgres/pgs_init.sh:/docker-entrypoint-initdb.d/setup-my-schema.sh:ro
+      - ${SUBMODULE_DIR}/rapydo-confs/confs/postgresql/pgs_init.sh:/docker-entrypoint-initdb.d/setup-my-schema.sh:ro
     environment:
       ACTIVATE: ${ACTIVATE_POSTGRES}
       POSTGRES_USER: "${PLACEHOLDER}"
@@ -194,8 +214,26 @@ services:
         aliases:
           - ${ALCHEMY_HOST}
 
+  mariadb:
+    # restart: always
+    restart: on-failure:5
+    image: mariadb:10.4.4
+    volumes:
+      - mariadb:/var/lib/mysql
+    environment:
+      ACTIVATE: ${ACTIVATE_POSTGRES}
+      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+      MYSQL_USER: "${PLACEHOLDER}"
+      MYSQL_PASSWORD: "${PLACEHOLDER}"
+      MYSQL_DATABASE: ${PLACEHOLDER}
+    networks:
+      db_net:
+        aliases:
+          - ${ALCHEMY_HOST}
+
   neo4j:
-    image: neo4j:3.5.0
+    restart: on-failure:5
+    image: neo4j:3.5.3
     volumes:
       - graphdata:/data
     networks:
@@ -213,6 +251,7 @@ services:
     #   - 7687:7687
 
   mongodb:
+    restart: on-failure:5
     image: mongo:4.1.4
     volumes:
       - mongodata:/data/db
@@ -228,6 +267,7 @@ services:
   #########################
 
   celery:
+    restart: on-failure:5
     build:
       # context: ${SUBMODULE_DIR}/build-templates/celery
       context: ${SUBMODULE_DIR}/build-templates/${BACKEND_BUILD_MODE}
@@ -242,7 +282,7 @@ services:
     working_dir: /code
     environment:
       APP_MODE: debug
-      DEBUG_LEVEL: DEBUG
+      DEBUG_LEVEL: ${LOG_LEVEL}
       ACTIVATE: ${ACTIVATE_CELERY}
       CURRENT_UID: ${CURRENT_UID}
       VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
@@ -264,6 +304,13 @@ services:
       CELERY_BACKEND_PORT: ${CELERY_BACKEND_PORT}
       CELERY_BACKEND_USER: ${CELERY_BACKEND_USER}
       CELERY_BACKEND_PASSWORD: ${CELERY_BACKEND_PASSWORD}
+
+      SMTP_ADMIN: ${SMTP_ADMIN}
+      SMTP_NOREPLY: ${SMTP_NOREPLY}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_USERNAME: ${SMTP_USERNAME}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
     volumes:
       # configuration files
       - ${SUBMODULE_DIR}/rapydo-confs/projects_defaults.yaml:/code/confs/projects_defaults.yaml
@@ -283,6 +330,7 @@ services:
     #   # - celeryui
 
   rabbit:
+    restart: on-failure:5
     image: rabbitmq:latest
     hostname: rabbit
     environment:
@@ -302,6 +350,7 @@ services:
   ##########################
 
   celeryui:
+    restart: on-failure:5
     build:
       # context: ${SUBMODULE_DIR}/build-templates/celery
       context: ${SUBMODULE_DIR}/build-templates/${BACKEND_BUILD_MODE}
@@ -340,7 +389,7 @@ services:
     #   - rabbit
     environment:
       APP_MODE: debug
-      DEBUG_LEVEL: DEBUG
+      DEBUG_LEVEL: ${LOG_LEVEL}
       ACTIVATE: ${ACTIVATE_CELERYUI}
       CURRENT_UID: ${CURRENT_UID}
 
@@ -371,6 +420,7 @@ services:
 
 
   swaggerui:
+    # restart: no
     # build: ${SUBMODULE_DIR}/build-templates/swaggerui
     image: swaggerapi/swagger-ui:latest
     # image: swaggerapi/swagger-ui:v3.0.5
@@ -378,9 +428,10 @@ services:
       ACTIVATE: ${ACTIVATE_SWAGGERUI}
 
   sqlalchemyui:
+    # restart: no
     # NOTE: this image let you access sqllite/postgres/mysql
     # with a phpmyadmin-like web page
-    image: adminer:4.6.3-standalone
+    image: adminer:4.7.1-standalone
     networks:
       db_net:
     environment:
@@ -389,6 +440,7 @@ services:
       # ADMINER_DESIGN: brade
 
   mongoui:
+    # restart: no
     image: mongo-express:0.45.0
     environment:
       ACTIVATE: ${ACTIVATE_MONGOUI}
@@ -400,6 +452,7 @@ services:
   #############
   # REST API client (wget, curl, httpie, http-prompt)
   restclient:
+    # restart: no
     build:
       context: ${SUBMODULE_DIR}/build-templates/restclient
       args:
@@ -420,6 +473,7 @@ services:
   ### FTP SERVER  ###
   ###################
   ftp:
+    restart: on-failure:5 
     # image: stilliard/pure-ftpd:latest
     build: ${SUBMODULE_DIR}/build-templates/ftp
     # image: ${COMPOSE_PROJECT_NAME}/ftp:template
@@ -440,6 +494,7 @@ services:
   ###  iRODS iCAT server (usually for EUDAT B2safe)  ###
   ######################################################
   icat:
+    # restart: no
     # B2safe instance on irods
     build:
       context: ${SUBMODULE_DIR}/build-templates/icat
@@ -468,23 +523,3 @@ services:
       db_net:
     depends_on:
       - postgres
-
-  # #################################
-  # OTHERS
-  # #################################
-
-  #######################
-  # elasticsearch:
-  #   image: elasticsearch
-  #   hostname: elastic
-  #   volumes:
-  #       - restangulask_graphbased_elasticdata:/usr/share/elasticsearch/data
-
-  #################################
-  # REDIS key/value store
-  # redisqueue:
-  #   image: redis:alpine
-  #   command: redis-server --appendonly yes
-  #   hostname: myqueue
-  #   volumes:
-  #     - redisdata:/data

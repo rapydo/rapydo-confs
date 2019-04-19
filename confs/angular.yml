@@ -2,6 +2,7 @@ version: '3'
 
 services:
   frontend:
+    # restart: no
     build:
       context: ${SUBMODULE_DIR}/build-templates/angular
       args:
@@ -19,7 +20,7 @@ services:
       PROJECT_TITLE: ${PROJECT_TITLE}
       ALLOW_PASSWORD_RESET: "false"
       ALLOW_REGISTRATION: "false"
-      BACKEND_PORT: 8080
+      BACKEND_PORT: ${BACKEND_PORT}
       BACKEND_HOST: ${PROJECT_DOMAIN}
     volumes:
       - ${PROJECT_DIR}:/app

@@ -2,6 +2,7 @@ version: '3'
 
 services:
   frontend:
+    restart: on-failure:5
     image: rapydo/frontend
     command: ./boot
     hostname: frontend
@@ -31,12 +32,12 @@ services:
   ###############################
   # Make automatic to install libraries
   bower:
+    # restart: no
     image: pdonorio/jsdev
     working_dir: /confs
     volumes:
       - ${VANILLA_DIR}/data/${COMPOSE_PROJECT_NAME}:/libs
-      - ${PROJECT_DIR}/frontend/package.json:/confs/bower.json
-
+      - ${PROJECT_DIR}/frontend/package.json:/confs/bower.js
   ###############################
   proxy:
     volumes:

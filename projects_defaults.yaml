@@ -1,6 +1,10 @@
 
 variables:
+  # back-compatibility fix:
   repos:
+    # this empty list of repos will allow old rapydo versions to be able to execute
+    # both rapydo install and rapydo version commands
+  submodules:
     # IMPORTANT: if you change online_urls here, remember to also fix in develop
     rapydo-confs:
       online_url: https://github.com/rapydo/rapydo-confs.git
@@ -63,15 +67,6 @@ variables:
       path: $$baseconf
       mandatory: True
       if: $$backend
-
-    # TO BE REMOVED
-    frontend:
-      file: frontend
-      base: True
-      path: $$baseconf
-      mandatory: False
-      if: $$frontend
-    #################
     angular:
       file: angular
       base: True
@@ -157,9 +152,12 @@ variables:
     PYTHON_PATH: /usr/local/lib/python3.6/dist-packages
     # DB_SUBNET: 172.1.0.0
     BACKEND_BUILD_MODE: backend  # or backendirods
+    BACKEND_PORT: 8080
+    LOG_LEVEL: VERBOSE  # log level for backend and celery
     JWT_APP_SECRETS: /jwt_tokens
     ALCHEMY_HOST: psqldb.dockerized.io
     ALCHEMY_PORT: 5432
+    ALCHEMY_DBTYPE: 'postgresql'
     GRAPHDB_HOST: matrix.dockerized.io
     GRAPHDB_BOLT_PORT: 7687
     IRODS_HOST: rodserver.dockerized.io
@@ -199,7 +197,16 @@ variables:
     PROXY_PROD_PORT: 443
     LETSENCRYPT_MODE: --staging
     FULL_JWT: true
+
+    SMTP_ADMIN: 
+    SMTP_NOREPLY:
     SMTP_HOST: smtp.dockerized.io
+    SMTP_PORT:
+    SMTP_USERNAME:
+    SMTP_PASSWORD:
+
+    SENTRY_URL:
+
     REGISTRATION_NOTIFICATIONS: true
 
     GRAPHDB_EXTERNAL: 0
