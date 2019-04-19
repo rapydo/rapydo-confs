@@ -13,9 +13,30 @@ from utilities.logs import get_logger
 log = get_logger('check_versions.py')
 
 
+def check_updates(category, lib):
+
+    if category in ['pip', 'utilities', 'controller', 'http-api']:
+        token = lib.split("==")
+        print('https://pypi.org/project/%s/%s' % (token[0], token[1]))
+    elif category in ['compose', 'Dockerfile']:
+        token = lib.split(":")
+        print("https://hub.docker.com/_/%s" % token[0])
+    else:
+        log.critical("%s: %s", category, lib)
+
+
 @click.command()
 @click.option('--skip-angular', is_flag=True, default=False)
-def check_versions(skip_angular):
+@click.option('--verbose', is_flag=True, default=False)
+def check_versions(skip_angular, verbose):
+
+    import logging
+    if verbose:
+        os.environ['DEBUG_LEVEL'] = 'VERBOSE'
+        log.setLevel(logging.VERBOSE)
+    else:
+        os.environ['DEBUG_LEVEL'] = 'INFO'
+        log.setLevel(logging.INFO)
 
     dependencies = {}
 
@@ -120,16 +141,17 @@ def check_versions(skip_angular):
                 skipped = False
                 if d.startswith('rapydo-utils=='):
                     skipped = True
-                elif '==' in d:
-                    filtered_dependencies[service].append(d)
-                else:
+                elif '==' not in d:
                     skipped = True
+                else:
+                    filtered_dependencies[service].append(d)
+                    check_updates(service, d)
 
                 if skipped:
-                    log.info("Filtering out %s", d)
+                    log.debug("Filtering out %s", d)
 
             if len(filtered_dependencies[service]) == 0:
-                log.warning("Removing empty list: %s", service)
+                log.debug("Removing empty list: %s", service)
                 del filtered_dependencies[service]
 
         elif isinstance(service_dependencies, dict):
@@ -164,23 +186,24 @@ def check_versions(skip_angular):
 
                         if was_str:
                             filtered_dependencies[service][category] = d
-                            log.critical(filtered_dependencies[service][category])
+                            check_updates(category, d)
                         else:
                             filtered_dependencies[service][category].append(d)
+                            check_updates(category, d)
                     else:
                         skipped = True
 
                     if skipped:
-                        log.info("Filtering out %s", d)
+                        log.debug("Filtering out %s", d)
             if category in filtered_dependencies[service]:
                 if len(filtered_dependencies[service][category]) == 0:
-                    log.warning("Removing empty list: %s.%s", service, category)
+                    log.debug("Removing empty list: %s.%s", service, category)
                     del filtered_dependencies[service][category]
             if len(filtered_dependencies[service]) == 0:
-                log.warning("Removing empty list: %s", service)
+                log.debug("Removing empty list: %s", service)
                 del filtered_dependencies[service]
         else:
-            log.critical("Unknown dependencies type: %s", type(service_dependencies))
+            log.warning("Unknown dependencies type: %s", type(service_dependencies))
 
         # print(service)
 
