@@ -153,6 +153,7 @@ variables:
     # DB_SUBNET: 172.1.0.0
     BACKEND_BUILD_MODE: backend  # or backendirods
     BACKEND_PORT: 8080
+    FRONTEND_PREFIX: /
     LOG_LEVEL: VERBOSE  # log level for backend and celery
     JWT_APP_SECRETS: /jwt_tokens
     ALCHEMY_HOST: psqldb.dockerized.io

@@ -22,6 +22,7 @@ services:
       ALLOW_REGISTRATION: "false"
       BACKEND_PORT: ${BACKEND_PORT}
       BACKEND_HOST: ${PROJECT_DOMAIN}
+      FRONTEND_PREFIX: ${FRONTEND_PREFIX}
     volumes:
       - ${PROJECT_DIR}:/app
       - ${SUBMODULE_DIR}/frontend/:/rapydo
