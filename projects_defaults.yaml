@@ -153,6 +153,7 @@ variables:
     # DB_SUBNET: 172.1.0.0
     BACKEND_BUILD_MODE: backend  # or backendirods
     BACKEND_PORT: 8080
+    BACKEND_URI: ''
     FRONTEND_PREFIX: /
     BACKEND_PREFIX: ''
     LOG_LEVEL: VERBOSE  # log level for backend and celery
