@@ -154,6 +154,7 @@ variables:
     BACKEND_BUILD_MODE: backend  # or backendirods
     BACKEND_PORT: 8080
     FRONTEND_PREFIX: /
+    BACKEND_PREFIX: ''
     LOG_LEVEL: VERBOSE  # log level for backend and celery
     JWT_APP_SECRETS: /jwt_tokens
     ALCHEMY_HOST: psqldb.dockerized.io
