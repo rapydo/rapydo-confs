@@ -176,6 +176,7 @@ variables:
     ELASTIC_PORT: 9200
     RABBITMQ_HOST: rabbit.dockerized.io
     RABBITMQ_PORT: 5672
+    FRONTEND_HOST: frontend.dockerized.io
 
     CELERY_BROKER: RABBIT
     CELERY_BROKER_HOST: broker.dockerized.io
@@ -227,6 +228,9 @@ variables:
     TOKEN_LONG_TTL: 2592000 # 1 month in seconds
     ALLOW_ACCESS_TOKEN_PARAMETER: False
     # AUTH_SECOND_FACTOR_AUTHENTICATION: TOTP
+
+    DEFAULT_USERNAME: "user@nomail.org"    
+    DEFAULT_PASSWORD: "test"  
 
 project:
   name: rapydo
