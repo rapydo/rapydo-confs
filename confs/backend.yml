@@ -427,6 +427,8 @@ services:
     # image: swaggerapi/swagger-ui:v3.0.5
     environment:
       ACTIVATE: ${ACTIVATE_SWAGGERUI}
+    ports:
+      - 7777:8080
 
   sqlalchemyui:
     # restart: no
