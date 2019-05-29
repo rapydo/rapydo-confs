@@ -424,6 +424,8 @@ services:
     # build: ${SUBMODULE_DIR}/build-templates/swaggerui
     image: swaggerapi/swagger-ui:latest
     # image: swaggerapi/swagger-ui:v3.0.5
+    ports:
+      - 7777:8080
     environment:
       ACTIVATE: ${ACTIVATE_SWAGGERUI}
 
