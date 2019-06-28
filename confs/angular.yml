@@ -20,8 +20,11 @@ services:
       PROJECT_TITLE: ${PROJECT_TITLE}
       ALLOW_PASSWORD_RESET: "false"
       ALLOW_REGISTRATION: "false"
+      BACKEND_URI: ${BACKEND_URI}
       BACKEND_PORT: ${BACKEND_PORT}
       BACKEND_HOST: ${PROJECT_DOMAIN}
+      BACKEND_PREFIX: ${BACKEND_PREFIX}
+      FRONTEND_PREFIX: ${FRONTEND_PREFIX}
     volumes:
       - ${PROJECT_DIR}:/app
       - ${SUBMODULE_DIR}/frontend/:/rapydo
