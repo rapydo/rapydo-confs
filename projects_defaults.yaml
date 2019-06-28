@@ -229,6 +229,7 @@ variables:
     TOKEN_LONG_TTL: 2592000 # 1 month in seconds
     ALLOW_ACCESS_TOKEN_PARAMETER: False
     # AUTH_SECOND_FACTOR_AUTHENTICATION: TOTP
+    DEFAULT_DHLEN: 2048
 
     DEFAULT_USERNAME: "user@nomail.org"    
     DEFAULT_PASSWORD: "test"  
