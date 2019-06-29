@@ -16,9 +16,18 @@ log = get_logger('check_versions.py')
 def check_updates(category, lib):
 
     if category in ['pip', 'utilities', 'controller', 'http-api']:
-        token = lib.split("==")
+        if "==" in lib:
+            token = lib.split("==")
+        elif ">=" in lib:
+            token = lib.split(">=")
+        else:
+            log.critical("Invalid lib format: %s", lib)
+
         print('https://pypi.org/project/%s/%s' % (token[0], token[1]))
     elif category in ['compose', 'Dockerfile']:
+        token = lib.split(":")
+        print("https://hub.docker.com/_/%s" % token[0])
+    elif category in ['package.json']:
         token = lib.split(":")
         print("https://hub.docker.com/_/%s" % token[0])
     else:
@@ -141,7 +150,7 @@ def check_versions(skip_angular, verbose):
                 skipped = False
                 if d.startswith('rapydo-utils=='):
                     skipped = True
-                elif '==' not in d:
+                elif '==' not in d and '>=' not in d:
                     skipped = True
                 else:
                     filtered_dependencies[service].append(d)
