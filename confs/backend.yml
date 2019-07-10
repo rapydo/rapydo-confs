@@ -442,6 +442,8 @@ services:
       ACTIVATE: ${ACTIVATE_SQLALCHEMYUI}
       # https://github.com/vrana/adminer/tree/master/designs
       # ADMINER_DESIGN: brade
+    ports:
+      - 7777:8080
 
   mongoui:
     # restart: no

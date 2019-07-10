@@ -224,5 +224,6 @@ def check_versions(skip_angular, verbose):
     log.info("injector: cannot upgrade since from 0.13+ passing keyword arguments to inject is no longer supported")
     log.info("flask_injector: compatibility issues with version 1.0.12, to be retried")
 
+
 if __name__ == '__main__':
     check_versions()
