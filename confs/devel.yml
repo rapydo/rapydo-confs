@@ -14,6 +14,11 @@ services:
       - ${SUBMODULE_DIR}/http-api/restapi:${PYTHON_PATH}/restapi
       - ${SUBMODULE_DIR}/utils/utilities:${PYTHON_PATH}/utilities
 
+  celery-beat:
+    volumes:
+      - ${SUBMODULE_DIR}/http-api/restapi:${PYTHON_PATH}/restapi
+      - ${SUBMODULE_DIR}/utils/utilities:${PYTHON_PATH}/utilities
+
   celeryui:
     volumes:
       - ${SUBMODULE_DIR}/http-api/restapi:${PYTHON_PATH}/restapi

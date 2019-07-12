@@ -25,6 +25,8 @@ volumes:
     driver: local
   flower_db:
     driver: local
+  celerybeat:
+    driver: local
 
 # #####################
 # NETWORKS
@@ -330,6 +332,68 @@ services:
     # depends_on:
     #   - rabbit
     #   # - celeryui
+
+  celery-beat:
+    restart: on-failure:5
+    build:
+      # context: ${SUBMODULE_DIR}/build-templates/celery
+      context: ${SUBMODULE_DIR}/build-templates/${BACKEND_BUILD_MODE}
+      args:
+        RAPYDO_VERSION: ${RAPYDO_VERSION}
+        CURRENT_UID: ${CURRENT_UID}
+    image: rapydo/${BACKEND_BUILD_MODE}:${RAPYDO_VERSION}
+    entrypoint: docker-entrypoint-celery
+    command: celery beat -A restapi.flask_ext.flask_celery.beat.celery_app --pidfile /tmp/celerybeat.pid --schedule /beat/celerybeat-schedule --loglevel ${LOG_LEVEL} --max-interval 30
+    
+    user: developer
+    working_dir: /code
+    environment:
+      APP_MODE: debug
+      DEBUG_LEVEL: ${LOG_LEVEL}
+      ACTIVATE: ${ACTIVATE_CELERY_BEAT}
+      CURRENT_UID: ${CURRENT_UID}
+      DOMAIN: ${PROJECT_DOMAIN}
+      VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
+      EXTENDED_PACKAGE: ${EXTENDED_PROJECT}
+      JWT_APP_SECRETS: ${JWT_APP_SECRETS}
+
+      CELERY_ENABLE: 1
+      CELERY_EXTERNAL: ${CELERY_EXTERNAL}
+
+      CELERY_BROKER: ${CELERY_BROKER}
+      CELERY_BROKER_HOST: ${CELERY_BROKER_HOST}
+      CELERY_BROKER_PORT: ${CELERY_BROKER_PORT}
+      CELERY_BROKER_USER: ${CELERY_BROKER_USER}
+      CELERY_BROKER_PASSWORD: ${CELERY_BROKER_PASSWORD}
+      CELERY_BROKER_VHOST: ${CELERY_BROKER_VHOST}
+
+      CELERY_BACKEND: ${CELERY_BACKEND}
+      CELERY_BACKEND_HOST: ${CELERY_BACKEND_HOST}
+      CELERY_BACKEND_PORT: ${CELERY_BACKEND_PORT}
+      CELERY_BACKEND_USER: ${CELERY_BACKEND_USER}
+      CELERY_BACKEND_PASSWORD: ${CELERY_BACKEND_PASSWORD}
+
+      SMTP_ADMIN: ${SMTP_ADMIN}
+      SMTP_NOREPLY: ${SMTP_NOREPLY}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_USERNAME: ${SMTP_USERNAME}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+    volumes:
+      - celerybeat:/beat
+      # configuration files
+      - ${SUBMODULE_DIR}/rapydo-confs/projects_defaults.yaml:/code/confs/projects_defaults.yaml
+      - ${PROJECT_DIR}/project_configuration.yaml:/code/confs/project_configuration.yaml
+      # Vanilla code
+      - ${PROJECT_DIR}/backend:/code/${COMPOSE_PROJECT_NAME}
+      # From project, if any
+      - ${EXTENDED_PROJECT_PATH}/backend:/code/${EXTENDED_PROJECT}
+      - ${EXTENDED_PROJECT_PATH}/project_configuration.yaml:/code/confs/extended_project_configuration.yaml
+      # JWT tokens secret
+      - jwt_tokens:${JWT_APP_SECRETS}
+    networks:
+      db_net:
+      worker_net:
 
   rabbit:
     restart: on-failure:5
