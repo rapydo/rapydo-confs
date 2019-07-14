@@ -146,6 +146,8 @@ services:
     image: rapydo/proxy:${RAPYDO_VERSION}
     hostname: reverseproxy
     volumes:
+      - ${SUBMODULE_DIR}/rapydo-confs/confs/nginx/${NGINX_PROD_CONF}:/etc/nginx/sites-enabled/production
+      - ${SUBMODULE_DIR}/rapydo-confs/confs/nginx/${NGINX_PROD_HEADERS}:/etc/nginx/sites-enabled/production-headers
       - letsencrypt_certs:/etc/letsencrypt
       - ssl_dhparam:/etc/nginx/ssl/
     networks:
