@@ -238,11 +238,10 @@ variables:
     DEFAULT_PASSWORD: "test"  
 
 project:
-  name: rapydo
   title: REST HTTP-API server with Python, Flask and Docker
-  version: v0.1
   description: No description yet
-  # rapydo: master
+  rapydo: 0.6.7
+  version: v0.1
 
 tags:
   specifications: JSON with SWAGGER standards for any REST client
