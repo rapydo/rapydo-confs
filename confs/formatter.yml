@@ -3,13 +3,18 @@ version: '3'
 
 services:
 
-  formatter:
+  vanilla-formatter:
     image: unibeautify/black:latest
     command: -S .
     volumes:
-      # main config
-      - ${SUBMODULE_DIR}/rapydo-confs/confs/ormatter.toml:/workdir/pyproject.toml
-      # base dirs
-      - ${PROJECT_DIR}/backend/apis:/workdir/api
-      - ${PROJECT_DIR}/backend/tests:/workdir/tests
+      - ${SUBMODULE_DIR}/rapydo-confs/confs/formatter.toml:/workdir/pyproject.toml
+      - ${PROJECT_DIR}/backend/${BLACK_FOLDER}:/workdir/${BLACK_FOLDER}
+    working_dir: /workdir
+
+  submodules-formatter:
+    image: unibeautify/black:latest
+    command: -S .
+    volumes:
+      - ${SUBMODULE_DIR}/rapydo-confs/confs/formatter.toml:/workdir/pyproject.toml
+      - ${SUBMODULE_DIR}/${BLACK_SUBMODULE}/${BLACK_FOLDER}:/workdir/${BLACK_FOLDER}
     working_dir: /workdir
