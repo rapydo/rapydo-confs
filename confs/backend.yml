@@ -89,8 +89,8 @@ services:
       # enable the basic /api/login method
       MAIN_LOGIN_ENABLE: 1
       # base the user/role mechanism on some database
-      AUTH_ENABLE: 0
-      # AUTH_SERVICE: ${AUTH_SERVICE}
+      AUTH_ENABLE: ${ACTIVATE_AUTH}
+      AUTH_SERVICE: ${AUTH_SERVICE}
       AUTH_REGISTER_FAILED_LOGIN: ${AUTH_REGISTER_FAILED_LOGIN}
       AUTH_FORCE_FIRST_PASSWORD_CHANGE: ${AUTH_FORCE_FIRST_PASSWORD_CHANGE}
       AUTH_VERIFY_PASSWORD_STRENGTH: ${AUTH_VERIFY_PASSWORD_STRENGTH}
@@ -103,8 +103,31 @@ services:
       ALLOW_ACCESS_TOKEN_PARAMETER: ${ALLOW_ACCESS_TOKEN_PARAMETER}
 
       REGISTRATION_NOTIFICATIONS: ${REGISTRATION_NOTIFICATIONS}
-
       DEBUG_ENDPOINTS: 0
+
+      ALCHEMY_ENABLE: ${ACTIVATE_ALCHEMY}
+      ALCHEMY_HOST: ${ALCHEMY_HOST}
+      ALCHEMY_PORT: ${ALCHEMY_PORT}
+      ALCHEMY_USER: ${ALCHEMY_USER}
+      ALCHEMY_PASSWORD: ${ALCHEMY_PASSWORD}
+      ALCHEMY_DB: ${ALCHEMY_DB}
+      ALCHEMY_POOLSIZE: ${ALCHEMY_POOLSIZE}
+      ALCHEMY_DBTYPE: ${ALCHEMY_DBTYPE}
+
+      GRAPHDB_ENABLE: ${ACTIVATE_NEO4J}
+      GRAPHDB_HOST: ${GRAPHDB_HOST}
+      GRAPHDB_PORT: ${GRAPHDB_BOLT_PORT}
+      GRAPHDB_PASSWORD: ${GRAPHDB_PASSWORD}
+
+      CELERY_ENABLE: ${ACTIVATE_CELERY}
+      CELERY_BROKER: ${CELERY_BROKER}
+      CELERY_BROKER_HOST: ${CELERY_BROKER_HOST}
+      CELERY_BROKER_PORT: ${CELERY_BROKER_PORT}
+      CELERY_BACKEND: ${CELERY_BACKEND}
+      CELERY_BACKEND_HOST: ${CELERY_BACKEND_HOST}
+      CELERY_BACKEND_PORT: ${CELERY_BACKEND_PORT}
+
+      CELERY_BEAT_ENABLED: ${ACTIVATE_CELERY_BEAT}
 
       SMTP_ADMIN: ${SMTP_ADMIN}
       SMTP_NOREPLY: ${SMTP_NOREPLY}
@@ -115,7 +138,6 @@ services:
 
       SENTRY_URL: ${SENTRY_URL}
 
-      CELERY_BEAT_ENABLED: ${ACTIVATE_CELERY_BEAT}
     volumes:
       # configuration files
       - ${SUBMODULE_DIR}/rapydo-confs/projects_defaults.yaml:/code/confs/projects_defaults.yaml
@@ -213,9 +235,9 @@ services:
       - ${SUBMODULE_DIR}/rapydo-confs/confs/postgresql/pgs_init.sh:/docker-entrypoint-initdb.d/setup-my-schema.sh:ro
     environment:
       ACTIVATE: ${ACTIVATE_POSTGRES}
-      POSTGRES_USER: "${PLACEHOLDER}"
-      POSTGRES_PASSWORD: "${PLACEHOLDER}"
-      POSTGRES_DBS: ${PLACEHOLDER}
+      POSTGRES_USER: "${ALCHEMY_USER}"
+      POSTGRES_PASSWORD: "${ALCHEMY_PASSWORD}"
+      POSTGRES_DBS: ${ALCHEMY_DBS}
     networks:
       db_net:
         aliases:
@@ -230,9 +252,9 @@ services:
     environment:
       ACTIVATE: ${ACTIVATE_POSTGRES}
       MYSQL_RANDOM_ROOT_PASSWORD: "yes"
-      MYSQL_USER: "${PLACEHOLDER}"
-      MYSQL_PASSWORD: "${PLACEHOLDER}"
-      MYSQL_DATABASE: ${PLACEHOLDER}
+      MYSQL_USER: "${ALCHEMY_USER}"
+      MYSQL_PASSWORD: "${ALCHEMY_PASSWORD}"
+      MYSQL_DATABASE: ${ALCHEMY_DB}
     networks:
       db_net:
         aliases:
@@ -250,7 +272,7 @@ services:
     environment:
       ACTIVATE: ${ACTIVATE_NEO4J}
       # Note: once changed this, also set GRAPHDB_PASSWORD in backend service
-      NEO4J_AUTH: neo4j/${PLACEHOLDER}
+      NEO4J_AUTH: ${GRAPHDB_USER}/${GRAPHDB_PASSWORD}
       # NEO4J_dbms_memory_pagecache_size: 2048M
       # NEO4J_dbms_memory_heap_maxSize: 4096M
     # ports:
@@ -298,7 +320,6 @@ services:
       JWT_APP_SECRETS: ${JWT_APP_SECRETS}
 
       CELERY_ENABLE: 1
-      CELERY_EXTERNAL: ${CELERY_EXTERNAL}
 
       CELERY_BROKER: ${CELERY_BROKER}
       CELERY_BROKER_HOST: ${CELERY_BROKER_HOST}
@@ -312,6 +333,11 @@ services:
       CELERY_BACKEND_PORT: ${CELERY_BACKEND_PORT}
       CELERY_BACKEND_USER: ${CELERY_BACKEND_USER}
       CELERY_BACKEND_PASSWORD: ${CELERY_BACKEND_PASSWORD}
+
+      GRAPHDB_ENABLE: ${ACTIVATE_NEO4J}
+      GRAPHDB_HOST: ${GRAPHDB_HOST}
+      GRAPHDB_PORT: ${GRAPHDB_BOLT_PORT}
+      GRAPHDB_PASSWORD: ${GRAPHDB_PASSWORD}
 
       SMTP_ADMIN: ${SMTP_ADMIN}
       SMTP_NOREPLY: ${SMTP_NOREPLY}
@@ -362,7 +388,6 @@ services:
       JWT_APP_SECRETS: ${JWT_APP_SECRETS}
 
       CELERY_ENABLE: 1
-      CELERY_EXTERNAL: ${CELERY_EXTERNAL}
       CELERY_BEAT_ENABLED: ${ACTIVATE_CELERY_BEAT}
 
       CELERY_BROKER: ${CELERY_BROKER}
@@ -469,7 +494,6 @@ services:
       JWT_APP_SECRETS: ${JWT_APP_SECRETS}
 
       CELERY_ENABLE: 1
-      CELERY_EXTERNAL: ${CELERY_EXTERNAL}
 
       CELERY_BROKER: ${CELERY_BROKER}
       CELERY_BROKER_HOST: ${CELERY_BROKER_HOST}
@@ -492,9 +516,7 @@ services:
 
   swaggerui:
     # restart: no
-    # build: ${SUBMODULE_DIR}/build-templates/swaggerui
     image: swaggerapi/swagger-ui:latest
-    # image: swaggerapi/swagger-ui:v3.0.5
     environment:
       ACTIVATE: ${ACTIVATE_SWAGGERUI}
     ports:
@@ -502,8 +524,6 @@ services:
 
   sqlalchemyui:
     # restart: no
-    # NOTE: this image let you access sqllite/postgres/mysql
-    # with a phpmyadmin-like web page
     image: adminer:4.7.1-standalone
     networks:
       db_net:
@@ -584,15 +604,17 @@ services:
     environment:
       ACTIVATE: ${ACTIVATE_ICAT}
       CURRENT_UID: ${CURRENT_UID}
-      POSTGRES_HOST: ${PLACEHOLDER}
-      POSTGRES_USER: ${PLACEHOLDER}
-      POSTGRES_PASSWORD: ${PLACEHOLDER}
-      IRODS_HOST: ${PLACEHOLDER}
-      IRODS_PORT: ${PLACEHOLDER}
-      IRODS_ZONE: ${PLACEHOLDER}
-      IRODS_DB: ${PLACEHOLDER}
-      IRODS_USER: ${PLACEHOLDER}
-      IRODS_PASSWORD: ${PLACEHOLDER}
+      POSTGRES_USER: ${ALCHEMY_USER}
+      POSTGRES_PASSWORD: ${ALCHEMY_PASSWORD}
+      POSTGRES_HOST: ${ALCHEMY_HOST}
+      IRODS_HOST: "${IRODS_HOST}"
+      IRODS_PORT: ${IRODS_PORT}
+      IRODS_USER: ${IRODS_USER}
+      IRODS_ZONE: ${IRODS_ZONE}
+      IRODS_DB: "${IRODS_DB}"
+      IRODS_PASSWORD: ${IRODS_PASSWORD}
+
+      IRODS_ANONYMOUS: ${IRODS_ANONYMOUS}
     networks:
       i_net:
         aliases:
