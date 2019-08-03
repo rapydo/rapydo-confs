@@ -255,7 +255,7 @@ services:
     volumes:
       - mariadb:/var/lib/mysql
     environment:
-      ACTIVATE: ${ACTIVATE_POSTGRES}
+      ACTIVATE: ${ACTIVATE_MYSQL}
       MYSQL_RANDOM_ROOT_PASSWORD: "yes"
       MYSQL_USER: "${ALCHEMY_USER}"
       MYSQL_PASSWORD: "${ALCHEMY_PASSWORD}"
