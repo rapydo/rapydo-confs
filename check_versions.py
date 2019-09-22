@@ -16,9 +16,18 @@ log = get_logger('check_versions.py')
 def check_updates(category, lib):
 
     if category in ['pip', 'utilities', 'controller', 'http-api']:
-        token = lib.split("==")
+        if "==" in lib:
+            token = lib.split("==")
+        elif ">=" in lib:
+            token = lib.split(">=")
+        else:
+            log.critical("Invalid lib format: %s", lib)
+
         print('https://pypi.org/project/%s/%s' % (token[0], token[1]))
     elif category in ['compose', 'Dockerfile']:
+        token = lib.split(":")
+        print("https://hub.docker.com/_/%s" % token[0])
+    elif category in ['package.json']:
         token = lib.split(":")
         print("https://hub.docker.com/_/%s" % token[0])
     else:
@@ -141,7 +150,7 @@ def check_versions(skip_angular, verbose):
                 skipped = False
                 if d.startswith('rapydo-utils=='):
                     skipped = True
-                elif '==' not in d:
+                elif '==' not in d and '>=' not in d:
                     skipped = True
                 else:
                     filtered_dependencies[service].append(d)
@@ -210,10 +219,11 @@ def check_versions(skip_angular, verbose):
     log.app(filtered_dependencies)
 
     log.info("Note: very hard to upgrade ubuntu:17.10 from backendirods and icat")
-    log.info("PyYAML: cannot upgrade since compose 1.24.0 still require PyYAML 3.13")
+    log.info("PyYAML: cannot upgrade since compose 1.24.0 still require PyYAML < 4.3 (== 3.13, next are all pre-releases up to 5.1)")
     log.info("requests-oauthlib: cannot upgrade since ver 1.2.0 requires OAuthlib >= 3.0.0 but Flask-OAuthlib requires OAuthlib < 3.0.0")
     log.info("injector: cannot upgrade since from 0.13+ passing keyword arguments to inject is no longer supported")
-    log.info("flask_injector: compatibility issues, to be retried")
+    log.info("flask_injector: compatibility issues with version 1.0.12, to be retried")
+
 
 if __name__ == '__main__':
     check_versions()
