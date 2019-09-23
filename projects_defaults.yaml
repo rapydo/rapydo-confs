@@ -258,7 +258,7 @@ variables:
 project:
   title: REST HTTP-API server with Python, Flask and Docker
   description: No description yet
-  rapydo: 0.6.7
+  rapydo: 0.6.8
   version: v0.1
 
 tags:
