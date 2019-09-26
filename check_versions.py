@@ -30,6 +30,9 @@ def check_updates(category, lib):
     elif category in ['package.json']:
         token = lib.split(":")
         print("https://hub.docker.com/_/%s" % token[0])
+    elif category in ['ACME']:
+        token = lib.split(":")
+        print("https://github.com/Neilpang/acme.sh/releases/tag/%s" % token[1])
     else:
         log.critical("%s: %s", category, lib)
 
@@ -67,19 +70,25 @@ def check_versions(skip_angular, verbose):
         if 'not_used_anymore_' in d:
             continue
         with open(d) as f:
-            for line in f:
-                if 'FROM' in line:
-                    if line.startswith("#"):
-                        continue
-                    line = line.replace("FROM", "").strip()
-                    # print("%s -> %s" % (d, line))
-                    service = d.replace("../build-templates/", "")
-                    service = service.replace("/Dockerfile", "")
+            service = d.replace("../build-templates/", "")
+            service = service.replace("/Dockerfile", "")
+            if service not in dependencies:
+                dependencies[service] = {}
 
-                    if service not in dependencies:
-                        dependencies[service] = {}
+            for line in f:
+
+                if line.startswith("#"):
+                    continue
+
+                if 'FROM' in line:
+                    line = line.replace("FROM", "").strip()
 
                     dependencies[service]['Dockerfile'] = line
+                elif 'ENV ACMEV' in line:
+                    line = line.replace("ENV ACMEV", "").strip()
+                    line = line.replace("\"", "").strip()
+
+                    dependencies[service]['ACME'] = "ACME:%s" % line
 
     for d in glob("../build-templates/*/requirements.txt"):
 
