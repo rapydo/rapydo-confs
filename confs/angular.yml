@@ -50,4 +50,4 @@ services:
   ###############################
   proxy:
     volumes:
-      - ${VANILLA_DIR}/data/${COMPOSE_PROJECT_NAME}/frontend:/modules
+      - ${VANILLA_DIR}/data/${COMPOSE_PROJECT_NAME}/frontend:/app
