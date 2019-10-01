@@ -27,8 +27,7 @@ services:
       BACKEND_PREFIX: ${BACKEND_PREFIX}
       FRONTEND_PREFIX: ${FRONTEND_PREFIX}
     volumes:
-      - ${PROJECT_DIR}:/app_ori
-      - ${SUBMODULE_DIR}/frontend/:/rapydo
+      - ${SUBMODULE_DIR}/frontend/utility:/rapydo
 
       - ${VANILLA_DIR}/data/${COMPOSE_PROJECT_NAME}/frontend:/app
 
@@ -36,10 +35,12 @@ services:
       - ${SUBMODULE_DIR}/frontend/browserslist:/app/browserslist
       - ${SUBMODULE_DIR}/frontend/e2e:/app/e2e
       - ${SUBMODULE_DIR}/frontend/karma.conf.js:/app/karma.conf.js
+      - ${SUBMODULE_DIR}/frontend/polyfills.ts:/app/polyfills.ts
       - ${SUBMODULE_DIR}/frontend/tsconfig.app.json:/app/tsconfig.app.json
       - ${SUBMODULE_DIR}/frontend/tsconfig.json:/app/tsconfig.json
       - ${SUBMODULE_DIR}/frontend/tsconfig.spec.json:/app/tsconfig.spec.json
       - ${SUBMODULE_DIR}/frontend/tslint.json:/app/tslint.json
+      - ${SUBMODULE_DIR}/frontend/typedarray.js:/app/typedarray.js
 
       - ${SUBMODULE_DIR}/frontend/src:/app/rapydo
       - ${PROJECT_DIR}/frontend:/app/custom
