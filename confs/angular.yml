@@ -9,9 +9,8 @@ services:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
         CURRENT_UID: ${CURRENT_UID}
     image: rapydo/angular:${RAPYDO_VERSION}
-    # command: sleep infinity
     hostname: angular
-    # working_dir: /rapydo/
+    user: node
     environment:
       ACTIVATE: 1  # fixed, because it is enabled by frontend.framework variable
       CURRENT_UID: ${CURRENT_UID}
@@ -26,6 +25,7 @@ services:
       BACKEND_HOST: ${PROJECT_DOMAIN}
       BACKEND_PREFIX: ${BACKEND_PREFIX}
       FRONTEND_PREFIX: ${FRONTEND_PREFIX}
+
     volumes:
       - ${SUBMODULE_DIR}/frontend/utility:/rapydo
 
