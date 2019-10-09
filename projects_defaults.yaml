@@ -172,6 +172,7 @@ variables:
 
     GRAPHDB_HOST: matrix.dockerized.io
     GRAPHDB_BOLT_PORT: 7687
+    GRAPHDB_AUTOINDEXING: True
     GRAPHDB_USER: neo4j
     GRAPHDB_PASSWORD: "**PLACEHOLDER**"
 
