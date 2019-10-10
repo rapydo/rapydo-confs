@@ -11,6 +11,7 @@ services:
     image: rapydo/angular:${RAPYDO_VERSION}
     hostname: angular
     user: node
+    privileged: ${DOCKER_PRIVILEGED_MODE}
     environment:
       ACTIVATE: 1  # fixed, because it is enabled by frontend.framework variable
       CURRENT_UID: ${CURRENT_UID}

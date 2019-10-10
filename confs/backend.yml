@@ -74,6 +74,7 @@ services:
     image: rapydo/${BACKEND_BUILD_MODE}:${RAPYDO_VERSION}
     # hostname: restapi
     hostname: rapydo_server
+    privileged: ${DOCKER_PRIVILEGED_MODE}
     environment:
       ACTIVATE: ${ACTIVATE_BACKEND}
       APP_MODE: debug
@@ -160,7 +161,6 @@ services:
       db_net:
       worker_net:
       # i_net:
-    privileged: ${DOCKER_PRIVILEGED_MODE}
 
   ##############################
   proxy:
