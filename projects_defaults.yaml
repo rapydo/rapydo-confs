@@ -265,4 +265,3 @@ tags:
   helpers: tools for checking status and privileges
   authentication: log in and out of the REST API
   profiles: set and view profile for current credentials
-  open_sessions: manage authorized sessions
