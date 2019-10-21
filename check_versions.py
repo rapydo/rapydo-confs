@@ -29,7 +29,10 @@ def check_updates(category, lib):
         print("https://hub.docker.com/_/%s" % token[0])
     elif category in ['package.json', 'npm']:
         token = lib.split(":")
-        print("https://hub.docker.com/_/%s" % token[0])
+        print("https://www.npmjs.com/package/%s" % token[0])
+    elif category in ['ACME']:
+        token = lib.split(":")
+        print("https://github.com/Neilpang/acme.sh/releases/tag/%s" % token[1])
     else:
         log.critical("%s: %s", category, lib)
 
@@ -67,17 +70,18 @@ def check_versions(skip_angular, verbose):
         if 'not_used_anymore_' in d:
             continue
         with open(d) as f:
-            for line in f:
-                if 'FROM' in line:
-                    if line.startswith("#"):
-                        continue
-                    line = line.replace("FROM", "").strip()
-                    # print("%s -> %s" % (d, line))
-                    service = d.replace("../build-templates/", "")
-                    service = service.replace("/Dockerfile", "")
+            service = d.replace("../build-templates/", "")
+            service = service.replace("/Dockerfile", "")
+            if service not in dependencies:
+                dependencies[service] = {}
 
-                    if service not in dependencies:
-                        dependencies[service] = {}
+            for line in f:
+
+                if line.startswith("#"):
+                    continue
+
+                if 'FROM' in line:
+                    line = line.replace("FROM", "").strip()
 
                     dependencies[service]['Dockerfile'] = line
                 elif not skip_angular and 'RUN npm install' in line:
@@ -93,6 +97,11 @@ def check_versions(skip_angular, verbose):
                             if "npm" not in dependencies[service]:
                                 dependencies[service]["npm"] = []
                             dependencies[service]["npm"].append(t)
+                elif 'ENV ACMEV' in line:
+                    line = line.replace("ENV ACMEV", "").strip()
+                    line = line.replace("\"", "").strip()
+
+                    dependencies[service]['ACME'] = "ACME:%s" % line
 
     for d in glob("../build-templates/*/requirements.txt"):
 
@@ -236,7 +245,7 @@ def check_versions(skip_angular, verbose):
 
     log.info("Note: very hard to upgrade ubuntu:16.04 from backendirods and icat")
     log.info("PyYAML: cannot upgrade since compose 1.24.0 still require PyYAML < 4.3 (== 3.13, next are all pre-releases up to 5.1)")
-    log.info("requests-oauthlib: cannot upgrade since ver 1.2.0 requires OAuthlib >= 3.0.0 but Flask-OAuthlib requires OAuthlib < 3.0.0")
+    log.info("requests-oauthlib: cannot upgrade since ver 1.2.0 requires OAuthlib >= 3.0.0 but Flask-OAuthlib 0.9.5 requires OAuthlib < 3.0.0")
     log.info("injector: cannot upgrade since from 0.13+ passing keyword arguments to inject is no longer supported")
     log.info("flask_injector: compatibility issues with version 1.0.12, to be retried")
 
