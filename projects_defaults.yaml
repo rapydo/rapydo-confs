@@ -132,6 +132,7 @@ variables:
     ACTIVATE_NEO4J: 0
     ACTIVATE_MONGODB: 0
     ACTIVATE_RABBIT: 0
+    ACTIVATE_REDIS: 0
 
     ACTIVATE_ICAT: 0
     ACTIVATE_CELERY_BEAT: 0
@@ -188,13 +189,19 @@ variables:
     MONGO_HOST: mongo.dockerized.io
     MONGO_PORT: 27017
     MONGO_DATABASE: test
+
     FLASK_HOST: apiserver.dockerized.io
     FLASK_DEFAULT_PORT: 5000
+    FRONTEND_HOST: frontend.dockerized.io
+
     ELASTIC_HOST: elastic.dockerized.io
     ELASTIC_PORT: 9200
+
     RABBITMQ_HOST: rabbit.dockerized.io
     RABBITMQ_PORT: 5672
-    FRONTEND_HOST: frontend.dockerized.io
+
+    REDIS_HOST: redis.dockerized.io
+    REDIS_PORT: 6379
 
     # Celery
     ACTIVATE_CELERY: 0

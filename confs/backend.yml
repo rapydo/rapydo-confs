@@ -27,6 +27,8 @@ volumes:
     driver: local
   celerybeat:
     driver: local
+  redisdata:
+    driver: local
 
 # #####################
 # NETWORKS
@@ -392,7 +394,7 @@ services:
         CURRENT_UID: ${CURRENT_UID}
     image: rapydo/${BACKEND_BUILD_MODE}:${RAPYDO_VERSION}
     entrypoint: docker-entrypoint-celery
-    command: celery beat -A restapi.flask_ext.flask_celery.beat.celery_app --pidfile /tmp/celerybeat.pid --schedule /beat/celerybeat-schedule --loglevel ${LOG_LEVEL} --max-interval 30 --scheduler celerybeatmongo.schedulers.MongoScheduler
+    command: celery beat -A restapi.flask_ext.flask_celery.beat.celery_app --pidfile /tmp/celerybeat.pid --schedule /beat/celerybeat-schedule --loglevel ${LOG_LEVEL} --max-interval 30 --scheduler ${CELERY_BEAT_SCHEDULER}
     
     user: developer
     working_dir: /code
@@ -408,6 +410,7 @@ services:
 
       CELERY_ENABLE: 1
       CELERY_BEAT_ENABLED: ${ACTIVATE_CELERY_BEAT}
+      CELERY_BEAT_SCHEDULER: ${CELERY_BEAT_SCHEDULER}
 
       CELERY_BROKER: ${CELERY_BROKER}
       CELERY_BROKER_HOST: ${CELERY_BROKER_HOST}
@@ -459,6 +462,19 @@ services:
       worker_net:
         aliases:
           - ${CELERY_BROKER_HOST}
+
+  redis:
+    restart: on-failure:5
+    image: redis:5.0.6
+    command: redis-server --appendonly yes
+    volumes:
+      - redisdata:/data
+    networks:
+      db_net:
+        aliases:
+          - ${REDIS_HOST}
+    environment:
+      ACTIVATE: ${ACTIVATE_REDIS}
 
   ##########################
   ### SERVICE INTERFACES ###
