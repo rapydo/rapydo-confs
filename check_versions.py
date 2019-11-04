@@ -248,7 +248,6 @@ def check_versions(skip_angular, verbose):
     log.info("requests-oauthlib: cannot upgrade since ver 1.2.0 requires OAuthlib >= 3.0.0 but Flask-OAuthlib 0.9.5 requires OAuthlib < 3.0.0")
     log.info("injector: cannot upgrade since from 0.13+ passing keyword arguments to inject is no longer supported")
     log.info("flask_injector: compatibility issues with version 1.0.12, to be retried")
-    log.info("ng2-file-upload: check chunk support to replace back @myog-io/ngx-chunk-file-upload-base")
 
 
 if __name__ == '__main__':
