@@ -16,7 +16,6 @@ services:
       ACTIVATE: 1  # fixed, because it is enabled by frontend.framework variable
       CURRENT_UID: ${CURRENT_UID}
       APP_MODE: debug
-      ENABLE_AOT: ${ENABLE_AOT}
       PROJECT_TITLE: ${PROJECT_TITLE}
       PROJECT_DESCRIPTION: ${PROJECT_DESCRIPTION}
       ALLOW_PASSWORD_RESET: "false"
