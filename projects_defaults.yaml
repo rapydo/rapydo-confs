@@ -146,6 +146,8 @@ variables:
 
     ACTIVATE_TESTING_MODE: 0
 
+    FLASK_HOST: apiserver.dockerized.io
+    FLASK_DEFAULT_PORT: 5000
     API_MAIN_ENDPOINT: status
     PYTHON_MAIN_FILE: __main__
     # Path to dist-packages in backend/celery containers
@@ -160,6 +162,7 @@ variables:
     BACKEND_PREFIX: ''
     LOG_LEVEL: VERBOSE  # log level for backend and celery
     JWT_APP_SECRETS: /jwt_tokens
+    FULL_JWT: true
 
     # SQLAlchemy
     ALCHEMY_HOST: psqldb.dockerized.io
@@ -189,10 +192,6 @@ variables:
     MONGO_HOST: mongo.dockerized.io
     MONGO_PORT: 27017
     MONGO_DATABASE: test
-
-    FLASK_HOST: apiserver.dockerized.io
-    FLASK_DEFAULT_PORT: 5000
-    FRONTEND_HOST: frontend.dockerized.io
 
     ELASTIC_HOST: elastic.dockerized.io
     ELASTIC_PORT: 9200
@@ -231,7 +230,6 @@ variables:
     NGINX_PROD_HEADERS: production-a2-headers.conf
     # LETSENCRYPT_MODE: --staging
     LETSENCRYPT_MODE:
-    FULL_JWT: true
 
     SMTP_ADMIN: 
     SMTP_NOREPLY:
@@ -240,9 +238,10 @@ variables:
     SMTP_USERNAME:
     SMTP_PASSWORD:
 
-    SENTRY_URL:
-
+    FRONTEND_HOST: frontend.dockerized.io
     REGISTRATION_NOTIFICATIONS: true
+    SENTRY_URL:
+    ENABLE_TOASTR: false
 
     ACTIVATE_AUTH: 1
     AUTH_SERVICE: sqlalchemy

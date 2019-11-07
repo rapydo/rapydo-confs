@@ -25,6 +25,7 @@ services:
       BACKEND_HOST: ${PROJECT_DOMAIN}
       BACKEND_PREFIX: ${BACKEND_PREFIX}
       FRONTEND_PREFIX: ${FRONTEND_PREFIX}
+      ENABLE_TOASTR: ${ENABLE_TOASTR}
 
     volumes:
       - ${SUBMODULE_DIR}/frontend/utility:/rapydo
