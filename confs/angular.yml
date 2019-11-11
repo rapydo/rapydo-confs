@@ -26,6 +26,8 @@ services:
       BACKEND_PREFIX: ${BACKEND_PREFIX}
       FRONTEND_PREFIX: ${FRONTEND_PREFIX}
       ENABLE_TOASTR: ${ENABLE_TOASTR}
+      PUSHPIN_HOST: ${PROJECT_DOMAIN}
+      PUSHPIN_PORT: ${PUSHPIN_PORT}
 
     volumes:
       - ${SUBMODULE_DIR}/frontend/utility:/rapydo
