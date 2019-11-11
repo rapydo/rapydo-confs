@@ -679,6 +679,10 @@ services:
       app_net:
         aliases:
           - ${PUSHPIN_HOST}
+      worker_net:
+        aliases:
+          - ${PUSHPIN_HOST}
+
     ports:
       - 7999:7999
     volumes:
