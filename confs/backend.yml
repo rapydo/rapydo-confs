@@ -137,6 +137,10 @@ services:
 
       CELERY_BEAT_ENABLED: ${ACTIVATE_CELERY_BEAT}
 
+      PUSHPIN_ENABLE: ${ACTIVATE_PUSHPIN}
+      PUSHPIN_HOST: ${PUSHPIN_HOST}
+      PUSHPIN_PORT: ${PUSHPIN_CONTROL_PORT}
+
       SMTP_ADMIN: ${SMTP_ADMIN}
       SMTP_NOREPLY: ${SMTP_NOREPLY}
       SMTP_HOST: ${SMTP_HOST}
@@ -360,6 +364,10 @@ services:
       MONGO_HOST: ${MONGO_HOST}
       MONGO_PORT: ${MONGO_PORT}
 
+      PUSHPIN_ENABLE: ${ACTIVATE_PUSHPIN}
+      PUSHPIN_HOST: ${PUSHPIN_HOST}
+      PUSHPIN_PORT: ${PUSHPIN_CONTROL_PORT}
+
       SMTP_ADMIN: ${SMTP_ADMIN}
       SMTP_NOREPLY: ${SMTP_NOREPLY}
       SMTP_HOST: ${SMTP_HOST}
@@ -424,6 +432,10 @@ services:
       CELERY_BACKEND_PORT: ${CELERY_BACKEND_PORT}
       CELERY_BACKEND_USER: ${CELERY_BACKEND_USER}
       CELERY_BACKEND_PASSWORD: ${CELERY_BACKEND_PASSWORD}
+
+      PUSHPIN_ENABLE: ${ACTIVATE_PUSHPIN}
+      PUSHPIN_HOST: ${PUSHPIN_HOST}
+      PUSHPIN_PORT: ${PUSHPIN_CONTROL_PORT}
 
       SMTP_ADMIN: ${SMTP_ADMIN}
       SMTP_NOREPLY: ${SMTP_NOREPLY}
@@ -657,3 +669,17 @@ services:
       db_net:
     depends_on:
       - postgres
+
+  pushpin:
+    restart: always
+    image: fanout/pushpin:1.24.0
+    environment:
+      ACTIVATE: 1
+    networks:
+      app_net:
+        aliases:
+          - ${PUSHPIN_HOST}
+    ports:
+      - 7999:7999
+    volumes:
+      - ${SUBMODULE_DIR}/rapydo-confs/confs/pushpin/routes:/etc/pushpin/routes
