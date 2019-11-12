@@ -674,7 +674,7 @@ services:
     restart: always
     image: fanout/pushpin:1.24.0
     environment:
-      ACTIVATE: 1
+      ACTIVATE: ${ACTIVATE_PUSHPIN}
     networks:
       app_net:
         aliases:
