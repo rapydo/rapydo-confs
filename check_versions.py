@@ -7,7 +7,7 @@ import re
 import distutils.core
 from glob import glob
 
-from utilities.myyaml import load_yaml_file
+from utilities.configuration import load_yaml_file
 from utilities.logs import get_logger
 
 log = get_logger('check_versions.py')
