@@ -7,8 +7,8 @@ import re
 import distutils.core
 from glob import glob
 
-from utilities.configuration import load_yaml_file
-from utilities.logs import get_logger
+from restapi.utilities.configuration import load_yaml_file
+from restapi.utilities.logs import get_logger
 
 log = get_logger('check_versions.py')
 
