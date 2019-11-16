@@ -11,10 +11,10 @@ variables:
       if: true
     utils:
       online_url: https://github.com/rapydo/utils.git
-      if: $$devel
+      if: true
     http-api:
       online_url: https://github.com/rapydo/http-api.git
-      if: $$devel
+      if: true
     build-templates:
       online_url: https://github.com/rapydo/build-templates.git
       if: true
@@ -33,7 +33,7 @@ variables:
       path: frontend
     do:
       online_url: https://github.com/rapydo/do.git
-      if: $$devel
+      if: true
 
   backend:
     credentials:
@@ -90,12 +90,6 @@ variables:
       path: $$baseconf
       mandatory: False
       if: $$logging
-    devel:
-      file: devel
-      base: True
-      path: $$baseconf
-      mandatory: False
-      if: $$devel
     extended-commons:
       file: commons
       base: False

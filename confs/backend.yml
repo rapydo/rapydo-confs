@@ -161,6 +161,12 @@ services:
       - ${EXTENDED_PROJECT_PATH}/project_configuration.yaml:/code/confs/extended_project_configuration.yaml
       # JWT tokens secret
       - jwt_tokens:${JWT_APP_SECRETS}
+      # submodules
+      - ${SUBMODULE_DIR}/http-api/restapi:${PYTHON_PATH}/restapi
+      - ${SUBMODULE_DIR}/utils/utilities:${PYTHON_PATH}/utilities
+      # Unit tests
+      - ${SUBMODULE_DIR}/http-api/tests:/code/tests
+      - ${PROJECT_DIR}/backend/tests:/code/tests/custom
     networks:
       app_net:
         aliases:
@@ -385,6 +391,9 @@ services:
       - ${EXTENDED_PROJECT_PATH}/project_configuration.yaml:/code/confs/extended_project_configuration.yaml
       # JWT tokens secret
       - jwt_tokens:${JWT_APP_SECRETS}
+      # submodules
+      - ${SUBMODULE_DIR}/http-api/restapi:${PYTHON_PATH}/restapi
+      - ${SUBMODULE_DIR}/utils/utilities:${PYTHON_PATH}/utilities
     networks:
       db_net:
       worker_net:
@@ -455,6 +464,9 @@ services:
       - ${EXTENDED_PROJECT_PATH}/project_configuration.yaml:/code/confs/extended_project_configuration.yaml
       # JWT tokens secret
       - jwt_tokens:${JWT_APP_SECRETS}
+      # submodules
+      - ${SUBMODULE_DIR}/http-api/restapi:${PYTHON_PATH}/restapi
+      - ${SUBMODULE_DIR}/utils/utilities:${PYTHON_PATH}/utilities
     networks:
       db_net:
       worker_net:
@@ -523,6 +535,9 @@ services:
       - ${EXTENDED_PROJECT_PATH}/project_configuration.yaml:/code/confs/extended_project_configuration.yaml
       # JWT tokens secret
       - jwt_tokens:${JWT_APP_SECRETS}
+      # submodules
+      - ${SUBMODULE_DIR}/http-api/restapi:${PYTHON_PATH}/restapi
+      - ${SUBMODULE_DIR}/utils/utilities:${PYTHON_PATH}/utilities
       - flower_db:${CELERYUI_DBDIR}
       - letsencrypt_certs:/ssl
     networks:
