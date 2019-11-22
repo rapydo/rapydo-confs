@@ -143,6 +143,7 @@ variables:
 
     ACTIVATE_TESTING_MODE: 0
 
+    APP_MODE: debug
     FLASK_HOST: apiserver.dockerized.io
     FLASK_DEFAULT_PORT: 8080
     API_MAIN_ENDPOINT: status

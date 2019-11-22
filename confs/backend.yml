@@ -79,7 +79,7 @@ services:
     privileged: ${DOCKER_PRIVILEGED_MODE}
     environment:
       ACTIVATE: ${ACTIVATE_BACKEND}
-      APP_MODE: debug
+      APP_MODE: ${APP_MODE}
       DEBUG_LEVEL: ${LOG_LEVEL}
       CURRENT_UID: ${CURRENT_UID}
       # APIUID is set in Dockerfile, overwriting with fixed value
@@ -329,7 +329,7 @@ services:
     # user: developer
     working_dir: /code
     environment:
-      APP_MODE: debug
+      APP_MODE: ${APP_MODE}
       DEBUG_LEVEL: ${LOG_LEVEL}
       ACTIVATE: ${ACTIVATE_CELERY}
       CURRENT_UID: ${CURRENT_UID}
@@ -418,7 +418,7 @@ services:
     # user: developer
     working_dir: /code
     environment:
-      APP_MODE: debug
+      APP_MODE: ${APP_MODE}
       DEBUG_LEVEL: ${LOG_LEVEL}
       ACTIVATE: ${ACTIVATE_CELERY_BEAT}
       CURRENT_UID: ${CURRENT_UID}
@@ -548,7 +548,7 @@ services:
     # depends_on:
     #   - rabbit
     environment:
-      APP_MODE: debug
+      APP_MODE: ${APP_MODE}
       DEBUG_LEVEL: ${LOG_LEVEL}
       ACTIVATE: ${ACTIVATE_CELERYUI}
       CURRENT_UID: ${CURRENT_UID}

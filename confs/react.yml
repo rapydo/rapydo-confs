@@ -15,7 +15,7 @@ services:
     environment:
       ACTIVATE: 1  # fixed, because it is enabled by frontend.framework variable
       CURRENT_UID: ${CURRENT_UID}
-      APP_MODE: debug
+      APP_MODE: ${APP_MODE}
       MODULE_PATH: /modules
       PROJECT_TITLE: ${PROJECT_TITLE}
       ALLOW_PASSWORD_RESET: "false"
