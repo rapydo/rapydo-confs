@@ -28,6 +28,7 @@ services:
       ENABLE_TOASTR: ${ENABLE_TOASTR}
       PUSHPIN_HOST: ${PROJECT_DOMAIN}
       PUSHPIN_PORT: ${PUSHPIN_PORT}
+      COVERALLS_REPO_TOKEN: ${COVERALLS_REPO_TOKEN}
 
     volumes:
       - ${SUBMODULE_DIR}/frontend/utility:/rapydo

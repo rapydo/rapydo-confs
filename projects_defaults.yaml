@@ -241,6 +241,7 @@ variables:
     FRONTEND_HOST: frontend.dockerized.io
     REGISTRATION_NOTIFICATIONS: true
     SENTRY_URL:
+    COVERALLS_REPO_TOKEN:
     ENABLE_TOASTR: false
 
     ACTIVATE_AUTH: 1
