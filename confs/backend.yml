@@ -27,6 +27,8 @@ volumes:
     driver: local
   celerybeat:
     driver: local
+  redisdata:
+    driver: local
 
 # #####################
 # NETWORKS
@@ -74,11 +76,14 @@ services:
     image: rapydo/${BACKEND_BUILD_MODE}:${RAPYDO_VERSION}
     # hostname: restapi
     hostname: rapydo_server
+    privileged: ${DOCKER_PRIVILEGED_MODE}
     environment:
       ACTIVATE: ${ACTIVATE_BACKEND}
-      APP_MODE: debug
+      APP_MODE: ${APP_MODE}
       DEBUG_LEVEL: ${LOG_LEVEL}
       CURRENT_UID: ${CURRENT_UID}
+      # APIUID is set in Dockerfile, overwriting with fixed value
+      APIUID: ${CURRENT_UID}
       FLASK_APP: ${PYTHON_PATH}/restapi/${PYTHON_MAIN_FILE}.py
       UWSGI_APP: restapi.${PYTHON_MAIN_FILE}
       VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
@@ -118,6 +123,7 @@ services:
       GRAPHDB_HOST: ${GRAPHDB_HOST}
       GRAPHDB_PORT: ${GRAPHDB_BOLT_PORT}
       GRAPHDB_PASSWORD: ${GRAPHDB_PASSWORD}
+      GRAPHDB_AUTOINDEXING: ${GRAPHDB_AUTOINDEXING}
 
       MONGO_ENABLE: ${ACTIVATE_MONGODB}
       MONGO_HOST: ${MONGO_HOST}
@@ -132,6 +138,10 @@ services:
       CELERY_BACKEND_PORT: ${CELERY_BACKEND_PORT}
 
       CELERY_BEAT_ENABLED: ${ACTIVATE_CELERY_BEAT}
+
+      PUSHPIN_ENABLE: ${ACTIVATE_PUSHPIN}
+      PUSHPIN_HOST: ${PUSHPIN_HOST}
+      PUSHPIN_PORT: ${PUSHPIN_CONTROL_PORT}
 
       SMTP_ADMIN: ${SMTP_ADMIN}
       SMTP_NOREPLY: ${SMTP_NOREPLY}
@@ -153,14 +163,21 @@ services:
       - ${EXTENDED_PROJECT_PATH}/project_configuration.yaml:/code/confs/extended_project_configuration.yaml
       # JWT tokens secret
       - jwt_tokens:${JWT_APP_SECRETS}
+      # submodules
+      - ${SUBMODULE_DIR}/http-api/restapi:${PYTHON_PATH}/restapi
+      - ${SUBMODULE_DIR}/utils/utilities:${PYTHON_PATH}/utilities
+      # Unit tests
+      - ${SUBMODULE_DIR}/http-api/tests:/code/tests
+      - ${PROJECT_DIR}/backend/tests:/code/tests/custom
     networks:
       app_net:
         aliases:
           - ${FLASK_HOST}
       db_net:
       worker_net:
-      # i_net:
-    privileged: ${DOCKER_PRIVILEGED_MODE}
+      proxy_net:
+        aliases:
+          - ${FLASK_HOST}
 
   ##############################
   proxy:
@@ -173,8 +190,8 @@ services:
     image: rapydo/proxy:${RAPYDO_VERSION}
     hostname: reverseproxy
     volumes:
-      - ${SUBMODULE_DIR}/rapydo-confs/confs/nginx/${NGINX_PROD_CONF}:/etc/nginx/sites-enabled/production
-      - ${SUBMODULE_DIR}/rapydo-confs/confs/nginx/${NGINX_PROD_HEADERS}:/etc/nginx/sites-enabled/production-headers
+      - ${SUBMODULE_DIR}/rapydo-confs/confs/nginx/${NGINX_PROD_CONF}:/etc/nginx/sites-enabled-templates/production
+      - ${SUBMODULE_DIR}/rapydo-confs/confs/nginx/${NGINX_PROD_HEADERS}:/etc/nginx/sites-enabled-templates/production-headers
       - letsencrypt_certs:/etc/letsencrypt
       - ssl_dhparam:/etc/nginx/ssl/
     networks:
@@ -193,10 +210,7 @@ services:
       SMTP_ADMIN: ${SMTP_ADMIN}
       DEFAULT_DHLEN: ${DEFAULT_DHLEN}
     depends_on:
-      # NOTE: you have to rewrite all depends_on in a new yml file
-      # at the moment they do not cumulate
       - backend
-      # - frontend
 
   # Cloned from proxy service
   certificates-proxy:
@@ -234,7 +248,7 @@ services:
   postgres:
     # restart: always
     restart: on-failure:5
-    image: postgres:11.4-alpine
+    image: postgres:11.5-alpine
     volumes:
       - sqldata:/var/lib/postgresql/data
       - ${SUBMODULE_DIR}/rapydo-confs/confs/postgresql/pgs_init.sh:/docker-entrypoint-initdb.d/setup-my-schema.sh:ro
@@ -251,7 +265,7 @@ services:
   mariadb:
     # restart: always
     restart: on-failure:5
-    image: mariadb:10.4.6
+    image: mariadb:10.4.8
     volumes:
       - mariadb:/var/lib/mysql
     environment:
@@ -267,7 +281,7 @@ services:
 
   neo4j:
     restart: on-failure:5
-    image: neo4j:3.5.6
+    image: neo4j:3.5.11
     volumes:
       - graphdata:/data
     networks:
@@ -286,7 +300,7 @@ services:
 
   mongodb:
     restart: on-failure:5
-    image: mongo:4.1.13
+    image: mongo:4.2.0
     volumes:
       - mongodata:/data/db
     networks:
@@ -312,10 +326,10 @@ services:
     entrypoint: docker-entrypoint-celery
     command: celery worker --concurrency=1 -Ofair -A restapi.flask_ext.flask_celery.worker.celery_app -Q celery -n ${COMPOSE_PROJECT_NAME}-%h
     
-    user: developer
+    # user: developer
     working_dir: /code
     environment:
-      APP_MODE: debug
+      APP_MODE: ${APP_MODE}
       DEBUG_LEVEL: ${LOG_LEVEL}
       ACTIVATE: ${ACTIVATE_CELERY}
       CURRENT_UID: ${CURRENT_UID}
@@ -325,6 +339,7 @@ services:
       JWT_APP_SECRETS: ${JWT_APP_SECRETS}
 
       CELERY_ENABLE: 1
+      CELERY_BEAT_ENABLED: ${ACTIVATE_CELERY_BEAT}
 
       CELERY_BROKER: ${CELERY_BROKER}
       CELERY_BROKER_HOST: ${CELERY_BROKER_HOST}
@@ -357,6 +372,10 @@ services:
       MONGO_HOST: ${MONGO_HOST}
       MONGO_PORT: ${MONGO_PORT}
 
+      PUSHPIN_ENABLE: ${ACTIVATE_PUSHPIN}
+      PUSHPIN_HOST: ${PUSHPIN_HOST}
+      PUSHPIN_PORT: ${PUSHPIN_CONTROL_PORT}
+
       SMTP_ADMIN: ${SMTP_ADMIN}
       SMTP_NOREPLY: ${SMTP_NOREPLY}
       SMTP_HOST: ${SMTP_HOST}
@@ -374,6 +393,9 @@ services:
       - ${EXTENDED_PROJECT_PATH}/project_configuration.yaml:/code/confs/extended_project_configuration.yaml
       # JWT tokens secret
       - jwt_tokens:${JWT_APP_SECRETS}
+      # submodules
+      - ${SUBMODULE_DIR}/http-api/restapi:${PYTHON_PATH}/restapi
+      - ${SUBMODULE_DIR}/utils/utilities:${PYTHON_PATH}/utilities
     networks:
       db_net:
       worker_net:
@@ -391,12 +413,12 @@ services:
         CURRENT_UID: ${CURRENT_UID}
     image: rapydo/${BACKEND_BUILD_MODE}:${RAPYDO_VERSION}
     entrypoint: docker-entrypoint-celery
-    command: celery beat -A restapi.flask_ext.flask_celery.beat.celery_app --pidfile /tmp/celerybeat.pid --schedule /beat/celerybeat-schedule --loglevel ${LOG_LEVEL} --max-interval 30 --scheduler celerybeatmongo.schedulers.MongoScheduler
+    command: celery beat -A restapi.flask_ext.flask_celery.beat.celery_app --pidfile /tmp/celerybeat.pid --schedule /beat/celerybeat-schedule --loglevel ${LOG_LEVEL} --max-interval 30 --scheduler ${CELERY_BEAT_SCHEDULER}
     
-    user: developer
+    # user: developer
     working_dir: /code
     environment:
-      APP_MODE: debug
+      APP_MODE: ${APP_MODE}
       DEBUG_LEVEL: ${LOG_LEVEL}
       ACTIVATE: ${ACTIVATE_CELERY_BEAT}
       CURRENT_UID: ${CURRENT_UID}
@@ -407,6 +429,7 @@ services:
 
       CELERY_ENABLE: 1
       CELERY_BEAT_ENABLED: ${ACTIVATE_CELERY_BEAT}
+      CELERY_BEAT_SCHEDULER: ${CELERY_BEAT_SCHEDULER}
 
       CELERY_BROKER: ${CELERY_BROKER}
       CELERY_BROKER_HOST: ${CELERY_BROKER_HOST}
@@ -420,6 +443,10 @@ services:
       CELERY_BACKEND_PORT: ${CELERY_BACKEND_PORT}
       CELERY_BACKEND_USER: ${CELERY_BACKEND_USER}
       CELERY_BACKEND_PASSWORD: ${CELERY_BACKEND_PASSWORD}
+
+      PUSHPIN_ENABLE: ${ACTIVATE_PUSHPIN}
+      PUSHPIN_HOST: ${PUSHPIN_HOST}
+      PUSHPIN_PORT: ${PUSHPIN_CONTROL_PORT}
 
       SMTP_ADMIN: ${SMTP_ADMIN}
       SMTP_NOREPLY: ${SMTP_NOREPLY}
@@ -439,6 +466,9 @@ services:
       - ${EXTENDED_PROJECT_PATH}/project_configuration.yaml:/code/confs/extended_project_configuration.yaml
       # JWT tokens secret
       - jwt_tokens:${JWT_APP_SECRETS}
+      # submodules
+      - ${SUBMODULE_DIR}/http-api/restapi:${PYTHON_PATH}/restapi
+      - ${SUBMODULE_DIR}/utils/utilities:${PYTHON_PATH}/utilities
     networks:
       db_net:
       worker_net:
@@ -459,6 +489,19 @@ services:
         aliases:
           - ${CELERY_BROKER_HOST}
 
+  redis:
+    restart: on-failure:5
+    image: redis:5.0.6
+    command: redis-server --appendonly yes
+    volumes:
+      - redisdata:/data
+    networks:
+      db_net:
+        aliases:
+          - ${REDIS_HOST}
+    environment:
+      ACTIVATE: ${ACTIVATE_REDIS}
+
   ##########################
   ### SERVICE INTERFACES ###
   ##########################
@@ -473,7 +516,7 @@ services:
         CURRENT_UID: ${CURRENT_UID}
     image: rapydo/${BACKEND_BUILD_MODE}:${RAPYDO_VERSION}
     entrypoint: docker-entrypoint-celery
-    user: root
+    # user: root
     command: flower --basic_auth=${CELERYUI_USER}:${CELERYUI_PASSWORD} --port=${CELERYUI_PORT} --persistent --db=${CELERYUI_DBDIR}/flower -A restapi.flask_ext.flask_celery.worker.celery_app -n flower_monitor
     # Production command:
     # command: flower --basic_auth=${CELERYUI_USER}:${CELERYUI_PASSWORD} --port=${CELERYUI_PORT} --persistent --db=${CELERYUI_DBDIR}/flower --certfile=/ssl/real/fullchain1.pem --keyfile=/ssl/real/privkey1.pem -A restapi.flask_ext.flask_celery.worker.celery_app -n flower_monitor
@@ -494,6 +537,9 @@ services:
       - ${EXTENDED_PROJECT_PATH}/project_configuration.yaml:/code/confs/extended_project_configuration.yaml
       # JWT tokens secret
       - jwt_tokens:${JWT_APP_SECRETS}
+      # submodules
+      - ${SUBMODULE_DIR}/http-api/restapi:${PYTHON_PATH}/restapi
+      - ${SUBMODULE_DIR}/utils/utilities:${PYTHON_PATH}/utilities
       - flower_db:${CELERYUI_DBDIR}
       - letsencrypt_certs:/ssl
     networks:
@@ -502,7 +548,7 @@ services:
     # depends_on:
     #   - rabbit
     environment:
-      APP_MODE: debug
+      APP_MODE: ${APP_MODE}
       DEBUG_LEVEL: ${LOG_LEVEL}
       ACTIVATE: ${ACTIVATE_CELERYUI}
       CURRENT_UID: ${CURRENT_UID}
@@ -542,7 +588,7 @@ services:
 
   sqlalchemyui:
     # restart: no
-    image: adminer:4.7.1-standalone
+    image: adminer:4.7.3-standalone
     networks:
       db_net:
     environment:
@@ -640,3 +686,21 @@ services:
       db_net:
     depends_on:
       - postgres
+
+  pushpin:
+    restart: always
+    image: fanout/pushpin:1.24.0
+    environment:
+      ACTIVATE: ${ACTIVATE_PUSHPIN}
+    networks:
+      app_net:
+        aliases:
+          - ${PUSHPIN_HOST}
+      worker_net:
+        aliases:
+          - ${PUSHPIN_HOST}
+
+    ports:
+      - 7999:7999
+    volumes:
+      - ${SUBMODULE_DIR}/rapydo-confs/confs/pushpin/routes:/etc/pushpin/routes

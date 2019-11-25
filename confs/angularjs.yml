@@ -10,7 +10,7 @@ services:
     working_dir: /data/submodules/frontend
     environment:
       ACTIVATE: 1  # fixed, because it is enabled by frontend.framework variable
-      APP_MODE: debug
+      APP_MODE: ${APP_MODE}
     volumes:
       # Main dir. It has to be the root directory, to make links work
       - ${VANILLA_DIR}:/data
