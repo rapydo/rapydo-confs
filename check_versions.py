@@ -15,7 +15,7 @@ log = get_logger('check_versions.py')
 
 def check_updates(category, lib):
 
-    if category in ['pip', 'utilities', 'controller', 'http-api']:
+    if category in ['pip', 'controller', 'http-api']:
         if "==" in lib:
             token = lib.split("==")
         elif ">=" in lib:
@@ -148,11 +148,9 @@ def check_versions(skip_angular, verbose):
                     lib = "%s:%s" % (dep, ver)
                     dependencies['angular']["package.json"].append(lib)
 
-    utilities = distutils.core.run_setup("../utils/setup.py")
     controller = distutils.core.run_setup("../do/setup.py")
     http_api = distutils.core.run_setup("../http-api/setup.py")
 
-    dependencies['utilities'] = utilities.install_requires
     dependencies['controller'] = controller.install_requires
     dependencies['http-api'] = http_api.install_requires
 
@@ -170,9 +168,7 @@ def check_versions(skip_angular, verbose):
             for d in service_dependencies:
 
                 skipped = False
-                if d.startswith('rapydo-utils=='):
-                    skipped = True
-                elif '==' not in d and '>=' not in d:
+                if '==' not in d and '>=' not in d:
                     skipped = True
                 else:
                     filtered_dependencies[service].append(d)
@@ -210,8 +206,6 @@ def check_versions(skip_angular, verbose):
                     elif d == 'docker:dind':
                         skipped = True
                     elif d.endswith(':latest'):
-                        skipped = True
-                    elif d.startswith('rapydo-utils=='):
                         skipped = True
                     elif '==' in d or ':' in d:
 
