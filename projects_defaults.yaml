@@ -9,9 +9,9 @@ variables:
     rapydo-confs:
       online_url: https://github.com/rapydo/rapydo-confs.git
       if: true
-    utils:
-      online_url: https://github.com/rapydo/utils.git
-      if: true
+    # utils:
+    #   online_url: https://github.com/rapydo/utils.git
+    #   if: true
     http-api:
       online_url: https://github.com/rapydo/http-api.git
       if: true
