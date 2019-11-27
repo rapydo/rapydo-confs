@@ -59,39 +59,39 @@ variables:
   # The list of files to be considered
   composers:
     backend:
-      file: backend
+      file: backend.yml
       base: True
       # extension: $$shortyaml
       path: $$baseconf
       mandatory: True
       if: $$backend
     angular:
-      file: angular
+      file: angular.yml
       base: True
       path: $$baseconf
       mandatory: False
       if: $$angular
     react:
-      file: react
+      file: react.yml
       base: True
       path: $$baseconf
       mandatory: False
       if: $$react
     angularjs:
-      file: angularjs
+      file: angularjs.yml
       base: True
       path: $$baseconf
       mandatory: False
       if: $$angularjs
 
     logging:
-      file: logging
+      file: logging.yml
       base: True
       path: $$baseconf
       mandatory: False
       if: $$logging
     extended-commons:
-      file: commons
+      file: commons.yml
       base: False
       path: $$extendedproject
       mandatory: False
@@ -103,7 +103,7 @@ variables:
       mandatory: False
       if: $$extended-mode
     commons:
-      file: commons
+      file: commons.yml
       base: False
       path: $$customconf
       mandatory: False
