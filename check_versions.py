@@ -8,9 +8,7 @@ import distutils.core
 from glob import glob
 
 from restapi.utilities.configuration import load_yaml_file
-from restapi.utilities.logs import get_logger
-
-log = get_logger('check_versions.py')
+from restapi.utilities.logs import log
 
 
 def check_updates(category, lib):
