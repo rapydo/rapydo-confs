@@ -165,10 +165,11 @@ services:
       - jwt_tokens:${JWT_APP_SECRETS}
       # submodules
       - ${SUBMODULE_DIR}/http-api/restapi:${PYTHON_PATH}/restapi
-      - ${SUBMODULE_DIR}/utils/utilities:${PYTHON_PATH}/utilities
       # Unit tests
       - ${SUBMODULE_DIR}/http-api/tests:/code/tests
       - ${PROJECT_DIR}/backend/tests:/code/tests/custom
+      # Logs
+      - ${VANILLA_DIR}/data/logs:/logs
     networks:
       app_net:
         aliases:
@@ -395,7 +396,8 @@ services:
       - jwt_tokens:${JWT_APP_SECRETS}
       # submodules
       - ${SUBMODULE_DIR}/http-api/restapi:${PYTHON_PATH}/restapi
-      - ${SUBMODULE_DIR}/utils/utilities:${PYTHON_PATH}/utilities
+      # Logs
+      - ${VANILLA_DIR}/data/logs:/logs
     networks:
       db_net:
       worker_net:
@@ -468,7 +470,8 @@ services:
       - jwt_tokens:${JWT_APP_SECRETS}
       # submodules
       - ${SUBMODULE_DIR}/http-api/restapi:${PYTHON_PATH}/restapi
-      - ${SUBMODULE_DIR}/utils/utilities:${PYTHON_PATH}/utilities
+      # Logs
+      - ${VANILLA_DIR}/data/logs:/logs
     networks:
       db_net:
       worker_net:
@@ -535,13 +538,15 @@ services:
       # From project, if any
       - ${EXTENDED_PROJECT_PATH}/backend:/code/${EXTENDED_PROJECT}
       - ${EXTENDED_PROJECT_PATH}/project_configuration.yaml:/code/confs/extended_project_configuration.yaml
-      # JWT tokens secret
+      # JWT tokens secret and SSL
       - jwt_tokens:${JWT_APP_SECRETS}
+      - letsencrypt_certs:/ssl
       # submodules
       - ${SUBMODULE_DIR}/http-api/restapi:${PYTHON_PATH}/restapi
-      - ${SUBMODULE_DIR}/utils/utilities:${PYTHON_PATH}/utilities
+      # Logs
+      - ${VANILLA_DIR}/data/logs:/logs
+      # DB
       - flower_db:${CELERYUI_DBDIR}
-      - letsencrypt_certs:/ssl
     networks:
       db_net:
       worker_net:
