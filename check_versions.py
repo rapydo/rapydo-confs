@@ -19,20 +19,20 @@ def check_updates(category, lib):
         elif ">=" in lib:
             token = lib.split(">=")
         else:
-            log.critical("Invalid lib format: %s", lib)
+            log.critical("Invalid lib format: {}", lib)
 
-        print('https://pypi.org/project/%s/%s' % (token[0], token[1]))
+        print('https://pypi.org/project/{}/{}'.format(token[0], token[1]))
     elif category in ['compose', 'Dockerfile']:
         token = lib.split(":")
-        print("https://hub.docker.com/_/%s" % token[0])
+        print("https://hub.docker.com/_/{}".format(token[0]))
     elif category in ['package.json', 'npm']:
         token = lib.split(":")
-        print("https://www.npmjs.com/package/%s" % token[0])
+        print("https://www.npmjs.com/package/{}".format(token[0]))
     elif category in ['ACME']:
         token = lib.split(":")
-        print("https://github.com/Neilpang/acme.sh/releases/tag/%s" % token[1])
+        print("https://github.com/Neilpang/acme.sh/releases/tag/{}".format(token[1]))
     else:
-        log.critical("%s: %s", category, lib)
+        log.critical("{}: {}", category, lib)
 
 
 @click.command()
@@ -58,7 +58,6 @@ def check_versions(skip_angular, verbose):
 
         if image.startswith("rapydo/"):
             continue
-        # print("%s service = %s" % (service, image))
         if service not in dependencies:
             dependencies[service] = {}
 
@@ -99,7 +98,7 @@ def check_versions(skip_angular, verbose):
                     line = line.replace("ENV ACMEV", "").strip()
                     line = line.replace("\"", "").strip()
 
-                    dependencies[service]['ACME'] = "ACME:%s" % line
+                    dependencies[service]['ACME'] = "ACME:{}".format(line)
 
     for d in glob("../build-templates/*/requirements.txt"):
 
@@ -139,11 +138,11 @@ def check_versions(skip_angular, verbose):
 
                 for dep in package_dependencies:
                     ver = package_dependencies[dep]
-                    lib = "%s:%s" % (dep, ver)
+                    lib = "{}:{}".format(dep, ver)
                     dependencies['angular']["package.json"].append(lib)
                 for dep in package_devDependencies:
                     ver = package_devDependencies[dep]
-                    lib = "%s:%s" % (dep, ver)
+                    lib = "{}:{}".format(dep, ver)
                     dependencies['angular']["package.json"].append(lib)
 
     controller = distutils.core.run_setup("../do/setup.py")
@@ -173,10 +172,10 @@ def check_versions(skip_angular, verbose):
                     check_updates(service, d)
 
                 if skipped:
-                    log.debug("Filtering out %s", d)
+                    log.debug("Filtering out {}", d)
 
             if len(filtered_dependencies[service]) == 0:
-                log.debug("Removing empty list: %s", service)
+                log.debug("Removing empty list: {}", service)
                 del filtered_dependencies[service]
 
         elif isinstance(service_dependencies, dict):
@@ -220,16 +219,16 @@ def check_versions(skip_angular, verbose):
                         skipped = True
 
                     if skipped:
-                        log.debug("Filtering out %s", d)
+                        log.debug("Filtering out {}", d)
             if category in filtered_dependencies[service]:
                 if len(filtered_dependencies[service][category]) == 0:
-                    log.debug("Removing empty list: %s.%s", service, category)
+                    log.debug("Removing empty list: {}.{}", service, category)
                     del filtered_dependencies[service][category]
             if len(filtered_dependencies[service]) == 0:
-                log.debug("Removing empty list: %s", service)
+                log.debug("Removing empty list: {}", service)
                 del filtered_dependencies[service]
         else:
-            log.warning("Unknown dependencies type: %s", type(service_dependencies))
+            log.warning("Unknown dependencies type: {}", type(service_dependencies))
 
         # print(service)
 
