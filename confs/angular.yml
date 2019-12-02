@@ -8,6 +8,7 @@ services:
       args:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
         CURRENT_UID: ${CURRENT_UID}
+        CURRENT_GID: ${CURRENT_GID}
     image: rapydo/angular:${RAPYDO_VERSION}
     hostname: angular
     # user: node
@@ -15,6 +16,7 @@ services:
     environment:
       ACTIVATE: 1  # fixed, because it is enabled by frontend.framework variable
       CURRENT_UID: ${CURRENT_UID}
+      CURRENT_GID: ${CURRENT_GID}
       APP_MODE: ${APP_MODE}
       PROJECT_TITLE: ${PROJECT_TITLE}
       PROJECT_DESCRIPTION: ${PROJECT_DESCRIPTION}

@@ -8,6 +8,7 @@ services:
       args:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
         CURRENT_UID: ${CURRENT_UID}
+        CURRENT_GID: ${CURRENT_GID}
     image: rapydo/frontend:${RAPYDO_VERSION}
     # command: sleep infinity
     hostname: frontend
@@ -15,6 +16,7 @@ services:
     environment:
       ACTIVATE: 1  # fixed, because it is enabled by frontend.framework variable
       CURRENT_UID: ${CURRENT_UID}
+      CURRENT_GID: ${CURRENT_GID}
       APP_MODE: ${APP_MODE}
       MODULE_PATH: /modules
       PROJECT_TITLE: ${PROJECT_TITLE}
