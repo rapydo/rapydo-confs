@@ -53,9 +53,6 @@ variables:
     #     - yourrole
     #     - yourrole
 
-  frontend:
-    framework: None
-
   # The list of files to be considered
   composers:
     backend:
@@ -116,6 +113,8 @@ variables:
       if: True
 
   env:
+
+    FRONTEND_FRAMEWORK: None
 
     ACTIVATE_BACKEND: 1
     ACTIVATE_PROXY: 0
@@ -226,8 +225,8 @@ variables:
     PROXY_HOST: myproxy.dockerized.io
     PROXY_DEV_PORT: 80
     PROXY_PROD_PORT: 443
-    NGINX_PROD_CONF: production-a2.conf
-    NGINX_PROD_HEADERS: production-a2-headers.conf
+    # NGINX_PROD_CONF: production-a2.conf
+    # NGINX_PROD_HEADERS: production-headers.conf
     # LETSENCRYPT_MODE: --staging
     LETSENCRYPT_MODE:
 

@@ -193,8 +193,9 @@ services:
     image: rapydo/proxy:${RAPYDO_VERSION}
     hostname: reverseproxy
     volumes:
-      - ${SUBMODULE_DIR}/rapydo-confs/confs/nginx/${NGINX_PROD_CONF}:/etc/nginx/sites-enabled-templates/production
-      - ${SUBMODULE_DIR}/rapydo-confs/confs/nginx/${NGINX_PROD_HEADERS}:/etc/nginx/sites-enabled-templates/production-headers
+      - ${SUBMODULE_DIR}/rapydo-confs/confs/nginx:/etc/nginx/sites-enabled-templates
+      # - ${SUBMODULE_DIR}/rapydo-confs/confs/nginx/${NGINX_PROD_CONF}:/etc/nginx/sites-enabled-templates/production
+      # - ${SUBMODULE_DIR}/rapydo-confs/confs/nginx/${NGINX_PROD_HEADERS}:/etc/nginx/sites-enabled-templates/production-headers
       - letsencrypt_certs:/etc/letsencrypt
       - ssl_dhparam:/etc/nginx/ssl/
     networks:
@@ -213,6 +214,7 @@ services:
       CURRENT_GID: ${CURRENT_GID}
       SMTP_ADMIN: ${SMTP_ADMIN}
       DEFAULT_DHLEN: ${DEFAULT_DHLEN}
+      FRONTEND: ${FRONTEND_FRAMEWORK} 
     depends_on:
       - backend
 
