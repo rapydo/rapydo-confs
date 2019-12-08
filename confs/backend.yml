@@ -289,7 +289,7 @@ services:
 
   neo4j:
     restart: on-failure:5
-    image: neo4j:3.5.11
+    image: neo4j:3.5.13
     volumes:
       - graphdata:/data
     networks:
