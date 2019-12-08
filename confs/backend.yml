@@ -606,7 +606,7 @@ services:
 
   sqlalchemyui:
     # restart: no
-    image: adminer:4.7.3-standalone
+    image: adminer:4.7.5-standalone
     networks:
       db_net:
     environment:
