@@ -256,7 +256,7 @@ services:
   postgres:
     # restart: always
     restart: on-failure:5
-    image: postgres:11.5-alpine
+    image: postgres:12.1-alpine
     volumes:
       - sqldata:/var/lib/postgresql/data
       - ${SUBMODULE_DIR}/rapydo-confs/confs/postgresql/pgs_init.sh:/docker-entrypoint-initdb.d/setup-my-schema.sh:ro
