@@ -40,7 +40,7 @@ services:
       - ${VANILLA_DIR}/data/${COMPOSE_PROJECT_NAME}/frontend:/app
       - ${VANILLA_DIR}/data/${COMPOSE_PROJECT_NAME}/karma:/coverage
 
-      - ${SUBMODULE_DIR}/frontend/angular.json:/app/angular.json
+      # - ${SUBMODULE_DIR}/frontend/angular.json:/app/angular.json
       - ${SUBMODULE_DIR}/frontend/browserslist:/app/browserslist
       - ${SUBMODULE_DIR}/frontend/e2e:/app/e2e
       - ${SUBMODULE_DIR}/frontend/karma.conf.js:/app/karma.conf.js
