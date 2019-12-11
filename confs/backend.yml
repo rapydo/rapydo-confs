@@ -300,6 +300,8 @@ services:
       ACTIVATE: ${ACTIVATE_NEO4J}
       # Note: once changed this, also set GRAPHDB_PASSWORD in backend service
       NEO4J_AUTH: ${GRAPHDB_USER}/${GRAPHDB_PASSWORD}
+      NEO4J_USERNAME: ${GRAPHDB_USER}
+      NEO4J_PASSWORD: ${GRAPHDB_PASSWORD}
       # NEO4J_dbms_memory_pagecache_size: 2048M
       # NEO4J_dbms_memory_heap_maxSize: 4096M
     # ports:
