@@ -80,7 +80,7 @@ services:
     environment:
       ACTIVATE: ${ACTIVATE_BACKEND}
       APP_MODE: ${APP_MODE}
-      DEBUG_LEVEL: ${LOG_LEVEL}
+      LOGURU_LEVEL: ${LOG_LEVEL}
       CURRENT_UID: ${CURRENT_UID}
       CURRENT_GID: ${CURRENT_GID}
       # APIUID is set in Dockerfile, overwriting with fixed value
@@ -342,7 +342,7 @@ services:
     working_dir: /code
     environment:
       APP_MODE: ${APP_MODE}
-      DEBUG_LEVEL: ${LOG_LEVEL}
+      LOGURU_LEVEL: ${LOG_LEVEL}
       ACTIVATE: ${ACTIVATE_CELERY}
       CURRENT_UID: ${CURRENT_UID}
       CURRENT_GID: ${CURRENT_GID}
@@ -434,7 +434,7 @@ services:
     working_dir: /code
     environment:
       APP_MODE: ${APP_MODE}
-      DEBUG_LEVEL: ${LOG_LEVEL}
+      LOGURU_LEVEL: ${LOG_LEVEL}
       ACTIVATE: ${ACTIVATE_CELERY_BEAT}
       CURRENT_UID: ${CURRENT_UID}
       CURRENT_GID: ${CURRENT_GID}
@@ -569,7 +569,7 @@ services:
     #   - rabbit
     environment:
       APP_MODE: ${APP_MODE}
-      DEBUG_LEVEL: ${LOG_LEVEL}
+      LOGURU_LEVEL: ${LOG_LEVEL}
       ACTIVATE: ${ACTIVATE_CELERYUI}
       CURRENT_UID: ${CURRENT_UID}
       CURRENT_GID: ${CURRENT_GID}
