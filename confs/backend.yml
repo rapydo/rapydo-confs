@@ -216,6 +216,7 @@ services:
       SMTP_ADMIN: ${SMTP_ADMIN}
       DEFAULT_DHLEN: ${DEFAULT_DHLEN}
       FRONTEND: ${FRONTEND_FRAMEWORK} 
+      UNSAFE_EVAL: ${SET_UNSAFE_EVAL}
     depends_on:
       - backend
 
