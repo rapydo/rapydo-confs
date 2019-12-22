@@ -49,7 +49,6 @@ services:
       - ${SUBMODULE_DIR}/frontend/tsconfig.json:/app/tsconfig.json
       - ${SUBMODULE_DIR}/frontend/tsconfig.spec.json:/app/tsconfig.spec.json
       - ${SUBMODULE_DIR}/frontend/tslint.json:/app/tslint.json
-      - ${SUBMODULE_DIR}/frontend/typedarray.js:/app/typedarray.js
 
       - ${SUBMODULE_DIR}/frontend/src:/app/app/rapydo
       - ${PROJECT_DIR}/frontend:/app/app/custom
