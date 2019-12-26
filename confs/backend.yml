@@ -73,7 +73,6 @@ services:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
         CURRENT_UID: ${CURRENT_UID}
         CURRENT_GID: ${CURRENT_GID}
-
     image: rapydo/${BACKEND_BUILD_MODE}:${RAPYDO_VERSION}
     hostname: backend-server
     privileged: ${DOCKER_PRIVILEGED_MODE}
@@ -338,7 +337,6 @@ services:
   celery:
     restart: on-failure:5
     build:
-      # context: ${SUBMODULE_DIR}/build-templates/celery
       context: ${SUBMODULE_DIR}/build-templates/${BACKEND_BUILD_MODE}
       args:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
@@ -433,7 +431,6 @@ services:
   celery-beat:
     restart: on-failure:5
     build:
-      # context: ${SUBMODULE_DIR}/build-templates/celery
       context: ${SUBMODULE_DIR}/build-templates/${BACKEND_BUILD_MODE}
       args:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
@@ -508,7 +505,13 @@ services:
 
   rabbit:
     restart: on-failure:5
-    image: rabbitmq:3.8.2
+    build:
+      context: ${SUBMODULE_DIR}/build-templates/rabbitmq
+      args:
+        RAPYDO_VERSION: ${RAPYDO_VERSION}
+        CURRENT_UID: ${CURRENT_UID}
+        CURRENT_GID: ${CURRENT_GID}
+    image: rapydo/rabbitmq:${RAPYDO_VERSION}
     hostname: rabbit
     environment:
       # CAN BE locally changed by ovverride with:
@@ -516,6 +519,8 @@ services:
       ACTIVATE: ${ACTIVATE_CELERY}
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+      RABBITMQ_ENABLE_MANAGEMENT_PLUGIN: ${RABBITMQ_ENABLE_MANAGEMENT_PLUGIN}
+      RABBITMQ_ENABLE_SHOVEL_PLUGIN: ${RABBITMQ_ENABLE_SHOVEL_PLUGIN}
 
     volumes:
       - rabbitdata:/var/lib/rabbitmq
@@ -544,7 +549,6 @@ services:
   celeryui:
     restart: on-failure:5
     build:
-      # context: ${SUBMODULE_DIR}/build-templates/celery
       context: ${SUBMODULE_DIR}/build-templates/${BACKEND_BUILD_MODE}
       args:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
@@ -662,7 +666,6 @@ services:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
         CURRENT_UID: ${CURRENT_UID}
         CURRENT_GID: ${CURRENT_GID}
-    # image: ${COMPOSE_PROJECT_NAME}/restclient:template
     image: rapydo/restclient:${RAPYDO_VERSION}
     hostname: rapydo_client
     environment:
