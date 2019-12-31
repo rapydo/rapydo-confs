@@ -227,7 +227,8 @@ variables:
     # NGINX_PROD_HEADERS: production-headers.conf
     # LETSENCRYPT_MODE: --staging
     LETSENCRYPT_MODE:
-    SET_UNSAFE_EVAL:
+    # SET_UNSAFE_EVAL:
+    SET_UNSAFE_EVAL: "'unsafe-eval'"
 
     SMTP_ADMIN: 
     SMTP_NOREPLY:
