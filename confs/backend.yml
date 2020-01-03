@@ -225,6 +225,8 @@ services:
       DEFAULT_DHLEN: ${DEFAULT_DHLEN}
       FRONTEND: ${FRONTEND_FRAMEWORK} 
       UNSAFE_EVAL: ${SET_UNSAFE_EVAL}
+      CSP_SCRIPT_SRC: ${SET_CSP_SCRIPT_SRC}
+      CSP_IMG_SRC: ${SET_CSP_IMG_SRC}
     depends_on:
       - backend
 

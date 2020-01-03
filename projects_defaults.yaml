@@ -229,6 +229,8 @@ variables:
     LETSENCRYPT_MODE:
     # SET_UNSAFE_EVAL:
     SET_UNSAFE_EVAL: "'unsafe-eval'"
+    SET_CSP_SCRIPT_SRC:
+    SET_CSP_IMG_SRC:
 
     SMTP_ADMIN: 
     SMTP_NOREPLY:
