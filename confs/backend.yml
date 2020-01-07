@@ -268,8 +268,8 @@ services:
   ###  DATABASES  ###
   ###################
   postgres:
-    # restart: always
-    restart: on-failure:5
+    restart: always
+    # restart: on-failure:5
     image: postgres:12.1-alpine
     volumes:
       - sqldata:/var/lib/postgresql/data
@@ -306,6 +306,8 @@ services:
     image: neo4j:3.5.13
     volumes:
       - graphdata:/data
+      # it is used to enable SSL in production mode
+      - letsencrypt_certs:/ssl
     networks:
       db_net:
         aliases:
@@ -540,6 +542,7 @@ services:
 
     volumes:
       - rabbitdata:/var/lib/rabbitmq
+      # it is used to enable SSL in production mode
       - letsencrypt_certs:/ssl
     networks:
       worker_net:
