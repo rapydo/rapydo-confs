@@ -1,0 +1,6 @@
+
+variables:
+  env:
+
+    ACTIVATE_PROXY: 1
+
