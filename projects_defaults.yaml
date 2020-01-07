@@ -60,55 +60,55 @@ variables:
       base: True
       # extension: $$shortyaml
       path: $$baseconf
-      # mandatory: True
+      mandatory: True
       if: $$backend
     angular:
       file: angular.yml
       base: True
       path: $$baseconf
-      # mandatory: False
+      mandatory: True
       if: $$angular
     react:
       file: react.yml
       base: True
       path: $$baseconf
-      # mandatory: False
+      mandatory: True
       if: $$react
     angularjs:
       file: angularjs.yml
       base: True
       path: $$baseconf
-      # mandatory: False
+      mandatory: True
       if: $$angularjs
     logging:
       file: logging.yml
       base: True
       path: $$baseconf
-      # mandatory: False
+      mandatory: True
       if: $$logging
     extended-commons:
       file: commons.yml
       base: False
       path: $$extendedproject
-      # mandatory: False
+      mandatory: True
       if: $$extended-commons
     extended-mode:
       file: $$mode
       base: False
       path: $$extendedproject
-      # mandatory: False
+      mandatory: False
       if: $$extended-mode
     commons:
       file: commons.yml
       base: False
       path: $$customconf
-      # mandatory: False
+      mandatory: True
       if: $$commons
     mode:
       file: $$mode
       base: False
       path: $$customconf
-      # mandatory: False
+      mandatory: True
       if: True
 
   env:
