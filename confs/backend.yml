@@ -268,8 +268,8 @@ services:
   ###  DATABASES  ###
   ###################
   postgres:
-    restart: always
-    # restart: on-failure:5
+    # restart: always
+    restart: on-failure:5
     image: postgres:12.1-alpine
     volumes:
       - sqldata:/var/lib/postgresql/data
@@ -423,7 +423,7 @@ services:
       - ${EXTENDED_PROJECT_PATH}/backend:/code/${EXTENDED_PROJECT}
       - ${EXTENDED_PROJECT_PATH}/project_configuration.yaml:/code/confs/extended_project_configuration.yaml
       # JWT tokens secret
-      - jwt_tokens:${JWT_APP_SECRETS}
+      # - jwt_tokens:${JWT_APP_SECRETS}
       # submodules
       - ${SUBMODULE_DIR}/http-api/restapi:${PYTHON_PATH}/restapi
       # Logs
@@ -502,7 +502,7 @@ services:
       - ${EXTENDED_PROJECT_PATH}/backend:/code/${EXTENDED_PROJECT}
       - ${EXTENDED_PROJECT_PATH}/project_configuration.yaml:/code/confs/extended_project_configuration.yaml
       # JWT tokens secret
-      - jwt_tokens:${JWT_APP_SECRETS}
+      # - jwt_tokens:${JWT_APP_SECRETS}
       # submodules
       - ${SUBMODULE_DIR}/http-api/restapi:${PYTHON_PATH}/restapi
       # Logs
@@ -577,9 +577,7 @@ services:
     image: rapydo/${BACKEND_BUILD_MODE}:${RAPYDO_VERSION}
     entrypoint: docker-entrypoint-celery
     # user: root
-    command: flower --basic_auth=${CELERYUI_USER}:${CELERYUI_PASSWORD} --port=${CELERYUI_PORT} --persistent --db=${CELERYUI_DBDIR}/flower -A restapi.flask_ext.flask_celery.worker.celery_app -n flower_monitor
-    # Production command:
-    # command: flower --basic_auth=${CELERYUI_USER}:${CELERYUI_PASSWORD} --port=${CELERYUI_PORT} --persistent --db=${CELERYUI_DBDIR}/flower --certfile=/ssl/real/fullchain1.pem --keyfile=/ssl/real/privkey1.pem -A restapi.flask_ext.flask_celery.worker.celery_app -n flower_monitor
+    command: flower --basic_auth=${CELERYUI_USER}:${CELERYUI_PASSWORD} --port=${CELERYUI_PORT} --persistent --db=${CELERYUI_DBDIR}/flower ${CELERYUI_SSL_OPTIONS} -A restapi.flask_ext.flask_celery.worker.celery_app -n flower_monitor
     hostname: flower
     working_dir: /code
     expose:
@@ -596,7 +594,8 @@ services:
       - ${EXTENDED_PROJECT_PATH}/backend:/code/${EXTENDED_PROJECT}
       - ${EXTENDED_PROJECT_PATH}/project_configuration.yaml:/code/confs/extended_project_configuration.yaml
       # JWT tokens secret and SSL
-      - jwt_tokens:${JWT_APP_SECRETS}
+      # - jwt_tokens:${JWT_APP_SECRETS}
+      # it is used to enable SSL in production mode
       - letsencrypt_certs:/ssl
       # submodules
       - ${SUBMODULE_DIR}/http-api/restapi:${PYTHON_PATH}/restapi

@@ -221,6 +221,7 @@ variables:
     CELERYUI_PASSWORD: "**PLACEHOLDER**"
     CELERYUI_DBDIR: /var/flower
     CELERYUI_PORT: 5555
+    CELERYUI_SSL_OPTIONS:
 
     PUSHPIN_HOST: pushpin.dockerized.io
     PUSHPIN_PORT: 7999

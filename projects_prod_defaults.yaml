@@ -20,3 +20,5 @@ variables:
     # RABBITMQ_SSL_VERIFY
     RABBITMQ_SSL_ENABLED: True  # it is used by Celery
 
+    CELERYUI_SSL_OPTIONS: --certfile=/ssl/real/fullchain1.pem --keyfile=/ssl/real/privkey1.pem
+
