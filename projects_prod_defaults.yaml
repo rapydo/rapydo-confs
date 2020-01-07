@@ -18,4 +18,5 @@ variables:
     # RABBITMQ_SSL_DEPTH
     RABBITMQ_SSL_FAIL_IF_NO_PEER_CERT: "false"
     # RABBITMQ_SSL_VERIFY
+    RABBITMQ_SSL_ENABLED: True  # it is used by Celery
 
