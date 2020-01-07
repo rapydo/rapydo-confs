@@ -79,6 +79,7 @@ services:
     environment:
       ACTIVATE: ${ACTIVATE_BACKEND}
       APP_MODE: ${APP_MODE}
+      NGINX_ACTIVE: ${ENABLE_BACKEND_NGINX_ACTIVE}
       LOGURU_LEVEL: ${LOG_LEVEL}
       CURRENT_UID: ${CURRENT_UID}
       CURRENT_GID: ${CURRENT_GID}
@@ -526,6 +527,7 @@ services:
 
     volumes:
       - rabbitdata:/var/lib/rabbitmq
+      - letsencrypt_certs:/ssl
     networks:
       worker_net:
         aliases:
