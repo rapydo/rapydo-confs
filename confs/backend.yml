@@ -307,7 +307,7 @@ services:
     volumes:
       - graphdata:/data
       # it is used to enable SSL in production mode
-      - letsencrypt_certs:/ssl
+      # - letsencrypt_certs:/ssl
     networks:
       db_net:
         aliases:
