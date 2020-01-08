@@ -177,6 +177,8 @@ variables:
     GRAPHDB_AUTOINDEXING: True
     GRAPHDB_USER: neo4j
     GRAPHDB_PASSWORD: "**PLACEHOLDER**"
+    NEO4J_WEB_INTERFACE_PORT: 7474  # changed to 7173 in production mode
+    NEO4J_SSL_PATH: /ssl_no_used # changed to /ssl in production mode
 
     IRODS_HOST: rodserver.dockerized.io
     IRODS_PORT: 1247
@@ -278,7 +280,7 @@ project:
   version: v0.1
 
 tags:
-  specifications: JSON with SWAGGER standards for any REST client
+  specifications: OpenAPI 2.0 Specification in JSON format
   base: endpoints for base operations
   helpers: tools for checking status and privileges
   authentication: log in and out of the REST API

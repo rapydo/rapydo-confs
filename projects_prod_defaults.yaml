@@ -22,3 +22,6 @@ variables:
 
     CELERYUI_SSL_OPTIONS: --certfile=/ssl/real/fullchain1.pem --keyfile=/ssl/real/privkey1.pem
 
+    NEO4J_WEB_INTERFACE_PORT: 7473
+    NEO4J_SSL_PATH: /ssl
+
