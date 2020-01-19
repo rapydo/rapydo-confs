@@ -8,6 +8,7 @@ services:
       args:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
         CURRENT_UID: ${CURRENT_UID}
+        CURRENT_GID: ${CURRENT_GID}
     image: rapydo/angular:${RAPYDO_VERSION}
     hostname: angular
     # user: node
@@ -15,20 +16,24 @@ services:
     environment:
       ACTIVATE: 1  # fixed, because it is enabled by frontend.framework variable
       CURRENT_UID: ${CURRENT_UID}
+      CURRENT_GID: ${CURRENT_GID}
       APP_MODE: ${APP_MODE}
       PROJECT_TITLE: ${PROJECT_TITLE}
       PROJECT_DESCRIPTION: ${PROJECT_DESCRIPTION}
       ALLOW_PASSWORD_RESET: "false"
       ALLOW_REGISTRATION: "false"
       BACKEND_URI: ${BACKEND_URI}
-      BACKEND_PORT: ${BACKEND_PORT}
+      BACKEND_PORT: ${BACKEND_API_PORT}
       BACKEND_HOST: ${PROJECT_DOMAIN}
       BACKEND_PREFIX: ${BACKEND_PREFIX}
+      BASE_HREF: ${PROJECT_DOMAIN}
       FRONTEND_PREFIX: ${FRONTEND_PREFIX}
-      ENABLE_TOASTR: ${ENABLE_TOASTR}
+      # ENABLE_TOASTR: ${ENABLE_TOASTR}
       PUSHPIN_HOST: ${PROJECT_DOMAIN}
       PUSHPIN_PORT: ${PUSHPIN_PORT}
-      COVERALLS_REPO_TOKEN: ${COVERALLS_REPO_TOKEN}
+      # COVERALLS_REPO_TOKEN: ${COVERALLS_REPO_TOKEN}
+      SENTRY_URL: ${SENTRY_URL}
+      GA_TRACKING_CODE: ${GA_TRACKING_CODE}
 
     volumes:
       - ${SUBMODULE_DIR}/frontend/utility:/rapydo
@@ -36,7 +41,7 @@ services:
       - ${VANILLA_DIR}/data/${COMPOSE_PROJECT_NAME}/frontend:/app
       - ${VANILLA_DIR}/data/${COMPOSE_PROJECT_NAME}/karma:/coverage
 
-      - ${SUBMODULE_DIR}/frontend/angular.json:/app/angular.json
+      # - ${SUBMODULE_DIR}/frontend/angular.json:/app/angular.json
       - ${SUBMODULE_DIR}/frontend/browserslist:/app/browserslist
       - ${SUBMODULE_DIR}/frontend/e2e:/app/e2e
       - ${SUBMODULE_DIR}/frontend/karma.conf.js:/app/karma.conf.js
@@ -45,7 +50,6 @@ services:
       - ${SUBMODULE_DIR}/frontend/tsconfig.json:/app/tsconfig.json
       - ${SUBMODULE_DIR}/frontend/tsconfig.spec.json:/app/tsconfig.spec.json
       - ${SUBMODULE_DIR}/frontend/tslint.json:/app/tslint.json
-      - ${SUBMODULE_DIR}/frontend/typedarray.js:/app/typedarray.js
 
       - ${SUBMODULE_DIR}/frontend/src:/app/app/rapydo
       - ${PROJECT_DIR}/frontend:/app/app/custom

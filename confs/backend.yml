@@ -72,18 +72,20 @@ services:
       args:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
         CURRENT_UID: ${CURRENT_UID}
-
+        CURRENT_GID: ${CURRENT_GID}
     image: rapydo/${BACKEND_BUILD_MODE}:${RAPYDO_VERSION}
-    # hostname: restapi
-    hostname: rapydo_server
+    hostname: backend-server
     privileged: ${DOCKER_PRIVILEGED_MODE}
     environment:
       ACTIVATE: ${ACTIVATE_BACKEND}
       APP_MODE: ${APP_MODE}
-      DEBUG_LEVEL: ${LOG_LEVEL}
+      NGINX_ACTIVE: ${ENABLE_BACKEND_NGINX_ACTIVE}
+      LOGURU_LEVEL: ${LOG_LEVEL}
       CURRENT_UID: ${CURRENT_UID}
+      CURRENT_GID: ${CURRENT_GID}
       # APIUID is set in Dockerfile, overwriting with fixed value
       APIUID: ${CURRENT_UID}
+      PYTHON_PATH: ${PYTHON_PATH}
       FLASK_APP: ${PYTHON_PATH}/restapi/${PYTHON_MAIN_FILE}.py
       UWSGI_APP: restapi.${PYTHON_MAIN_FILE}
       VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
@@ -130,12 +132,22 @@ services:
       MONGO_PORT: ${MONGO_PORT}
 
       CELERY_ENABLE: ${ACTIVATE_CELERY}
+
       CELERY_BROKER: ${CELERY_BROKER}
-      CELERY_BROKER_HOST: ${CELERY_BROKER_HOST}
-      CELERY_BROKER_PORT: ${CELERY_BROKER_PORT}
+      RABBITMQ_HOST: ${RABBITMQ_HOST}
+      RABBITMQ_PORT: ${RABBITMQ_PORT}
+      RABBITMQ_USER: ${RABBITMQ_USER}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+      RABBITMQ_VHOST: ${RABBITMQ_VHOST}
+      RABBITMQ_SSL_ENABLED: ${RABBITMQ_SSL_ENABLED}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+
       CELERY_BACKEND: ${CELERY_BACKEND}
-      CELERY_BACKEND_HOST: ${CELERY_BACKEND_HOST}
-      CELERY_BACKEND_PORT: ${CELERY_BACKEND_PORT}
+      MONGO_HOST: ${MONGO_HOST}
+      MONGO_PORT: ${MONGO_PORT}
+      MONGO_USER: ${MONGO_USER}
+      MONGO_PASSWORD: ${MONGO_PASSWORD}
 
       CELERY_BEAT_ENABLED: ${ACTIVATE_CELERY_BEAT}
 
@@ -165,10 +177,11 @@ services:
       - jwt_tokens:${JWT_APP_SECRETS}
       # submodules
       - ${SUBMODULE_DIR}/http-api/restapi:${PYTHON_PATH}/restapi
-      - ${SUBMODULE_DIR}/utils/utilities:${PYTHON_PATH}/utilities
       # Unit tests
       - ${SUBMODULE_DIR}/http-api/tests:/code/tests
       - ${PROJECT_DIR}/backend/tests:/code/tests/custom
+      # Logs
+      - ${VANILLA_DIR}/data/logs:/logs
     networks:
       app_net:
         aliases:
@@ -187,11 +200,13 @@ services:
       args:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
         CURRENT_UID: ${CURRENT_UID}
+        CURRENT_GID: ${CURRENT_GID}
     image: rapydo/proxy:${RAPYDO_VERSION}
     hostname: reverseproxy
     volumes:
-      - ${SUBMODULE_DIR}/rapydo-confs/confs/nginx/${NGINX_PROD_CONF}:/etc/nginx/sites-enabled-templates/production
-      - ${SUBMODULE_DIR}/rapydo-confs/confs/nginx/${NGINX_PROD_HEADERS}:/etc/nginx/sites-enabled-templates/production-headers
+      - ${SUBMODULE_DIR}/rapydo-confs/confs/nginx:/etc/nginx/sites-enabled-templates
+      # - ${SUBMODULE_DIR}/rapydo-confs/confs/nginx/${NGINX_PROD_CONF}:/etc/nginx/sites-enabled-templates/production
+      # - ${SUBMODULE_DIR}/rapydo-confs/confs/nginx/${NGINX_PROD_HEADERS}:/etc/nginx/sites-enabled-templates/production-headers
       - letsencrypt_certs:/etc/letsencrypt
       - ssl_dhparam:/etc/nginx/ssl/
     networks:
@@ -207,8 +222,13 @@ services:
       MODE: ${LETSENCRYPT_MODE}
       ACTIVATE: ${ACTIVATE_PROXY}
       CURRENT_UID: ${CURRENT_UID}
+      CURRENT_GID: ${CURRENT_GID}
       SMTP_ADMIN: ${SMTP_ADMIN}
       DEFAULT_DHLEN: ${DEFAULT_DHLEN}
+      FRONTEND: ${FRONTEND_FRAMEWORK} 
+      UNSAFE_EVAL: ${SET_UNSAFE_EVAL}
+      CSP_SCRIPT_SRC: ${SET_CSP_SCRIPT_SRC}
+      CSP_IMG_SRC: ${SET_CSP_IMG_SRC}
     depends_on:
       - backend
 
@@ -220,6 +240,7 @@ services:
       args:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
         CURRENT_UID: ${CURRENT_UID}
+        CURRENT_GID: ${CURRENT_GID}
     image: rapydo/proxy:${RAPYDO_VERSION}
     command: updatecertificates
     hostname: reverseproxy
@@ -241,6 +262,7 @@ services:
       MODE: ${LETSENCRYPT_MODE}
       SMTP_ADMIN: ${SMTP_ADMIN}
       CURRENT_UID: ${CURRENT_UID}
+      CURRENT_GID: ${CURRENT_GID}
 
   ###################
   ###  DATABASES  ###
@@ -248,7 +270,7 @@ services:
   postgres:
     # restart: always
     restart: on-failure:5
-    image: postgres:11.5-alpine
+    image: postgres:12.1-alpine
     volumes:
       - sqldata:/var/lib/postgresql/data
       - ${SUBMODULE_DIR}/rapydo-confs/confs/postgresql/pgs_init.sh:/docker-entrypoint-initdb.d/setup-my-schema.sh:ro
@@ -265,7 +287,7 @@ services:
   mariadb:
     # restart: always
     restart: on-failure:5
-    image: mariadb:10.4.8
+    image: mariadb:10.4.10
     volumes:
       - mariadb:/var/lib/mysql
     environment:
@@ -281,9 +303,11 @@ services:
 
   neo4j:
     restart: on-failure:5
-    image: neo4j:3.5.11
+    image: neo4j:3.5.13
     volumes:
       - graphdata:/data
+      # it is used to enable SSL in production mode
+      - letsencrypt_certs:${NEO4J_SSL_PATH}
     networks:
       db_net:
         aliases:
@@ -292,6 +316,9 @@ services:
       ACTIVATE: ${ACTIVATE_NEO4J}
       # Note: once changed this, also set GRAPHDB_PASSWORD in backend service
       NEO4J_AUTH: ${GRAPHDB_USER}/${GRAPHDB_PASSWORD}
+      NEO4J_USERNAME: ${GRAPHDB_USER}
+      NEO4J_PASSWORD: ${GRAPHDB_PASSWORD}
+      SECURE_FILE_PERMISSIONS: "yes"
       # NEO4J_dbms_memory_pagecache_size: 2048M
       # NEO4J_dbms_memory_heap_maxSize: 4096M
     # ports:
@@ -300,7 +327,7 @@ services:
 
   mongodb:
     restart: on-failure:5
-    image: mongo:4.2.0
+    image: mongo:4.2.1
     volumes:
       - mongodata:/data/db
     networks:
@@ -317,11 +344,11 @@ services:
   celery:
     restart: on-failure:5
     build:
-      # context: ${SUBMODULE_DIR}/build-templates/celery
       context: ${SUBMODULE_DIR}/build-templates/${BACKEND_BUILD_MODE}
       args:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
         CURRENT_UID: ${CURRENT_UID}
+        CURRENT_GID: ${CURRENT_GID}
     image: rapydo/${BACKEND_BUILD_MODE}:${RAPYDO_VERSION}
     entrypoint: docker-entrypoint-celery
     command: celery worker --concurrency=1 -Ofair -A restapi.flask_ext.flask_celery.worker.celery_app -Q celery -n ${COMPOSE_PROJECT_NAME}-%h
@@ -330,9 +357,10 @@ services:
     working_dir: /code
     environment:
       APP_MODE: ${APP_MODE}
-      DEBUG_LEVEL: ${LOG_LEVEL}
+      LOGURU_LEVEL: ${LOG_LEVEL}
       ACTIVATE: ${ACTIVATE_CELERY}
       CURRENT_UID: ${CURRENT_UID}
+      CURRENT_GID: ${CURRENT_GID}
       DOMAIN: ${PROJECT_DOMAIN}
       VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
       EXTENDED_PACKAGE: ${EXTENDED_PROJECT}
@@ -342,17 +370,21 @@ services:
       CELERY_BEAT_ENABLED: ${ACTIVATE_CELERY_BEAT}
 
       CELERY_BROKER: ${CELERY_BROKER}
-      CELERY_BROKER_HOST: ${CELERY_BROKER_HOST}
-      CELERY_BROKER_PORT: ${CELERY_BROKER_PORT}
-      CELERY_BROKER_USER: ${CELERY_BROKER_USER}
-      CELERY_BROKER_PASSWORD: ${CELERY_BROKER_PASSWORD}
-      CELERY_BROKER_VHOST: ${CELERY_BROKER_VHOST}
+      RABBITMQ_HOST: ${RABBITMQ_HOST}
+      RABBITMQ_PORT: ${RABBITMQ_PORT}
+      RABBITMQ_USER: ${RABBITMQ_USER}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+      RABBITMQ_VHOST: ${RABBITMQ_VHOST}
+      RABBITMQ_SSL_ENABLED: ${RABBITMQ_SSL_ENABLED}
+
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
 
       CELERY_BACKEND: ${CELERY_BACKEND}
-      CELERY_BACKEND_HOST: ${CELERY_BACKEND_HOST}
-      CELERY_BACKEND_PORT: ${CELERY_BACKEND_PORT}
-      CELERY_BACKEND_USER: ${CELERY_BACKEND_USER}
-      CELERY_BACKEND_PASSWORD: ${CELERY_BACKEND_PASSWORD}
+      MONGO_HOST: ${MONGO_HOST}
+      MONGO_PORT: ${MONGO_PORT}
+      MONGO_USER: ${MONGO_USER}
+      MONGO_PASSWORD: ${MONGO_PASSWORD}
 
       ALCHEMY_ENABLE: ${ACTIVATE_ALCHEMY}
       ALCHEMY_HOST: ${ALCHEMY_HOST}
@@ -392,10 +424,11 @@ services:
       - ${EXTENDED_PROJECT_PATH}/backend:/code/${EXTENDED_PROJECT}
       - ${EXTENDED_PROJECT_PATH}/project_configuration.yaml:/code/confs/extended_project_configuration.yaml
       # JWT tokens secret
-      - jwt_tokens:${JWT_APP_SECRETS}
+      # - jwt_tokens:${JWT_APP_SECRETS}
       # submodules
       - ${SUBMODULE_DIR}/http-api/restapi:${PYTHON_PATH}/restapi
-      - ${SUBMODULE_DIR}/utils/utilities:${PYTHON_PATH}/utilities
+      # Logs
+      - ${VANILLA_DIR}/data/logs:/logs
     networks:
       db_net:
       worker_net:
@@ -406,11 +439,11 @@ services:
   celery-beat:
     restart: on-failure:5
     build:
-      # context: ${SUBMODULE_DIR}/build-templates/celery
       context: ${SUBMODULE_DIR}/build-templates/${BACKEND_BUILD_MODE}
       args:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
         CURRENT_UID: ${CURRENT_UID}
+        CURRENT_GID: ${CURRENT_GID}
     image: rapydo/${BACKEND_BUILD_MODE}:${RAPYDO_VERSION}
     entrypoint: docker-entrypoint-celery
     command: celery beat -A restapi.flask_ext.flask_celery.beat.celery_app --pidfile /tmp/celerybeat.pid --schedule /beat/celerybeat-schedule --loglevel ${LOG_LEVEL} --max-interval 30 --scheduler ${CELERY_BEAT_SCHEDULER}
@@ -419,9 +452,10 @@ services:
     working_dir: /code
     environment:
       APP_MODE: ${APP_MODE}
-      DEBUG_LEVEL: ${LOG_LEVEL}
+      LOGURU_LEVEL: ${LOG_LEVEL}
       ACTIVATE: ${ACTIVATE_CELERY_BEAT}
       CURRENT_UID: ${CURRENT_UID}
+      CURRENT_GID: ${CURRENT_GID}
       DOMAIN: ${PROJECT_DOMAIN}
       VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
       EXTENDED_PACKAGE: ${EXTENDED_PROJECT}
@@ -432,17 +466,21 @@ services:
       CELERY_BEAT_SCHEDULER: ${CELERY_BEAT_SCHEDULER}
 
       CELERY_BROKER: ${CELERY_BROKER}
-      CELERY_BROKER_HOST: ${CELERY_BROKER_HOST}
-      CELERY_BROKER_PORT: ${CELERY_BROKER_PORT}
-      CELERY_BROKER_USER: ${CELERY_BROKER_USER}
-      CELERY_BROKER_PASSWORD: ${CELERY_BROKER_PASSWORD}
-      CELERY_BROKER_VHOST: ${CELERY_BROKER_VHOST}
+      RABBITMQ_HOST: ${RABBITMQ_HOST}
+      RABBITMQ_PORT: ${RABBITMQ_PORT}
+      RABBITMQ_USER: ${RABBITMQ_USER}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+      RABBITMQ_VHOST: ${RABBITMQ_VHOST}
+      RABBITMQ_SSL_ENABLED: ${RABBITMQ_SSL_ENABLED}
+
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
 
       CELERY_BACKEND: ${CELERY_BACKEND}
-      CELERY_BACKEND_HOST: ${CELERY_BACKEND_HOST}
-      CELERY_BACKEND_PORT: ${CELERY_BACKEND_PORT}
-      CELERY_BACKEND_USER: ${CELERY_BACKEND_USER}
-      CELERY_BACKEND_PASSWORD: ${CELERY_BACKEND_PASSWORD}
+      MONGO_HOST: ${MONGO_HOST}
+      MONGO_PORT: ${MONGO_PORT}
+      MONGO_USER: ${MONGO_USER}
+      MONGO_PASSWORD: ${MONGO_PASSWORD}
 
       PUSHPIN_ENABLE: ${ACTIVATE_PUSHPIN}
       PUSHPIN_HOST: ${PUSHPIN_HOST}
@@ -465,33 +503,58 @@ services:
       - ${EXTENDED_PROJECT_PATH}/backend:/code/${EXTENDED_PROJECT}
       - ${EXTENDED_PROJECT_PATH}/project_configuration.yaml:/code/confs/extended_project_configuration.yaml
       # JWT tokens secret
-      - jwt_tokens:${JWT_APP_SECRETS}
+      # - jwt_tokens:${JWT_APP_SECRETS}
       # submodules
       - ${SUBMODULE_DIR}/http-api/restapi:${PYTHON_PATH}/restapi
-      - ${SUBMODULE_DIR}/utils/utilities:${PYTHON_PATH}/utilities
+      # Logs
+      - ${VANILLA_DIR}/data/logs:/logs
     networks:
       db_net:
       worker_net:
 
   rabbit:
     restart: on-failure:5
-    image: rabbitmq:latest
+    build:
+      context: ${SUBMODULE_DIR}/build-templates/rabbitmq
+      args:
+        RAPYDO_VERSION: ${RAPYDO_VERSION}
+        CURRENT_UID: ${CURRENT_UID}
+        CURRENT_GID: ${CURRENT_GID}
+    image: rapydo/rabbitmq:${RAPYDO_VERSION}
     hostname: rabbit
     environment:
       # CAN BE locally changed by ovverride with:
       # ACTIVATE: ${ACTIVATE_RABBIT}  
       ACTIVATE: ${ACTIVATE_CELERY}
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+      RABBITMQ_ENABLE_MANAGEMENT_PLUGIN: ${RABBITMQ_ENABLE_MANAGEMENT_PLUGIN}
+      RABBITMQ_ENABLE_SHOVEL_PLUGIN: ${RABBITMQ_ENABLE_SHOVEL_PLUGIN}
+
+      RABBITMQ_SSL_CACERTFILE: ${RABBITMQ_SSL_CERTFILE}
+      RABBITMQ_SSL_CERTFILE: ${RABBITMQ_SSL_CERTFILE}
+      RABBITMQ_SSL_KEYFILE: ${RABBITMQ_SSL_KEYFILE}
+      RABBITMQ_SSL_FAIL_IF_NO_PEER_CERT: ${RABBITMQ_SSL_FAIL_IF_NO_PEER_CERT}
+
+      RABBITMQ_MANAGEMENT_SSL_CACERTFILE: ${RABBITMQ_SSL_CERTFILE}
+      RABBITMQ_MANAGEMENT_SSL_CERTFILE: ${RABBITMQ_SSL_CERTFILE}
+      RABBITMQ_MANAGEMENT_SSL_KEYFILE: ${RABBITMQ_SSL_KEYFILE}
+      RABBITMQ_MANAGEMENT_SSL_FAIL_IF_NO_PEER_CERT: ${RABBITMQ_SSL_FAIL_IF_NO_PEER_CERT}
+
+      RABBITMQ_CTL_ERL_ARGS: "-proto_dist inet_tls"
 
     volumes:
       - rabbitdata:/var/lib/rabbitmq
+      # it is used to enable SSL in production mode
+      - letsencrypt_certs:/ssl
     networks:
       worker_net:
         aliases:
-          - ${CELERY_BROKER_HOST}
+          - ${RABBITMQ_HOST}
 
   redis:
     restart: on-failure:5
-    image: redis:5.0.6
+    image: redis:5.0.7
     command: redis-server --appendonly yes
     volumes:
       - redisdata:/data
@@ -509,17 +572,15 @@ services:
   celeryui:
     restart: on-failure:5
     build:
-      # context: ${SUBMODULE_DIR}/build-templates/celery
       context: ${SUBMODULE_DIR}/build-templates/${BACKEND_BUILD_MODE}
       args:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
         CURRENT_UID: ${CURRENT_UID}
+        CURRENT_GID: ${CURRENT_GID}
     image: rapydo/${BACKEND_BUILD_MODE}:${RAPYDO_VERSION}
     entrypoint: docker-entrypoint-celery
     # user: root
-    command: flower --basic_auth=${CELERYUI_USER}:${CELERYUI_PASSWORD} --port=${CELERYUI_PORT} --persistent --db=${CELERYUI_DBDIR}/flower -A restapi.flask_ext.flask_celery.worker.celery_app -n flower_monitor
-    # Production command:
-    # command: flower --basic_auth=${CELERYUI_USER}:${CELERYUI_PASSWORD} --port=${CELERYUI_PORT} --persistent --db=${CELERYUI_DBDIR}/flower --certfile=/ssl/real/fullchain1.pem --keyfile=/ssl/real/privkey1.pem -A restapi.flask_ext.flask_celery.worker.celery_app -n flower_monitor
+    command: flower --basic_auth=${CELERYUI_USER}:${CELERYUI_PASSWORD} --port=${CELERYUI_PORT} --persistent --db=${CELERYUI_DBDIR}/flower ${CELERYUI_SSL_OPTIONS} -A restapi.flask_ext.flask_celery.worker.celery_app -n flower_monitor
     hostname: flower
     working_dir: /code
     expose:
@@ -535,13 +596,16 @@ services:
       # From project, if any
       - ${EXTENDED_PROJECT_PATH}/backend:/code/${EXTENDED_PROJECT}
       - ${EXTENDED_PROJECT_PATH}/project_configuration.yaml:/code/confs/extended_project_configuration.yaml
-      # JWT tokens secret
-      - jwt_tokens:${JWT_APP_SECRETS}
+      # JWT tokens secret and SSL
+      # - jwt_tokens:${JWT_APP_SECRETS}
+      # it is used to enable SSL in production mode
+      - letsencrypt_certs:/ssl
       # submodules
       - ${SUBMODULE_DIR}/http-api/restapi:${PYTHON_PATH}/restapi
-      - ${SUBMODULE_DIR}/utils/utilities:${PYTHON_PATH}/utilities
+      # Logs
+      - ${VANILLA_DIR}/data/logs:/logs
+      # DB
       - flower_db:${CELERYUI_DBDIR}
-      - letsencrypt_certs:/ssl
     networks:
       db_net:
       worker_net:
@@ -549,9 +613,10 @@ services:
     #   - rabbit
     environment:
       APP_MODE: ${APP_MODE}
-      DEBUG_LEVEL: ${LOG_LEVEL}
+      LOGURU_LEVEL: ${LOG_LEVEL}
       ACTIVATE: ${ACTIVATE_CELERYUI}
       CURRENT_UID: ${CURRENT_UID}
+      CURRENT_GID: ${CURRENT_GID}
 
       VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
       EXTENDED_PACKAGE: ${EXTENDED_PROJECT}
@@ -560,17 +625,21 @@ services:
       CELERY_ENABLE: 1
 
       CELERY_BROKER: ${CELERY_BROKER}
-      CELERY_BROKER_HOST: ${CELERY_BROKER_HOST}
-      CELERY_BROKER_PORT: ${CELERY_BROKER_PORT}
-      CELERY_BROKER_USER: ${CELERY_BROKER_USER}
-      CELERY_BROKER_PASSWORD: ${CELERY_BROKER_PASSWORD}
-      CELERY_BROKER_VHOST: ${CELERY_BROKER_VHOST}
+      RABBITMQ_HOST: ${RABBITMQ_HOST}
+      RABBITMQ_PORT: ${RABBITMQ_PORT}
+      RABBITMQ_USER: ${RABBITMQ_USER}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+      RABBITMQ_VHOST: ${RABBITMQ_VHOST}
+      RABBITMQ_SSL_ENABLED: ${RABBITMQ_SSL_ENABLED}
+
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
 
       CELERY_BACKEND: ${CELERY_BACKEND}
-      CELERY_BACKEND_HOST: ${CELERY_BACKEND_HOST}
-      CELERY_BACKEND_PORT: ${CELERY_BACKEND_PORT}
-      CELERY_BACKEND_USER: ${CELERY_BACKEND_USER}
-      CELERY_BACKEND_PASSWORD: ${CELERY_BACKEND_PASSWORD}
+      MONGO_HOST: ${MONGO_HOST}
+      MONGO_PORT: ${MONGO_PORT}
+      MONGO_USER: ${MONGO_USER}
+      MONGO_PASSWORD: ${MONGO_PASSWORD}
 
       CELERYUI_PORT: ${CELERYUI_PORT}
       CELERYUI_USER: ${CELERYUI_USER}
@@ -580,7 +649,7 @@ services:
 
   swaggerui:
     # restart: no
-    image: swaggerapi/swagger-ui:latest
+    image: swaggerapi/swagger-ui:v3.24.3
     environment:
       ACTIVATE: ${ACTIVATE_SWAGGERUI}
     ports:
@@ -588,7 +657,7 @@ services:
 
   sqlalchemyui:
     # restart: no
-    image: adminer:4.7.3-standalone
+    image: adminer:4.7.5-standalone
     networks:
       db_net:
     environment:
@@ -619,13 +688,14 @@ services:
       args:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
         CURRENT_UID: ${CURRENT_UID}
-    # image: ${COMPOSE_PROJECT_NAME}/restclient:template
+        CURRENT_GID: ${CURRENT_GID}
     image: rapydo/restclient:${RAPYDO_VERSION}
     hostname: rapydo_client
     environment:
       MAIN_ENDPOINT: ${API_MAIN_ENDPOINT}
       ACTIVATE: ${ACTIVATE_RESTCLIENT}
       CURRENT_UID: ${CURRENT_UID}
+      CURRENT_GID: ${CURRENT_GID}
     volumes:
       - ${PROJECT_DIR}/project_configuration.yaml:/code/custom.yaml
       - ${SUBMODULE_DIR}/rapydo-confs/projects_defaults.yaml:/code/base.yaml
@@ -635,9 +705,7 @@ services:
   ###################
   ftp:
     restart: on-failure:5 
-    # image: stilliard/pure-ftpd:latest
     build: ${SUBMODULE_DIR}/build-templates/ftp
-    # image: ${COMPOSE_PROJECT_NAME}/ftp:template
     image: rapydo/ftp:${RAPYDO_VERSION}
     volumes:
       - pureftpd:/etc/pure-ftpd/passwd
@@ -662,12 +730,14 @@ services:
       args:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
         CURRENT_UID: ${CURRENT_UID}
+        CURRENT_GID: ${CURRENT_GID}
     image: rapydo/icat:${RAPYDO_VERSION}
     hostname: ${IRODS_HOST}
     # command: sleep infinity
     environment:
       ACTIVATE: ${ACTIVATE_ICAT}
       CURRENT_UID: ${CURRENT_UID}
+      CURRENT_GID: ${CURRENT_GID}
       POSTGRES_USER: ${ALCHEMY_USER}
       POSTGRES_PASSWORD: ${ALCHEMY_PASSWORD}
       POSTGRES_HOST: ${ALCHEMY_HOST}
@@ -689,7 +759,7 @@ services:
 
   pushpin:
     restart: always
-    image: fanout/pushpin:1.24.0
+    image: fanout/pushpin:1.25.0
     environment:
       ACTIVATE: ${ACTIVATE_PUSHPIN}
     networks:
