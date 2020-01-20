@@ -287,7 +287,7 @@ services:
   mariadb:
     # restart: always
     restart: on-failure:5
-    image: mariadb:10.4.10
+    image: mariadb:10.4.11
     volumes:
       - mariadb:/var/lib/mysql
     environment:
@@ -303,7 +303,7 @@ services:
 
   neo4j:
     restart: on-failure:5
-    image: neo4j:3.5.13
+    image: neo4j:3.5.14
     volumes:
       - graphdata:/data
       # it is used to enable SSL in production mode
@@ -327,7 +327,7 @@ services:
 
   mongodb:
     restart: on-failure:5
-    image: mongo:4.2.1
+    image: mongo:4.2.2
     volumes:
       - mongodata:/data/db
     networks:
