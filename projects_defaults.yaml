@@ -146,7 +146,7 @@ variables:
     API_MAIN_ENDPOINT: status
     PYTHON_MAIN_FILE: __main__
     # Path to dist-packages in backend/celery containers
-    PYTHON_PATH: /usr/local/lib/python3.7/dist-packages
+    PYTHON_PATH: /usr/local/lib/python3.8/dist-packages
     # in backendirods it is:
     # PYTHON_PATH: /usr/local/lib/python3.6/dist-packages/
     # DB_SUBNET: 172.1.0.0
