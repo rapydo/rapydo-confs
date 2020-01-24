@@ -37,8 +37,8 @@ variables:
 
   backend:
     credentials:
-      username: user@nomail.org
-      password: test
+      # username: user@nomail.org
+      # password: test
       roles:
         user: normal_user
         internal: staff_user
@@ -270,8 +270,8 @@ variables:
     # AUTH_SECOND_FACTOR_AUTHENTICATION: TOTP
     DEFAULT_DHLEN: 2048
 
-    DEFAULT_USERNAME: "user@nomail.org"    
-    DEFAULT_PASSWORD: "test"  
+    AUTH_DEFAULT_USERNAME: "user@nomail.org"    
+    AUTH_DEFAULT_PASSWORD: "test"  
 
 project:
   title: REST HTTP-API server with Python, Flask and Docker
