@@ -166,8 +166,8 @@ variables:
     ALCHEMY_HOST: psqldb.dockerized.io
     ALCHEMY_PORT: 5432
     ALCHEMY_DBTYPE: 'postgresql'
-    ALCHEMY_USER: "**PLACEHOLDER**"
-    ALCHEMY_PASSWORD: "**PLACEHOLDER**"
+    ALCHEMY_USER: "sql"  # This default is invalidated in production mode
+    ALCHEMY_PASSWORD: "D3vMode!"  # This default is invalidated in production mode
     ALCHEMY_DB: SQL_API
     ALCHEMY_DBS: SQL_API
     ALCHEMY_POOLSIZE: 30 # or 20 # (default is 5)
@@ -176,7 +176,7 @@ variables:
     GRAPHDB_BOLT_PORT: 7687
     GRAPHDB_AUTOINDEXING: True
     GRAPHDB_USER: neo4j
-    GRAPHDB_PASSWORD: "**PLACEHOLDER**"
+    GRAPHDB_PASSWORD: "D3vMode!"  # This default is invalidated in production mode
     NEO4J_WEB_INTERFACE_PORT: 7474  # changed to 7173 in production mode
     NEO4J_SSL_PATH: /ssl_no_used # changed to /ssl in production mode
 
@@ -201,8 +201,8 @@ variables:
     RABBITMQ_HOST: rabbit.dockerized.io
     RABBITMQ_PORT: 5672
     RABBITMQ_VHOST:
-    RABBITMQ_USER: "**PLACEHOLDER**"
-    RABBITMQ_PASSWORD: "**PLACEHOLDER**"
+    RABBITMQ_USER: "rabbit"  # This default is invalidated in production mode
+    RABBITMQ_PASSWORD: "D3vMode!"  # This default is invalidated in production mode
     RABBITMQ_ENABLE_MANAGEMENT_PLUGIN: 0
     RABBITMQ_MANAGEMENT_PORT: 15672
     RABBITMQ_ENABLE_SHOVEL_PLUGIN: 0
@@ -219,8 +219,8 @@ variables:
     CELERY_BACKEND: RABBIT
 
     # Flower
-    CELERYUI_USER: "**PLACEHOLDER**"
-    CELERYUI_PASSWORD: "**PLACEHOLDER**"
+    CELERYUI_USER: "flower"  # This default is invalidated in production mode
+    CELERYUI_PASSWORD: "D3vMode!"  # This default is invalidated in production mode
     CELERYUI_DBDIR: /var/flower
     CELERYUI_PORT: 5555
     CELERYUI_SSL_OPTIONS:
