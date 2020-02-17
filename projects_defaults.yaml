@@ -198,9 +198,10 @@ variables:
     ELASTIC_HOST: elastic.dockerized.io
     ELASTIC_PORT: 9200
 
+    # Used by celery
     RABBITMQ_HOST: rabbit.dockerized.io
     RABBITMQ_PORT: 5672
-    RABBITMQ_VHOST:
+    RABBITMQ_VHOST: '/'
     RABBITMQ_USER: "rabbit"  # This default is invalidated in production mode
     RABBITMQ_PASSWORD: "D3vMode!"  # This default is invalidated in production mode
     RABBITMQ_ENABLE_MANAGEMENT_PLUGIN: 0
