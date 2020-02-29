@@ -211,7 +211,7 @@ services:
         CURRENT_UID: ${CURRENT_UID}
         CURRENT_GID: ${CURRENT_GID}
     image: rapydo/proxy:${RAPYDO_VERSION}
-    hostname: reverseproxy
+    hostname: proxy
     volumes:
       - ${SUBMODULE_DIR}/rapydo-confs/confs/nginx:/etc/nginx/sites-enabled-templates
       # - ${SUBMODULE_DIR}/rapydo-confs/confs/nginx/${NGINX_PROD_CONF}:/etc/nginx/sites-enabled-templates/production
@@ -252,7 +252,7 @@ services:
         CURRENT_GID: ${CURRENT_GID}
     image: rapydo/proxy:${RAPYDO_VERSION}
     command: updatecertificates
-    hostname: reverseproxy
+    hostname: proxy
     volumes:
       - letsencrypt_certs:/etc/letsencrypt
       - ssl_dhparam:/etc/nginx/ssl/
@@ -456,6 +456,7 @@ services:
         CURRENT_UID: ${CURRENT_UID}
         CURRENT_GID: ${CURRENT_GID}
     image: rapydo/${BACKEND_BUILD_MODE}:${RAPYDO_VERSION}
+    hostname: celery-beat
     entrypoint: docker-entrypoint-celery
     command: celery beat -A restapi.flask_ext.flask_celery.beat.celery_app --pidfile /tmp/celerybeat.pid --schedule /beat/celerybeat-schedule --loglevel ${LOG_LEVEL} --max-interval 30 --scheduler ${CELERY_BEAT_SCHEDULER}
     
