@@ -275,6 +275,8 @@ variables:
     AUTH_DEFAULT_USERNAME: "user@nomail.org"    
     AUTH_DEFAULT_PASSWORD: "test"  
 
+    NETWORK_MTU: 1500
+
 project:
   title: REST HTTP-API server with Python, Flask and Docker
   description: No description yet
