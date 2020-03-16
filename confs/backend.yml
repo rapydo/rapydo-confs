@@ -35,7 +35,10 @@ volumes:
 # #####################
 
 networks:
-  # default:
+  default:
+    driver_opts:
+      com.docker.network.driver.mtu: ${NETWORK_MTU}
+
   i_net:
     driver_opts:
       com.docker.network.driver.mtu: ${NETWORK_MTU}
