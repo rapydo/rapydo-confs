@@ -80,12 +80,6 @@ variables:
       path: $$baseconf
       mandatory: True
       if: $$angularjs
-    logging:
-      file: logging.yml
-      base: True
-      path: $$baseconf
-      mandatory: True
-      if: $$logging
     extended-commons:
       file: commons.yml
       base: False
