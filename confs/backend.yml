@@ -35,13 +35,34 @@ volumes:
 # #####################
 
 networks:
-  # default:
+  default:
+    driver_opts:
+      com.docker.network.driver.mtu: ${NETWORK_MTU}
+
   i_net:
+    driver_opts:
+      com.docker.network.driver.mtu: ${NETWORK_MTU}
+
   app_net:
+    driver_opts:
+      com.docker.network.driver.mtu: ${NETWORK_MTU}
+
   proxy_net:
+    driver_opts:
+      com.docker.network.driver.mtu: ${NETWORK_MTU}
+
   worker_net:
+    driver_opts:
+      com.docker.network.driver.mtu: ${NETWORK_MTU}
+
   ftp_net:
+    driver_opts:
+      com.docker.network.driver.mtu: ${NETWORK_MTU}
+
   db_net:
+    driver_opts:
+      com.docker.network.driver.mtu: ${NETWORK_MTU}
+
     # # driver: bridge
     # ipam:
     #   driver: default
@@ -105,6 +126,8 @@ services:
       AUTH_DISABLE_UNUSED_CREDENTIALS_AFTER: ${AUTH_DISABLE_UNUSED_CREDENTIALS_AFTER}
       AUTH_MAX_LOGIN_ATTEMPTS: ${AUTH_MAX_LOGIN_ATTEMPTS}
       AUTH_SECOND_FACTOR_AUTHENTICATION: ${AUTH_SECOND_FACTOR_AUTHENTICATION}
+      AUTH_DEFAULT_USERNAME: ${AUTH_DEFAULT_USERNAME} 
+      AUTH_DEFAULT_PASSWORD: ${AUTH_DEFAULT_PASSWORD} 
       TOKEN_SHORT_TTL: ${TOKEN_SHORT_TTL}
       TOKEN_LONG_TTL: ${TOKEN_LONG_TTL}
       ALLOW_ACCESS_TOKEN_PARAMETER: ${ALLOW_ACCESS_TOKEN_PARAMETER}
@@ -121,35 +144,43 @@ services:
       ALCHEMY_POOLSIZE: ${ALCHEMY_POOLSIZE}
       ALCHEMY_DBTYPE: ${ALCHEMY_DBTYPE}
 
-      GRAPHDB_ENABLE: ${ACTIVATE_NEO4J}
-      GRAPHDB_HOST: ${GRAPHDB_HOST}
-      GRAPHDB_PORT: ${GRAPHDB_BOLT_PORT}
-      GRAPHDB_PASSWORD: ${GRAPHDB_PASSWORD}
-      GRAPHDB_AUTOINDEXING: ${GRAPHDB_AUTOINDEXING}
+      NEO4J_ENABLE: ${ACTIVATE_NEO4J}
+      NEO4J_HOST: ${NEO4J_HOST}
+      NEO4J_PORT: ${NEO4J_BOLT_PORT}
+      NEO4J_PASSWORD: ${NEO4J_PASSWORD}
+      NEO4J_AUTOINDEXING: ${NEO4J_AUTOINDEXING}
 
       MONGO_ENABLE: ${ACTIVATE_MONGODB}
       MONGO_HOST: ${MONGO_HOST}
       MONGO_PORT: ${MONGO_PORT}
+      MONGO_USER: ${MONGO_USER}
+      MONGO_PASSWORD: ${MONGO_PASSWORD}
 
       CELERY_ENABLE: ${ACTIVATE_CELERY}
-
       CELERY_BROKER: ${CELERY_BROKER}
+      CELERY_BACKEND: ${CELERY_BACKEND}
+      CELERY_BEAT_ENABLED: ${ACTIVATE_CELERY_BEAT}
+
+      # For celery
       RABBITMQ_HOST: ${RABBITMQ_HOST}
       RABBITMQ_PORT: ${RABBITMQ_PORT}
       RABBITMQ_USER: ${RABBITMQ_USER}
       RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
       RABBITMQ_VHOST: ${RABBITMQ_VHOST}
       RABBITMQ_SSL_ENABLED: ${RABBITMQ_SSL_ENABLED}
+
+      # Rabbit service
+      RABBITMQ_ENABLE: ${ACTIVATE_RABBIT}
+      # RABBITMQ_ALT_PARAMETERS: 'RABBIT'
+      # RABBIT_HOST: ${RABBIT_HOST}
+      # RABBIT_PORT: ${RABBIT_PORT}
+      # RABBIT_USER: ${RABBIT_USER}
+      # RABBIT_PASSWORD: ${RABBIT_PASSWORD}
+      # RABBIT_VHOST: ${RABBIT_VHOST}
+      # RABBIT_SSL_ENABLED: ${RABBIT_SSL_ENABLED}
+
       REDIS_HOST: ${REDIS_HOST}
       REDIS_PORT: ${REDIS_PORT}
-
-      CELERY_BACKEND: ${CELERY_BACKEND}
-      MONGO_HOST: ${MONGO_HOST}
-      MONGO_PORT: ${MONGO_PORT}
-      MONGO_USER: ${MONGO_USER}
-      MONGO_PASSWORD: ${MONGO_PASSWORD}
-
-      CELERY_BEAT_ENABLED: ${ACTIVATE_CELERY_BEAT}
 
       PUSHPIN_ENABLE: ${ACTIVATE_PUSHPIN}
       PUSHPIN_HOST: ${PUSHPIN_HOST}
@@ -202,7 +233,7 @@ services:
         CURRENT_UID: ${CURRENT_UID}
         CURRENT_GID: ${CURRENT_GID}
     image: rapydo/proxy:${RAPYDO_VERSION}
-    hostname: reverseproxy
+    hostname: proxy
     volumes:
       - ${SUBMODULE_DIR}/rapydo-confs/confs/nginx:/etc/nginx/sites-enabled-templates
       # - ${SUBMODULE_DIR}/rapydo-confs/confs/nginx/${NGINX_PROD_CONF}:/etc/nginx/sites-enabled-templates/production
@@ -227,6 +258,7 @@ services:
       DEFAULT_DHLEN: ${DEFAULT_DHLEN}
       FRONTEND: ${FRONTEND_FRAMEWORK} 
       UNSAFE_EVAL: ${SET_UNSAFE_EVAL}
+      CORS_ALLOW_ALL_ORIGINS: ${CORS_ALLOW_ALL_ORIGINS}
       CSP_SCRIPT_SRC: ${SET_CSP_SCRIPT_SRC}
       CSP_IMG_SRC: ${SET_CSP_IMG_SRC}
     depends_on:
@@ -243,7 +275,7 @@ services:
         CURRENT_GID: ${CURRENT_GID}
     image: rapydo/proxy:${RAPYDO_VERSION}
     command: updatecertificates
-    hostname: reverseproxy
+    hostname: proxy
     volumes:
       - letsencrypt_certs:/etc/letsencrypt
       - ssl_dhparam:/etc/nginx/ssl/
@@ -287,7 +319,7 @@ services:
   mariadb:
     # restart: always
     restart: on-failure:5
-    image: mariadb:10.4.10
+    image: mariadb:10.4.11
     volumes:
       - mariadb:/var/lib/mysql
     environment:
@@ -303,7 +335,7 @@ services:
 
   neo4j:
     restart: on-failure:5
-    image: neo4j:3.5.13
+    image: neo4j:3.5.14
     volumes:
       - graphdata:/data
       # it is used to enable SSL in production mode
@@ -311,13 +343,13 @@ services:
     networks:
       db_net:
         aliases:
-          - ${GRAPHDB_HOST}
+          - ${NEO4J_HOST}
     environment:
       ACTIVATE: ${ACTIVATE_NEO4J}
-      # Note: once changed this, also set GRAPHDB_PASSWORD in backend service
-      NEO4J_AUTH: ${GRAPHDB_USER}/${GRAPHDB_PASSWORD}
-      NEO4J_USERNAME: ${GRAPHDB_USER}
-      NEO4J_PASSWORD: ${GRAPHDB_PASSWORD}
+      # Note: once changed this, also set NEO4J_PASSWORD in backend service
+      NEO4J_AUTH: ${NEO4J_USER}/${NEO4J_PASSWORD}
+      NEO4J_USERNAME: ${NEO4J_USER}
+      NEO4J_PASSWORD: ${NEO4J_PASSWORD}
       SECURE_FILE_PERMISSIONS: "yes"
       # NEO4J_dbms_memory_pagecache_size: 2048M
       # NEO4J_dbms_memory_heap_maxSize: 4096M
@@ -327,7 +359,7 @@ services:
 
   mongodb:
     restart: on-failure:5
-    image: mongo:4.2.1
+    image: mongo:4.2.2
     volumes:
       - mongodata:/data/db
     networks:
@@ -377,6 +409,8 @@ services:
       RABBITMQ_VHOST: ${RABBITMQ_VHOST}
       RABBITMQ_SSL_ENABLED: ${RABBITMQ_SSL_ENABLED}
 
+      RABBITMQ_ENABLE: ${ACTIVATE_RABBIT}
+
       REDIS_HOST: ${REDIS_HOST}
       REDIS_PORT: ${REDIS_PORT}
 
@@ -395,10 +429,10 @@ services:
       ALCHEMY_POOLSIZE: ${ALCHEMY_POOLSIZE}
       ALCHEMY_DBTYPE: ${ALCHEMY_DBTYPE}
 
-      GRAPHDB_ENABLE: ${ACTIVATE_NEO4J}
-      GRAPHDB_HOST: ${GRAPHDB_HOST}
-      GRAPHDB_PORT: ${GRAPHDB_BOLT_PORT}
-      GRAPHDB_PASSWORD: ${GRAPHDB_PASSWORD}
+      NEO4J_ENABLE: ${ACTIVATE_NEO4J}
+      NEO4J_HOST: ${NEO4J_HOST}
+      NEO4J_PORT: ${NEO4J_BOLT_PORT}
+      NEO4J_PASSWORD: ${NEO4J_PASSWORD}
 
       MONGO_ENABLE: ${ACTIVATE_MONGODB}
       MONGO_HOST: ${MONGO_HOST}
@@ -445,6 +479,7 @@ services:
         CURRENT_UID: ${CURRENT_UID}
         CURRENT_GID: ${CURRENT_GID}
     image: rapydo/${BACKEND_BUILD_MODE}:${RAPYDO_VERSION}
+    hostname: celery-beat
     entrypoint: docker-entrypoint-celery
     command: celery beat -A restapi.flask_ext.flask_celery.beat.celery_app --pidfile /tmp/celerybeat.pid --schedule /beat/celerybeat-schedule --loglevel ${LOG_LEVEL} --max-interval 30 --scheduler ${CELERY_BEAT_SCHEDULER}
     
@@ -472,6 +507,8 @@ services:
       RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
       RABBITMQ_VHOST: ${RABBITMQ_VHOST}
       RABBITMQ_SSL_ENABLED: ${RABBITMQ_SSL_ENABLED}
+
+      RABBITMQ_ENABLE: ${ACTIVATE_RABBIT}
 
       REDIS_HOST: ${REDIS_HOST}
       REDIS_PORT: ${REDIS_PORT}
@@ -524,8 +561,8 @@ services:
     hostname: rabbit
     environment:
       # CAN BE locally changed by ovverride with:
-      # ACTIVATE: ${ACTIVATE_RABBIT}  
-      ACTIVATE: ${ACTIVATE_CELERY}
+      ACTIVATE: ${ACTIVATE_RABBIT}  
+      # ACTIVATE: ${ACTIVATE_CELERY}
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
       RABBITMQ_ENABLE_MANAGEMENT_PLUGIN: ${RABBITMQ_ENABLE_MANAGEMENT_PLUGIN}
@@ -632,6 +669,8 @@ services:
       RABBITMQ_VHOST: ${RABBITMQ_VHOST}
       RABBITMQ_SSL_ENABLED: ${RABBITMQ_SSL_ENABLED}
 
+      RABBITMQ_ENABLE: ${ACTIVATE_RABBIT}
+
       REDIS_HOST: ${REDIS_HOST}
       REDIS_PORT: ${REDIS_PORT}
 
@@ -678,27 +717,6 @@ services:
       db_net:
     ports:
       - 7777:8081
-
-  #############
-  # REST API client (wget, curl, httpie, http-prompt)
-  restclient:
-    # restart: no
-    build:
-      context: ${SUBMODULE_DIR}/build-templates/restclient
-      args:
-        RAPYDO_VERSION: ${RAPYDO_VERSION}
-        CURRENT_UID: ${CURRENT_UID}
-        CURRENT_GID: ${CURRENT_GID}
-    image: rapydo/restclient:${RAPYDO_VERSION}
-    hostname: rapydo_client
-    environment:
-      MAIN_ENDPOINT: ${API_MAIN_ENDPOINT}
-      ACTIVATE: ${ACTIVATE_RESTCLIENT}
-      CURRENT_UID: ${CURRENT_UID}
-      CURRENT_GID: ${CURRENT_GID}
-    volumes:
-      - ${PROJECT_DIR}/project_configuration.yaml:/code/custom.yaml
-      - ${SUBMODULE_DIR}/rapydo-confs/projects_defaults.yaml:/code/base.yaml
 
   ###################
   ### FTP SERVER  ###
