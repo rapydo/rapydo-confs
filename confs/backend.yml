@@ -98,6 +98,9 @@ services:
     hostname: backend-server
     privileged: ${DOCKER_PRIVILEGED_MODE}
     environment:
+
+      WRAP_RESPONSE: ${WRAP_RESPONSE}
+
       ACTIVATE: ${ACTIVATE_BACKEND}
       APP_MODE: ${APP_MODE}
       NGINX_ACTIVE: ${ENABLE_BACKEND_NGINX_ACTIVE}

@@ -271,6 +271,8 @@ variables:
 
     NETWORK_MTU: 1500
 
+    WRAP_RESPONSE: 1
+
 project:
   title: REST HTTP-API server with Python, Flask and Docker
   description: No description yet
