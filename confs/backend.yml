@@ -338,7 +338,7 @@ services:
 
   neo4j:
     restart: on-failure:5
-    image: neo4j:3.5.14
+    image: neo4j:3.5.16
     volumes:
       - graphdata:/data
       # it is used to enable SSL in production mode
