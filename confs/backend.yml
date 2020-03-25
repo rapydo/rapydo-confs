@@ -322,7 +322,7 @@ services:
   mariadb:
     # restart: always
     restart: on-failure:5
-    image: mariadb:10.4.11
+    image: mariadb:10.5.1
     volumes:
       - mariadb:/var/lib/mysql
     environment:
