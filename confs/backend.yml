@@ -362,7 +362,7 @@ services:
 
   mongodb:
     restart: on-failure:5
-    image: mongo:4.2.2
+    image: mongo:4.2.3
     volumes:
       - mongodata:/data/db
     networks:
