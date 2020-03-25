@@ -594,7 +594,7 @@ services:
 
   redis:
     restart: on-failure:5
-    image: redis:5.0.7
+    image: redis:5.0.8
     command: redis-server --appendonly yes
     volumes:
       - redisdata:/data
