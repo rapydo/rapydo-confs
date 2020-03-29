@@ -156,7 +156,7 @@ variables:
     JWT_APP_SECRETS: /jwt_tokens
     FULL_JWT: true
 
-    # SQLAlchemy
+    ALCHEMY_ENABLE_CONNECTOR: True
     ALCHEMY_HOST: psqldb.dockerized.io
     ALCHEMY_PORT: 5432
     ALCHEMY_DBTYPE: 'postgresql'
@@ -166,6 +166,7 @@ variables:
     ALCHEMY_DBS: SQL_API
     ALCHEMY_POOLSIZE: 30 # or 20 # (default is 5)
 
+    NEO4J_ENABLE_CONNECTOR: True
     NEO4J_HOST: matrix.dockerized.io
     NEO4J_BOLT_PORT: 7687
     NEO4J_AUTOINDEXING: True
@@ -174,6 +175,7 @@ variables:
     NEO4J_WEB_INTERFACE_PORT: 7474  # changed to 7173 in production mode
     NEO4J_SSL_PATH: /ssl_no_used # changed to /ssl in production mode
 
+    IRODS_ENABLE_CONNECTOR: True
     IRODS_HOST: rodserver.dockerized.io
     IRODS_PORT: 1247
     IRODS_DB: ICAT
@@ -183,6 +185,7 @@ variables:
     IRODS_USER: "**PLACEHOLDER**"
     IRODS_PASSWORD: "**PLACEHOLDER**"
 
+    MONGO_ENABLE_CONNECTOR: True
     MONGO_HOST: mongo.dockerized.io
     MONGO_PORT: 27017
     MONGO_DATABASE: test
@@ -192,7 +195,7 @@ variables:
     ELASTIC_HOST: elastic.dockerized.io
     ELASTIC_PORT: 9200
 
-    # Used by celery
+    RABBITMQ_ENABLE_CONNECTOR: True
     RABBITMQ_HOST: rabbit.dockerized.io
     RABBITMQ_PORT: 5672
     RABBITMQ_VHOST: '/'
@@ -210,8 +213,10 @@ variables:
     REDIS_PORT: 6379
 
     # Celery
+    CELERY_ENABLE_CONNECTOR: True
     CELERY_BROKER: RABBIT
     CELERY_BACKEND: RABBIT
+    CELERY_BEAT_ENABLE_CONNECTOR: True
 
     # Flower
     CELERYUI_USER: "flower"  # This default is invalidated in production mode
@@ -220,6 +225,7 @@ variables:
     CELERYUI_PORT: 5555
     CELERYUI_SSL_OPTIONS:
 
+    PUSHPIN_ENABLE_CONNECTOR: True
     PUSHPIN_HOST: pushpin.dockerized.io
     PUSHPIN_PORT: 7999
     PUSHPIN_CONTROL_PORT: 5561
