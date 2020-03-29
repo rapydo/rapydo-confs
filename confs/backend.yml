@@ -166,8 +166,8 @@ services:
       CELERY_ENABLE_CONNECTOR: ${CELERY_ENABLE_CONNECTOR}
       CELERY_BROKER: ${CELERY_BROKER}
       CELERY_BACKEND: ${CELERY_BACKEND}
-      CELERY_BEAT_ENABLED: ${ACTIVATE_CELERY_BEAT}
-      CELERY_BEAT_ENABLE_CONNECTOR: ${CELERY_BEAT_ENABLE_CONNECTOR}
+      CELERYBEAT_ENABLED: ${ACTIVATE_CELERYBEAT}
+      CELERYBEAT_ENABLE_CONNECTOR: ${CELERYBEAT_ENABLE_CONNECTOR}
 
       RABBITMQ_ENABLE: ${ACTIVATE_RABBIT}
       RABBITMQ_ENABLE_CONNECTOR: ${RABBITMQ_ENABLE_CONNECTOR}
@@ -383,7 +383,7 @@ services:
         CURRENT_GID: ${CURRENT_GID}
     image: rapydo/${BACKEND_BUILD_MODE}:${RAPYDO_VERSION}
     entrypoint: docker-entrypoint-celery
-    command: celery worker --concurrency=1 -Ofair -A restapi.flask_ext.flask_celery.worker.celery_app -Q celery -n ${COMPOSE_PROJECT_NAME}-%h
+    command: celery worker --concurrency=1 -Ofair -A restapi.connectors.celery.worker.celery_app -Q celery -n ${COMPOSE_PROJECT_NAME}-%h
     
     # user: developer
     working_dir: /code
@@ -399,7 +399,7 @@ services:
       JWT_APP_SECRETS: ${JWT_APP_SECRETS}
 
       CELERY_ENABLE: 1
-      CELERY_BEAT_ENABLED: ${ACTIVATE_CELERY_BEAT}
+      CELERYBEAT_ENABLED: ${ACTIVATE_CELERYBEAT}
 
       CELERY_BROKER: ${CELERY_BROKER}
       RABBITMQ_HOST: ${RABBITMQ_HOST}
@@ -487,14 +487,14 @@ services:
     image: rapydo/${BACKEND_BUILD_MODE}:${RAPYDO_VERSION}
     hostname: celery-beat
     entrypoint: docker-entrypoint-celery
-    command: celery beat -A restapi.flask_ext.flask_celery.beat.celery_app --pidfile /tmp/celerybeat.pid --schedule /beat/celerybeat-schedule --loglevel ${LOG_LEVEL} --max-interval 30 --scheduler ${CELERY_BEAT_SCHEDULER}
+    command: celery beat -A restapi.connectors.celery.beat.celery_app --pidfile /tmp/celerybeat.pid --schedule /beat/celerybeat-schedule --loglevel ${LOG_LEVEL} --max-interval 30 --scheduler ${CELERYBEAT_SCHEDULER}
     
     # user: developer
     working_dir: /code
     environment:
       APP_MODE: ${APP_MODE}
       LOGURU_LEVEL: ${LOG_LEVEL}
-      ACTIVATE: ${ACTIVATE_CELERY_BEAT}
+      ACTIVATE: ${ACTIVATE_CELERYBEAT}
       CURRENT_UID: ${CURRENT_UID}
       CURRENT_GID: ${CURRENT_GID}
       DOMAIN: ${PROJECT_DOMAIN}
@@ -503,8 +503,8 @@ services:
       JWT_APP_SECRETS: ${JWT_APP_SECRETS}
 
       CELERY_ENABLE: 1
-      CELERY_BEAT_ENABLED: ${ACTIVATE_CELERY_BEAT}
-      CELERY_BEAT_SCHEDULER: ${CELERY_BEAT_SCHEDULER}
+      CELERYBEAT_ENABLED: ${ACTIVATE_CELERYBEAT}
+      CELERYBEAT_SCHEDULER: ${CELERYBEAT_SCHEDULER}
 
       CELERY_BROKER: ${CELERY_BROKER}
       RABBITMQ_HOST: ${RABBITMQ_HOST}
@@ -623,7 +623,7 @@ services:
     image: rapydo/${BACKEND_BUILD_MODE}:${RAPYDO_VERSION}
     entrypoint: docker-entrypoint-celery
     # user: root
-    command: flower --basic_auth=${CELERYUI_USER}:${CELERYUI_PASSWORD} --port=${CELERYUI_PORT} --persistent --db=${CELERYUI_DBDIR}/flower ${CELERYUI_SSL_OPTIONS} -A restapi.flask_ext.flask_celery.worker.celery_app -n flower_monitor
+    command: flower --basic_auth=${CELERYUI_USER}:${CELERYUI_PASSWORD} --port=${CELERYUI_PORT} --persistent --db=${CELERYUI_DBDIR}/flower ${CELERYUI_SSL_OPTIONS} -A restapi.connectors.celery.worker.celery_app -n flower_monitor
     hostname: flower
     working_dir: /code
     expose:
