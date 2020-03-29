@@ -123,7 +123,7 @@ variables:
     ACTIVATE_ICAT: 0
     ACTIVATE_CELERY: 0
     ACTIVATE_CELERYUI: 0
-    ACTIVATE_CELERY_BEAT: 0
+    ACTIVATE_CELERYBEAT: 0
     ACTIVATE_FTP: 0
     ACTIVATE_PUSHPIN: 0
 
@@ -216,7 +216,7 @@ variables:
     CELERY_ENABLE_CONNECTOR: True
     CELERY_BROKER: RABBIT
     CELERY_BACKEND: RABBIT
-    CELERY_BEAT_ENABLE_CONNECTOR: True
+    CELERYBEAT_ENABLE_CONNECTOR: True
 
     # Flower
     CELERYUI_USER: "flower"  # This default is invalidated in production mode
@@ -241,7 +241,7 @@ variables:
     SET_UNSAFE_EVAL: "'unsafe-eval'"
     SET_CSP_SCRIPT_SRC:
     SET_CSP_IMG_SRC:
-    CORS_ALLOW_ALL_ORIGINS: 0
+    CORS_ALLOW_ALL_ORIGINS: 1
 
     SMTP_ADMIN: 
     SMTP_NOREPLY:
