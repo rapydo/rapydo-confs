@@ -160,7 +160,7 @@ variables:
     ALCHEMY_HOST: psqldb.dockerized.io
     ALCHEMY_PORT: 5432
     ALCHEMY_DBTYPE: 'postgresql'
-    ALCHEMY_USER: "sql"  # This default is invalidated in production mode
+    ALCHEMY_USER: "sqluser"  # This default is invalidated in production mode
     ALCHEMY_PASSWORD: "D3vMode!"  # This default is invalidated in production mode
     ALCHEMY_DB: SQL_API
     ALCHEMY_DBS: SQL_API
@@ -180,10 +180,16 @@ variables:
     IRODS_PORT: 1247
     IRODS_DB: ICAT
     IRODS_AUTHSCHEME:   # to be auto-detected
+    # DN of your iRODS host with GSI plugin installed
+    IRODS_DN:
+    IRODS_USER: irods
+    IRODS_DEFAULT_ADMIN_USER: rodsminer
+    IRODS_ZONE: tempZone
+    IRODS_HOME: home
     IRODS_ANONYMOUS: 0
-    IRODS_ZONE: "**PLACEHOLDER**"
-    IRODS_USER: "**PLACEHOLDER**"
-    IRODS_PASSWORD: "**PLACEHOLDER**"
+    IRODS_GUEST_USER: guest
+    # NOTE: this must match ALCHEMY_PASSWORD when running in development mode
+    IRODS_PASSWORD: "D3vMode!"  # This default is invalidated in production mode
 
     MONGO_ENABLE_CONNECTOR: True
     MONGO_HOST: mongo.dockerized.io
