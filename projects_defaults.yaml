@@ -155,6 +155,7 @@ variables:
     LOG_LEVEL: DEBUG  # log level for backend and celery
     JWT_APP_SECRETS: /jwt_tokens
     FULL_JWT: true
+    UPLOAD_PATH: /uploads
 
     ALCHEMY_ENABLE_CONNECTOR: True
     ALCHEMY_HOST: psqldb.dockerized.io

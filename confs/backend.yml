@@ -115,6 +115,7 @@ services:
       VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
       EXTENDED_PACKAGE: ${EXTENDED_PROJECT}
       JWT_APP_SECRETS: ${JWT_APP_SECRETS}
+      UPLOAD_PATH: ${UPLOAD_PATH}
       DOMAIN: ${PROJECT_DOMAIN}
 
       # enable the basic /api/login method
