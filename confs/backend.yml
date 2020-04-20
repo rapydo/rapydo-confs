@@ -195,6 +195,7 @@ services:
       SMTP_PASSWORD: ${SMTP_PASSWORD}
 
       SENTRY_URL: ${SENTRY_URL}
+      RUN_SCHEMATHESIS: ${RUN_SCHEMATHESIS}
 
     volumes:
       # configuration files

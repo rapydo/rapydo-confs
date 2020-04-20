@@ -134,6 +134,7 @@ variables:
     ACTIVATE_RESTCLIENT: 0
 
     ACTIVATE_TESTING_MODE: 0
+    RUN_SCHEMATHESIS: 1
 
     APP_MODE: debug
     FLASK_HOST: apiserver.dockerized.io
