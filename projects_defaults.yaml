@@ -253,12 +253,11 @@ variables:
 
     SMTP_ADMIN: 
     SMTP_NOREPLY:
-    SMTP_HOST: smtp.dockerized.io
+    SMTP_HOST:
     SMTP_PORT:
     SMTP_USERNAME:
     SMTP_PASSWORD:
 
-    FRONTEND_HOST: frontend.dockerized.io
     REGISTRATION_NOTIFICATIONS: true
     SENTRY_URL:
     GA_TRACKING_CODE:
