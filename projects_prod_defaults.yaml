@@ -4,7 +4,6 @@ variables:
 
     ACTIVATE_PROXY: 1
     APP_MODE: production
-    ENABLE_BACKEND_NGINX_ACTIVE: "True"
     # used to reach the backend from outer network
     # in production it match the with proxy ssl port (${PROXY_PROD_PORT})
     BACKEND_API_PORT: 443

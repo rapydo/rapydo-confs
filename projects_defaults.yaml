@@ -152,7 +152,6 @@ variables:
     BACKEND_URI: ''
     FRONTEND_PREFIX: /
     BACKEND_PREFIX: ''
-    ENABLE_BACKEND_NGINX_ACTIVE:
     LOG_LEVEL: DEBUG  # log level for backend and celery
     JWT_APP_SECRETS: /jwt_tokens
     FULL_JWT: true
