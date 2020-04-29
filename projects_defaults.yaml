@@ -107,7 +107,7 @@ variables:
 
   env:
 
-    FRONTEND_FRAMEWORK: None
+    FRONTEND_FRAMEWORK: nofrontend
 
     ACTIVATE_BACKEND: 1
     ACTIVATE_PROXY: 0
