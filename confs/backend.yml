@@ -39,10 +39,6 @@ networks:
     driver_opts:
       com.docker.network.driver.mtu: ${NETWORK_MTU}
 
-  i_net:
-    driver_opts:
-      com.docker.network.driver.mtu: ${NETWORK_MTU}
-
   app_net:
     driver_opts:
       com.docker.network.driver.mtu: ${NETWORK_MTU}
@@ -800,7 +796,7 @@ services:
 
       IRODS_ANONYMOUS: ${IRODS_ANONYMOUS}
     networks:
-      i_net:
+      app_net:
         aliases:
           - ${IRODS_HOST}
       db_net:
