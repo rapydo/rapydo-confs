@@ -159,7 +159,7 @@ variables:
     UPLOAD_PATH: /uploads
 
     ALCHEMY_ENABLE_CONNECTOR: True
-    ALCHEMY_HOST: psqldb.dockerized.io
+    ALCHEMY_HOST: sql.dockerized.io
     ALCHEMY_PORT: 5432
     ALCHEMY_DBTYPE: 'postgresql'
     ALCHEMY_USER: "sqluser"  # This default is invalidated in production mode
