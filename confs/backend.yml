@@ -287,7 +287,6 @@ services:
     hostname: proxy
     volumes:
       - ${SUBMODULE_DIR}/rapydo-confs/confs/nginx/maintenance.conf:/etc/nginx/sites-enabled/maintenance.conf
-      - ${SUBMODULE_DIR}/rapydo-confs/confs/nginx/maintenance.html:/var/www/index.html
       - letsencrypt_certs:/etc/letsencrypt
       - ssl_dhparam:/etc/nginx/ssl/
     networks:
