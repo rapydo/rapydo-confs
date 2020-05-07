@@ -283,7 +283,7 @@ services:
         CURRENT_UID: ${CURRENT_UID}
         CURRENT_GID: ${CURRENT_GID}
     image: rapydo/proxy:${RAPYDO_VERSION}
-    entrypoint: maintenance-entrypoint
+    entrypoint: docker-entrypoint-maintenanance
     hostname: proxy
     volumes:
       - ${SUBMODULE_DIR}/rapydo-confs/confs/nginx/maintenance.conf:/etc/nginx/sites-enabled/maintenance.conf
