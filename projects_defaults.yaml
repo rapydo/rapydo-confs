@@ -195,7 +195,7 @@ variables:
     MONGO_ENABLE_CONNECTOR: True
     MONGO_HOST: mongo.dockerized.io
     MONGO_PORT: 27017
-    MONGO_DATABASE: test
+    MONGO_DATABASE: rapydo
     MONGO_USER:
     MONGO_PASSWORD:
 
