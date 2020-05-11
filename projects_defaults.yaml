@@ -154,7 +154,6 @@ variables:
     BACKEND_PREFIX: ''
     LOG_LEVEL: DEBUG  # log level for backend and celery
     JWT_APP_SECRETS: /jwt_tokens
-    FULL_JWT: true
     UPLOAD_PATH: /uploads
 
     ALCHEMY_ENABLE_CONNECTOR: True
@@ -258,6 +257,8 @@ variables:
     SMTP_USERNAME:
     SMTP_PASSWORD:
 
+    ALLOW_PASSWORD_RESET: "false"
+    ALLOW_REGISTRATION: "false"
     REGISTRATION_NOTIFICATIONS: true
     SENTRY_URL:
     GA_TRACKING_CODE:
@@ -275,8 +276,7 @@ variables:
     AUTH_MAX_LOGIN_ATTEMPTS: 0
     AUTH_REGISTER_FAILED_LOGIN: False
     AUTH_SECOND_FACTOR_AUTHENTICATION: None
-    TOKEN_SHORT_TTL: 604800 # 1 week in seconds
-    TOKEN_LONG_TTL: 2592000 # 1 month in seconds
+    AUTH_JWT_TOKEN_TTL: 2592000 # 1 month in seconds
     ALLOW_ACCESS_TOKEN_PARAMETER: False
     # AUTH_SECOND_FACTOR_AUTHENTICATION: TOTP
     DEFAULT_DHLEN: 2048
