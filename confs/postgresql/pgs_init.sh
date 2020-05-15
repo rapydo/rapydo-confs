@@ -1,10 +1,8 @@
 #!/bin/bash
 
 ## http://www.postgresql.org/docs/9.1/static/auth-pg-hba-conf.html
-# net="172.1.0.0/16"
 net="0.0.0.0/0"
 
-# base_conf='/var/lib/postgresql/data/postgresql.conf'
 hba_conf='/var/lib/postgresql/data/pg_hba.conf'
 
 echo "Changing access"

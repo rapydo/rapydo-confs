@@ -1,5 +1,9 @@
-
 version: '3'
+
+networks:
+  default:
+    driver_opts:
+      com.docker.network.driver.mtu: ${NETWORK_MTU}
 
 services:
 
