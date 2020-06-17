@@ -165,6 +165,7 @@ variables:
     ALCHEMY_DB: SQL_API
     ALCHEMY_DBS: SQL_API
     ALCHEMY_POOLSIZE: 30 # or 20 # (default is 5)
+    PGDATA: /var/lib/postgresql/data
 
     NEO4J_ENABLE_CONNECTOR: True
     NEO4J_HOST: matrix.dockerized.io

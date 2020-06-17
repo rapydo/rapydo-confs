@@ -315,6 +315,7 @@ services:
       POSTGRES_USER: "${ALCHEMY_USER}"
       POSTGRES_PASSWORD: "${ALCHEMY_PASSWORD}"
       POSTGRES_DBS: ${ALCHEMY_DBS}
+      PGDATA: ${PGDATA}
     networks:
       db_net:
         aliases:
